@@ -22,7 +22,18 @@
  */
 #define DELAY_LOAD_VALUE     0x00100000
 #define LED 0
+#define MAJOR_FRAME 0x200C/4
 #define COUNTER 0xA00000
+#define  FABRIC_INT_CTRL_BASE_ADDR 0x40051000
+#define  FABRIC_GPIO_BASE_ADDR 0x40050100
+// enable Major Frame Interrupt
+#define  FABRIC_INTR_ENBL 0x00000001
+#define  FABRIC_INTR_CLR 0xFFFFFFFF
+#define  FABRIC_INTR_ENBL_OFF_ADDR 0x00000020
+#define  FABRIC_INTR_STAT_OFF_ADDR 0x0000002C
+#define  FABRIC_INTR_CLR_OFF_ADDR 0x00000080
+
+
 volatile uint32_t *fpgabase = (volatile uint32_t *)0x40050000;
 
 //#define ACTEL_STDIO_THRU_UART  1
@@ -51,6 +62,15 @@ int main()
       * Disable watchdog.
       */
      MSS_WD_disable();
+
+     /* Enabling Fabric Interrupt*/
+    NVIC_EnableIRQ(Fabric_IRQn);
+
+
+    /* Configuring the Interrupt control register in FPGA fabric
+     * This will enable the Interrupt in the FPGA*/
+    (*((uint32_t volatile *)(FABRIC_INT_CTRL_BASE_ADDR + FABRIC_INTR_ENBL_OFF_ADDR)) = FABRIC_INTR_ENBL);
+
     // turn on the LEDS
     fpgabase[LED] = 0xff;
     MSS_TIM1_init(MSS_TIMER_PERIODIC_MODE);
@@ -94,6 +114,11 @@ int main()
                 // disable timer 1 irq
                 MSS_TIM1_disable_irq();
             }
+            else if(key == '5')
+            {
+                printf("got a 5 - generate Major Frame IRQ irq\r\n");
+                fpgabase[MAJOR_FRAME] = 0x10;
+            }
             else
             {
                 printf("key received - %c \r\n",key);
@@ -115,4 +140,68 @@ void Timer1_IRQHandler(void)
     fpgabase[0] ^= 0xff;
     MSS_TIM1_clear_irq();
 }
+
+/* Fabric Interrupt Handler */
+/* This Interrupt handler executes upon the occurrence of
+   Fabric interrupt, which is from the FPGA Fabric.
+   This function reads the status register from the FPGA fabric
+   and checks for the Interrupt source. It prints source of the
+   interrupt to the hyperterminal */
+void Fabric_IRQHandler( void )
+{
+    uint32_t read_data;
+
+    /* reading Interrupt Status register from Interrupt controller in FPGA fabric */
+    read_data = (*((uint32_t volatile *)(FABRIC_INT_CTRL_BASE_ADDR + FABRIC_INTR_STAT_OFF_ADDR)));
+    /* Identifying the source of the interrupt */
+    if(read_data == 1)
+    {
+        printf("WFF93 Major Frame Interrupt Occurred\n\r");
+        // clear the interrupt
+        fpgabase[MAJOR_FRAME] = 0x1;
+        read_data = 0;
+    }
+    else if(read_data == 2)
+    {
+        printf("WFF93 Minor Frame Interrupt Occurred \n\r");
+        read_data = 0;
+    }
+    else if(read_data == 3)
+    {
+        printf("WFF93 FIF0 Empty Interrupt Occured\n\r");
+        read_data = 0;
+    }
+    else if(read_data == 4)
+    {
+        printf("PLASMIC FIFO EMPTY Interrupt Occurred \n\r");
+        read_data = 0;
+    }
+    else if(read_data == 5)
+    {
+        printf("PLASMIC FIFO Half Full Interrupt Occurred \n\r");
+        read_data = 0;
+    }
+    else if(read_data == 6)
+    {
+        printf("IRQ 6 Occured - WTF?\n\r");
+        read_data = 0;
+    }
+    else if(read_data == 7)
+    {
+        printf("IRQ 7 Occured - WTF?\n\r");
+        read_data = 0;
+    }
+    else if(read_data == 8)
+    {
+        printf("IRQ 8 Occured - WTF?\n\r");
+        read_data = 0;
+    }
+
+    /* Clearing the Interrupts in the FPGA */
+    (*((uint32_t volatile *)(FABRIC_GPIO_BASE_ADDR + FABRIC_INTR_CLR_OFF_ADDR)) = FABRIC_INTR_CLR);
+
+    NVIC_ClearPendingIRQ( Fabric_IRQn );
+
+  }
+
 
