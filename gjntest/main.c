@@ -60,10 +60,6 @@ int main()
 
     printf("blinky time\r\n");
 
-    /*
-      * Disable watchdog.
-      */
-     MSS_WD_disable();
 
      /* Enabling Fabric Interrupt*/
     NVIC_EnableIRQ(Fabric_IRQn);
@@ -84,10 +80,12 @@ int main()
      */
     for(;;)
     {
-
         do
         {
             rx_size = MSS_UART_get_rx(&g_mss_uart0, &key, 1);
+            //Reload watchdog.
+            MSS_WD_reload();
+
         }while(rx_size == 0);
 
         rx_size = 0;
@@ -130,6 +128,14 @@ int main()
             {
                 printf("got a 7 - generate Major and Minor Frame IRQ irq\r\n");
                 fpgabase[CIC] = 0x30;
+            }
+            else if(key == 'w')
+            {
+                printf("got a w - trigger watchdog timeout\r\n");
+                while(1)
+                {
+                    fpgabase[LED] ^=0xa55aa55a;
+                }
             }
             else
             {
