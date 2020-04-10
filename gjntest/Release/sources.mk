@@ -29,7 +29,6 @@ CPP_DEPS :=
 SUBDIRS := \
 CMSIS \
 CMSIS/startup_gcc \
-drivers/mss_gpio \
 drivers/mss_uart \
 . \
 
