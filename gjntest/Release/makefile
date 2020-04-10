@@ -9,7 +9,6 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include drivers/mss_uart/subdir.mk
--include drivers/mss_gpio/subdir.mk
 -include CMSIS/startup_gcc/subdir.mk
 -include CMSIS/subdir.mk
 -include subdir.mk
@@ -46,38 +45,38 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 SECONDARY_FLASH += \
-gjnuart.hex \
+gjntest.hex \
 
 SECONDARY_SIZE += \
-gjnuart.siz \
+gjntest.siz \
 
 
 # All Target
-all: gjnuart.elf secondary-outputs
+all: gjntest.elf secondary-outputs
 
 # Tool invocations
-gjnuart.elf: $(OBJS) $(USER_OBJS)
+gjntest.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GNU ARM Cross C++ Linker'
-	arm-none-eabi-g++ -mcpu=cortex-m3 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g -T /home/jerryneedell/Microsemi_SoftConsole_v6.2/extras/workspace.examples/gjnuart/CMSIS/startup_gcc/production-execute-in-place.ld -Xlinker --gc-sections -Wl,-Map,"gjnuart.map" -o "gjnuart.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-g++ -mcpu=cortex-m3 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g -T /home/jerryneedell/projects/smartfusion/gjntest/CMSIS/startup_gcc/production-execute-in-place.ld -Xlinker --gc-sections -Wl,-Map,"gjntest.map" --specs=nano.specs -o "gjntest.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-gjnuart.hex: gjnuart.elf
+gjntest.hex: gjntest.elf
 	@echo 'Invoking: GNU ARM Cross Create Flash Image'
-	arm-none-eabi-objcopy -O ihex "gjnuart.elf"  "gjnuart.hex"
+	arm-none-eabi-objcopy -O ihex "gjntest.elf"  "gjntest.hex"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-gjnuart.siz: gjnuart.elf
+gjntest.siz: gjntest.elf
 	@echo 'Invoking: GNU ARM Cross Print Size'
-	arm-none-eabi-size --format=berkeley "gjnuart.elf"
+	arm-none-eabi-size --format=berkeley "gjntest.elf"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(CC_DEPS)$(C++_DEPS)$(OBJS)$(C_UPPER_DEPS)$(CXX_DEPS)$(SECONDARY_FLASH)$(SECONDARY_SIZE)$(ASM_DEPS)$(S_UPPER_DEPS)$(C_DEPS)$(CPP_DEPS) gjnuart.elf
+	-$(RM) $(CC_DEPS)$(C++_DEPS)$(OBJS)$(C_UPPER_DEPS)$(CXX_DEPS)$(SECONDARY_FLASH)$(SECONDARY_SIZE)$(ASM_DEPS)$(S_UPPER_DEPS)$(C_DEPS)$(CPP_DEPS) gjntest.elf gjntest.map
 	-@echo ' '
 
 secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_SIZE)

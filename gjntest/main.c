@@ -22,12 +22,14 @@
  */
 #define DELAY_LOAD_VALUE     0x00100000
 #define LED 0
-#define MAJOR_FRAME 0x200C/4
+#define MAJOR_FRAME 1
+#define MINOR_FRAME 2
+#define CIC 0x200C/4
 #define COUNTER 0xA00000
 #define  FABRIC_INT_CTRL_BASE_ADDR 0x40051000
 #define  FABRIC_GPIO_BASE_ADDR 0x40050100
-// enable Major Frame Interrupt
-#define  FABRIC_INTR_ENBL 0x00000001
+// enable Major Frame and Minor Frame Interrupt
+#define  FABRIC_INTR_ENBL 0x00000003
 #define  FABRIC_INTR_CLR 0xFFFFFFFF
 #define  FABRIC_INTR_ENBL_OFF_ADDR 0x00000020
 #define  FABRIC_INTR_STAT_OFF_ADDR 0x0000002C
@@ -117,7 +119,17 @@ int main()
             else if(key == '5')
             {
                 printf("got a 5 - generate Major Frame IRQ irq\r\n");
-                fpgabase[MAJOR_FRAME] = 0x10;
+                fpgabase[CIC] = 0x10;
+            }
+            else if(key == '6')
+            {
+                printf("got a 6 - generate Minor Frame IRQ irq\r\n");
+                fpgabase[CIC] = 0x20;
+            }
+            else if(key == '7')
+            {
+                printf("got a 7 - generate Major and Minor Frame IRQ irq\r\n");
+                fpgabase[CIC] = 0x30;
             }
             else
             {
@@ -154,48 +166,50 @@ void Fabric_IRQHandler( void )
     /* reading Interrupt Status register from Interrupt controller in FPGA fabric */
     read_data = (*((uint32_t volatile *)(FABRIC_INT_CTRL_BASE_ADDR + FABRIC_INTR_STAT_OFF_ADDR)));
     /* Identifying the source of the interrupt */
-    if(read_data == 1)
+    if(read_data & 1)
     {
         printf("WFF93 Major Frame Interrupt Occurred\n\r");
         // clear the interrupt
-        fpgabase[MAJOR_FRAME] = 0x1;
-        read_data = 0;
+        fpgabase[CIC] = 0x1;
+        read_data &= 0xfffffffe;
+        // toggle LEDs
+        fpgabase[LED] ^= 0xaa;
     }
-    else if(read_data == 2)
+    if(read_data & 2)
     {
         printf("WFF93 Minor Frame Interrupt Occurred \n\r");
-        read_data = 0;
+        // clear the interrupt
+        fpgabase[CIC] = 0x2;
+        read_data &= 0xfffffffd;
+        // toggle LEDs
+        fpgabase[LED] ^= 0x55;
     }
-    else if(read_data == 3)
+    if(read_data == 3)
     {
         printf("WFF93 FIF0 Empty Interrupt Occured\n\r");
-        read_data = 0;
     }
     else if(read_data == 4)
     {
         printf("PLASMIC FIFO EMPTY Interrupt Occurred \n\r");
-        read_data = 0;
     }
     else if(read_data == 5)
     {
         printf("PLASMIC FIFO Half Full Interrupt Occurred \n\r");
-        read_data = 0;
     }
     else if(read_data == 6)
     {
         printf("IRQ 6 Occured - WTF?\n\r");
-        read_data = 0;
     }
     else if(read_data == 7)
     {
         printf("IRQ 7 Occured - WTF?\n\r");
-        read_data = 0;
     }
     else if(read_data == 8)
     {
         printf("IRQ 8 Occured - WTF?\n\r");
-        read_data = 0;
     }
+
+    read_data = 0;
 
     /* Clearing the Interrupts in the FPGA */
     (*((uint32_t volatile *)(FABRIC_GPIO_BASE_ADDR + FABRIC_INTR_CLR_OFF_ADDR)) = FABRIC_INTR_CLR);
