@@ -58,7 +58,7 @@ all: gjntest.elf secondary-outputs
 gjntest.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GNU ARM Cross C++ Linker'
-	arm-none-eabi-g++ -mcpu=cortex-m3 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g -T /home/jerryneedell/projects/smartfusion/gjntest/CMSIS/startup_gcc/production-execute-in-place.ld -Xlinker --gc-sections -Wl,-Map,"gjntest.map" --specs=nano.specs -o "gjntest.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-g++ -mcpu=cortex-m3 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g -T ../CMSIS/startup_gcc/production-execute-in-place.ld -Xlinker --gc-sections -Wl,-Map,"gjntest.map" --specs=nano.specs -o "gjntest.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
