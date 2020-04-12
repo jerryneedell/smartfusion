@@ -4,18 +4,7 @@ requires ARM Toolchain
 https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads
 tested with Version 9-2019-q4-major
 
-* patterned after SmartConsole examples:
-* source code is in main.c, CMSIS/,drivers/
-* there are two build options
-  * Debug  -- For load via JLink
-  * Release -- for inclusion in Libero build of design -- cannot load via JLink
 
-## to build
-```
-cd Debug
-make clean
-make
-```
 
 ## Directories
 Downloaded from MicroSemi Firmware Catalog
@@ -25,7 +14,21 @@ Downloaded from MicroSemi Firmware Catalog
 
 
 
-### gjntest
+## gjntest
+
+### to build
+
+* patterned after SmartConsole examples:
+* source code is in main.c, CMSIS/,drivers/
+* there are two build options
+  * Debug  -- For load via JLink
+  * Release -- for inclusion in Libero build of design -- cannot load via JLink
+
+```
+cd Debug
+make clean
+make
+```
 ISR examples
 
 open terminal session
