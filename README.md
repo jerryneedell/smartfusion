@@ -13,7 +13,7 @@ tested with Version 9-2019-q4-major
 
 
 
-## gjntest - isr example
+## gjntest - console/ISR example
 
 * patterned after SmartConsole examples:
 * source code is in main.c, CMSIS/,drivers/
