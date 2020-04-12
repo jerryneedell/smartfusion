@@ -16,13 +16,14 @@ Downloaded from MicroSemi Firmware Catalog
 
 ## gjntest
 
-### to build
-
 * patterned after SmartConsole examples:
 * source code is in main.c, CMSIS/,drivers/
 * there are two build options
   * Debug  -- For load via JLink
   * Release -- for inclusion in Libero build of design -- cannot load via JLink
+
+
+### to build
 
 ```
 cd Debug
