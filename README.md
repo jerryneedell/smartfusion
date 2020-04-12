@@ -6,15 +6,14 @@ tested with Version 9-2019-q4-major
 
 
 
-## Directories
-Downloaded from MicroSemi Firmware Catalog - for reference
+## Files Downloaded from MicroSemi Firmware Catalog - for reference
 * CMSIS
 * drivers
 * hal
 
 
 
-## gjntest
+## gjntest - isr example
 
 * patterned after SmartConsole examples:
 * source code is in main.c, CMSIS/,drivers/
