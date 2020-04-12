@@ -21,6 +21,10 @@ Downloaded from MicroSemi Firmware Catalog
 * there are two build options
   * Debug  -- For load via JLink
   * Release -- for inclusion in Libero build of design -- cannot load via JLink
+  
+under Debug or Release subdir.mk contains build information -- edit if new source files added.
+
+also edit subdir.mk  under CMSIS or drivers if new drivers added
 
 
 ### to build
