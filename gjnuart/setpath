@@ -1,2 +1,0 @@
-export SC_INSTALL_DIR=/home/jerryneedell/Microsemi_SoftConsole_v6.2
-export PATH=$SC_INSTALL_DIR/arm-none-eabi-gcc/bin:$PATH

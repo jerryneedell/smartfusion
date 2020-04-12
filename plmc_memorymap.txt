@@ -1,0 +1,239 @@
+----------------------------------------------------------------
+-- PLASMIC A2F Processor Emulator Board Memory Map
+-- 
+-- 2020/03/26 - dlb - create
+-- 2020/04/03 - dlb - first release
+-- 2020/04/03 - dlb - change to Tophat gate write & PLASMIC FIFO clear
+-- 2020/04/04 - dlb - update to test pulse register & counter addressing
+-- 2020/04/05 - dlb - change name of Version Registers
+-- 2020/04/07 - dlb - add MJR & MNR Frame Interrupt Latch & Clear
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+-- Memory Device Addressing
+----------------------------------------------------------------
+
+-- APB3 Area detail
+0x40050000 - 0x40050FFF Version Module
+0x40051000 - 0x40051FFF CoreInterrupt
+0x40052000 - 0x40052FFF WFF93 TM Module
+0x40053000 - 0x40053FFF PLASMIC Module
+0x40054000 - 0x40054FFF ACES2 Module
+
+----------------------------------------------------------------
+-- IRQ list
+----------------------------------------------------------------
+1 = WFF93 Major Frame
+2 = WFF93 Minor Frame
+3 = WFF93 FIFO empty
+4 = PLASMIC FIFO empty
+5 = PLASMIC FIFO half full
+6 = 
+7 = 
+8 =
+
+----------------------------------------------------------------
+-- Version Registers
+-- Fabric Base Address 0x40050000
+----------------------------------------------------------------
+read registers
+000 R/W scratch register
+   [31:0] scratch register
+   [7:0]  LED1-8
+080 R/O Release Date
+   [31:16] = year
+   [15:8]  = month
+   [7:0]   = day
+084 R/O Release Build Number
+   [31:16] = 0
+   [15:0]  = Version
+
+----------------------------------------------------------------
+-- CoreInterrupt Registers
+-- Fabric Base Address 0x40051000
+----------------------------------------------------------------
+000 R/W FIQ soft interrupt register
+004 W/O FIQ soft interrupt clear register
+008 R/W FIQ enable register
+00C W/O FIQ enable clear register
+010 R/O FIQ raw status register
+014 R/O FIQ status register
+018 R/W IRQ soft interrupt register
+01C W/O IRQ soft interrupt clear register
+020 R/W IRQ enable register
+024 W/O IRQ enable clear register
+028 R/O IRQ raw status register
+02C R/O IRQ status register
+
+----------------------------------------------------------------
+-- WFF93 Registers
+-- Fabric Base Address 0x40052000
+----------------------------------------------------------------
+000 R/O FIFO read data
+   [31:10] = 0
+   [9:0]   = FIFO data
+000 W/O FIFO write data
+(1 read required after writes to empty FIFO for TM output sync)
+   [31:10] = 0
+   [9:0]   = FIFO data
+004 R/O TM word counter
+   [31:6]  = 0
+   [5:0]   = number of words from the major frame start
+008 R/O TM Minor Frame counter
+   [31:6]  = 0
+   [5:0]   = number of monor frames from the major frame start
+00C W/O Interrupt Clear
+   [31:5]  = not used
+   [5]     = if 1, set Minor Frame Interrupt
+   [4]     = if 1, set Major Frame Interrupt
+   [3:2]   = unused
+   [1]     = if 1, clear Minor Frame Interrupt
+   [0]     = if 1, clear Major Frame Interrupt
+010 R/O FIFO Status
+   [31:6]  = 0
+   [7]     = FIFO Write Ack (just a pulse during write)
+   [6]     = FIFO Data Valid (just a pulse during read)
+   [5]     = FIFO overflow
+   [4]     = FIFO underflow
+   [3]     = FIFO almost full (384 bytes)
+   [2]     = FIFO half empty (255 bytes)
+   [1]     = FIFO full
+   [0]     = FIFO empty
+010 W/O TM FIFO Clear
+   [31:0]  = any value
+014 R/O TM FIFO counters
+   [31:26]  = 0
+   [25:16]  = FIFO Write Counter
+   [15:10] = 0
+   [9:0]   = FIFO Read Counter
+
+----------------------------------------------------------------
+-- PLASMIC Registers
+-- Fabric Base Address 0x40053000
+----------------------------------------------------------------
+000 R/W Command Output Register
+   [31:0]  = Command to transmit
+004 R/O Command Status
+   [31:2]  = 0
+   [1]     = Command Output Busy (command is being transmitted or blanking period)
+   [0]     = Command Output Enable (if low a second command can be buffered)
+008 R/O FIFO Receive Data
+   [31:10] = 0
+   [9:0]   = PLASMIC Data FIFO
+00C
+010 R/O FIFO Status
+   [31:6]  = 0
+   [7]     = FIFO Write Ack (just a pulse during write)
+   [6]     = FIFO Data Valid (just a pulse during read)
+   [5]     = FIFO overflow
+   [4]     = FIFO underflow
+   [3]     = FIFO almost full (384 bytes)
+   [2]     = FIFO half empty (255 bytes)
+   [1]     = FIFO full
+   [0]     = FIFO empty
+010 W/O PLASMIC FIFO Clear
+   [31:0]  = any value
+014 R/O PLASMIC FIFO counters
+   [31:26] = 0
+   [25:16] = FIFO Write Counter
+   [15:10] = 0
+   [9:0]   = FIFO Read Counter
+
+----------------------------------------------------------------
+-- ACES2 Registers
+-- Fabric Base Address 0x40054000
+----------------------------------------------------------------
+000 R/W SPI Control Register
+   [31:3]  = 0
+   [2:0]   = One of 8 SPI select channel
+004 R/O High Voltage Enable Input
+   [31:1]  = 0
+   [0]     = HV Enable
+008 R/W Legacy Counter FPGA signals
+   [31:6]  = 0
+   [5]     = a121_ts_n1
+   [4]     = rd_ctr_n1 
+   [3]     = wr_ctr_n1
+   [2]     = clear_n1
+   [1]     = mode
+   [0}     = gate (Counter Gate - reset value = 1)
+00C W/O Counter Gate signal (stops counters for latching)
+   [31:0]  = any value
+00C R/O Counter Gate signal
+   [31:1]  = 0
+   [0]     = Counter Gate
+010 R/O Counter Gate Stop Counter (wait loop to extend Gate for HV settling)
+   [31:16] = 0
+   [15:0]  = Gate Stop Count value
+014 R/W Counter Gate Stop value (# 20ns increments to extend Counter Gate)
+   [31:16] = 0
+   [15:0]  = Counter Gate Stop value
+080 W/O Particle Counter Test Pulse
+   [31:22] = 0
+   [21:0]  = Test Pulse (1 in each bit position = pulse that counter)
+080 R/O Particle Counter 0
+   [31:20] = 0
+   [19:0]  = Count Value
+084 R/O Particle Counter 1
+   [31:20] = 0
+   [19:0]  = Count Value
+088 R/O Particle Counter 2
+   [31:20] = 0
+   [19:0]  = Count Value
+08C R/O Particle Counter 3
+   [31:20] = 0
+   [19:0]  = Count Value
+090 R/O Particle Counter 4
+   [31:20] = 0
+   [19:0]  = Count Value
+094 R/O Particle Counter 5
+   [31:20] = 0
+   [19:0]  = Count Value
+098 R/O Particle Counter 6
+   [31:20] = 0
+   [19:0]  = Count Value
+09C R/O Particle Counter 7
+   [31:20] = 0
+   [19:0]  = Count Value
+0A0 R/O Particle Counter 8
+   [31:20] = 0
+   [19:0]  = Count Value
+0A4 R/O Particle Counter 9
+   [31:20] = 0
+   [19:0]  = Count Value
+0A8 R/O Particle Counter 10
+   [31:20] = 0
+   [19:0]  = Count Value
+0AC R/O Particle Counter 11
+   [31:20] = 0
+   [19:0]  = Count Value
+0B0 R/O Particle Counter 12
+   [31:20] = 0
+   [19:0]  = Count Value
+0B4 R/O Particle Counter 13
+   [31:20] = 0
+   [19:0]  = Count Value
+0B8 R/O Particle Counter 14
+   [31:20] = 0
+   [19:0]  = Count Value
+0BC R/O Particle Counter 15
+   [31:20] = 0
+   [19:0]  = Count Value
+0C0 R/O Particle Counter 16
+   [31:20] = 0
+   [19:0]  = Count Value
+0C4 R/O Particle Counter 17
+   [31:20] = 0
+   [19:0]  = Count Value
+0C8 R/O Particle Counter 18
+   [31:20] = 0
+   [19:0]  = Count Value
+0CC R/O Particle Counter 19
+   [31:20] = 0
+   [19:0]  = Count Value
+0DO R/O Particle Counter 20
+   [31:20] = 0
+   [19:0]  = Count Value
+0D4 R/O Particle Counter 21 (1MHz fixed input)
+   [31:20] = 0
+   [19:0]  = Count Value
