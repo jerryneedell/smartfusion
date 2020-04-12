@@ -12,6 +12,8 @@ https://www.segger.com/downloads/jlink/#J-LinkSoftwareAndDocumentationPack
 * CMSIS
 * drivers
 * hal
+
+## Example projects
 * gjntest --- console/isr example -- patterned after SmartConsole build structure
 * isrtest --- console/isr example -- single Makefile
 
