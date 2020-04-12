@@ -5,6 +5,10 @@ https://developer.arm.com/tools-and-software/open-source-software/developer-tool
 tested with Version 9-2019-q4-major
 
 
+For JLink - get tools from 
+https://www.segger.com/downloads/jlink/#J-LinkSoftwareAndDocumentationPack
+
+
 ## gjntest - console/ISR example
 
 * patterned after SmartConsole examples:

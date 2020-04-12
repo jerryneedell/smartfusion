@@ -4,6 +4,9 @@ requires ARM Toolchain
 https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads
 tested with Version 9-2019-q4-major
 
+For JLink - get tools from 
+https://www.segger.com/downloads/jlink/#J-LinkSoftwareAndDocumentationPack
+
 ## isrtest - console/ISR example
 
 * simplified build structure compared to SmartConsole example:
