@@ -17,7 +17,15 @@ make clean
 make
 ```
 
-#gjntest
+## Directories
+Downloaded from MicroSemi Firmware Catalog
+* CMSIS
+* drivers
+* hal
+
+
+
+### gjntest
 ISR examples
 
 open terminal session
