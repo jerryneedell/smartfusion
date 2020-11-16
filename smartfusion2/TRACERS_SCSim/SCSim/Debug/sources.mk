@@ -22,7 +22,7 @@ CMSIS \
 FreeRTOS \
 FreeRTOS/portable/GCC/ARM_CM3 \
 FreeRTOS/portable/MemMang \
-WebServer \
+tcp_stuff \
 drivers/mss_ethernet_mac \
 drivers/mss_gpio \
 drivers/mss_nvm \

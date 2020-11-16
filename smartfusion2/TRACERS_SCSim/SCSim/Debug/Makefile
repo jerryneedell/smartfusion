@@ -25,7 +25,7 @@ RM := rm -rf
 -include drivers/mss_nvm/subdir.mk
 -include drivers/mss_gpio/subdir.mk
 -include drivers/mss_ethernet_mac/subdir.mk
--include WebServer/subdir.mk
+-include tcp_stuff/subdir.mk
 -include FreeRTOS/portable/MemMang/subdir.mk
 -include FreeRTOS/portable/GCC/ARM_CM3/subdir.mk
 -include FreeRTOS/subdir.mk

@@ -75,7 +75,7 @@ static struct netif s_EMAC_if;
  */
 void prvUARTTask(void * pvParameters);
 void prvLinkStatusTask(void * pvParameters);
-void http_server_netconn_thread(void *arg);
+void tcp_server_thread(void *arg);
 
 /*==============================================================================
  *
@@ -104,8 +104,8 @@ int main()
 
         /* Create the web server task. */
         tcpip_init(prvEthernetConfigureInterface, NULL);
-        xTaskCreate(http_server_netconn_thread,
-                    (signed char *) "http_server",
+        xTaskCreate(tcp_server_thread,
+                    (signed char *) "tcp_server",
                     HTTPD_STACK_SIZE,
                     NULL,
                     mainuIP_TASK_PRIORITY,
