@@ -115,13 +115,18 @@ tcp_server_thread(void *arg)
 void prvPPSTask( void * pvParameters)
 
 {
-
+uint32_t pps_counter = 0;
+uint8_t pps_packet[4];
 pps_received = 0;
 while(1)
 {
     if(pps_received)
     {
-        tcpClientTest("PPS",3,30024);
+        uint32_t i;
+        pps_counter++;
+        for (i=0;i<4;i++)
+            pps_packet[i]= (pps_counter >> 8*(3-i))&0xff;
+        tcpClientTest(pps_packet,4,30024);
         pps_received = 0;
     }
 }

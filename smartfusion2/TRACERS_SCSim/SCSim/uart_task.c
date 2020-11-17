@@ -368,11 +368,11 @@ void tcpClientTest(uint8_t *packet, uint32_t packet_size, uint32_t port)
 	// socket create and varification
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1) {
-		send_msg((const uint8_t *)"socket creation failed...\n");
+		send_msg((const uint8_t *)"socket creation failed...\r\n");
 		return;
 	}
 	else
-		send_msg((const uint8_t *)"Socket successfully created..\n");
+		send_msg((const uint8_t *)"Socket successfully created..\r\n");
 	memset((uint8_t *)&servaddr, 0,sizeof(servaddr));
 
 	// assign IP, PORT
@@ -382,13 +382,13 @@ void tcpClientTest(uint8_t *packet, uint32_t packet_size, uint32_t port)
 
 	// connect the client socket to server socket
 	if (connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) != 0) {
-		send_msg((const uint8_t *)"connection with the server failed...\n");
+		send_msg((const uint8_t *)"connection with the server failed...\r\n");
         	// close the socket
 	        lwip_close(sockfd);
 		return;
 	}
 	else
-		send_msg((const uint8_t *)"connected to the server..\n");
+		send_msg((const uint8_t *)"connected to the server..\r\n");
 
 	lwip_send(sockfd, packet, packet_size,0);
 
