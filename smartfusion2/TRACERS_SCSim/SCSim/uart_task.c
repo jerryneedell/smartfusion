@@ -36,7 +36,8 @@ void clear_mac_buf(void);
  * Local functions.
  */
 static void send_msg(const uint8_t * p_msg);
-static void uart_tx_handler(mss_uart_instance_t * this_uart);
+static void uart0_tx_handler(mss_uart_instance_t * this_uart);
+static void uart1_tx_handler(mss_uart_instance_t * this_uart);
 static void display_link_status(void);
 static void display_instructions(void);
 static void display_reset_msg(void);
@@ -81,12 +82,55 @@ static const uint8_t g_reset_msg[] =
   UART0:
   mss_uart_instance_t * const gp_my_uart = &g_mss_uart1;
  */
-static mss_uart_instance_t * const gp_my_uart = &g_mss_uart0;
+//static mss_uart_instance_t * const gp_my_uart = &g_mss_uart0;
+static mss_uart_instance_t * const gp_comm_uart = &g_mss_uart0;
+static mss_uart_instance_t * const gp_my_uart = &g_mss_uart1;
 
 /*==============================================================================
  * UART task.
  */
-void prvUARTTask( void * pvParameters)
+void prvUART0Task( void * pvParameters)
+{
+
+    /*--------------------------------------------------------------------------
+     * Initialize and configure UART.
+     */
+    MSS_UART_init(gp_comm_uart,
+                  MSS_UART_115200_BAUD,
+                  MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
+
+    MSS_UART_set_tx_handler(gp_comm_uart, uart0_tx_handler);
+
+    for( ;; )
+    {
+        size_t rx_size;
+        uint8_t rx_buff[1];
+
+        /* Run through loop every 500 milliseconds. */
+        vTaskDelay(500 / portTICK_RATE_MS);
+
+        /* Check for inpout from the user. */
+        rx_size = MSS_UART_get_rx(gp_comm_uart, rx_buff, sizeof(rx_buff));
+        if(rx_size > 0)
+        {
+            switch(rx_buff[0])
+            {
+                case 't':
+                case 'T':
+                    tcpClientTest("Hello, world!", 12, 30023);
+                break;
+
+                default:
+                break;
+            }
+            sys_msleep(5);
+        }
+    }
+}
+/*==============================================================================
+ * UART task.
+ */
+void prvUART1Task( void * pvParameters)
 {
 
     /*--------------------------------------------------------------------------
@@ -96,7 +140,7 @@ void prvUARTTask( void * pvParameters)
                   MSS_UART_115200_BAUD,
                   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
 
-    MSS_UART_set_tx_handler(gp_my_uart, uart_tx_handler);
+    MSS_UART_set_tx_handler(gp_my_uart, uart1_tx_handler);
 
     send_msg((const uint8_t*)"\r\n\r\n**********************************************************************\r\n");
     send_msg((const uint8_t*)"**************SmartFusion2 MSS MAC WebServer Example *****************\r\n");
@@ -322,7 +366,34 @@ static void send_msg
 /*==============================================================================
  *
  */
-static void uart_tx_handler(mss_uart_instance_t * this_uart)
+static void uart0_tx_handler(mss_uart_instance_t * this_uart)
+{
+    size_t size_in_fifo;
+
+    if(g_tx_size > 0)
+    {
+        size_in_fifo = MSS_UART_fill_tx_fifo(this_uart,
+                                             (const uint8_t *)g_tx_buffer,
+                                             g_tx_size);
+
+        if(size_in_fifo  ==  g_tx_size)
+        {
+            g_tx_size = 0;
+            MSS_UART_disable_irq(this_uart, MSS_UART_TBE_IRQ);
+        }
+        else
+        {
+            g_tx_buffer = &g_tx_buffer[size_in_fifo];
+            g_tx_size = g_tx_size - size_in_fifo;
+        }
+    }
+    else
+    {
+        g_tx_size = 0;
+        MSS_UART_disable_irq(this_uart, MSS_UART_TBE_IRQ);
+    }
+}
+static void uart1_tx_handler(mss_uart_instance_t * this_uart)
 {
     size_t size_in_fifo;
 

@@ -9930,7 +9930,7 @@ END GROUP
                 0x00000000000006a0                . = ALIGN (0x10)
  *fill*         0x000000000000069c        0x4 
 
-.text           0x00000000000006a0    0x14070 load address 0x00000000600006a0
+.text           0x00000000000006a0    0x14150 load address 0x00000000600006a0
  CREATE_OBJECT_SYMBOLS
                 0x00000000600006a0                __text_load = LOADADDR (.text)
                 0x00000000000006a0                __text_start = .
@@ -10927,130 +10927,135 @@ END GROUP
                 0x0000000000010b94                _sbrk
  .text.prvEthernetConfigureInterface
                 0x0000000000010bf8       0x4c ./main.o
- .text.main     0x0000000000010c44      0x1e8 ./main.o
+ .text.main     0x0000000000010c44      0x204 ./main.o
                 0x0000000000010c44                main
  .text.vApplicationMallocFailedHook
-                0x0000000000010e2c        0x2 ./main.o
-                0x0000000000010e2c                vApplicationMallocFailedHook
+                0x0000000000010e48        0x2 ./main.o
+                0x0000000000010e48                vApplicationMallocFailedHook
  .text.vApplicationStackOverflowHook
-                0x0000000000010e2e        0xa ./main.o
-                0x0000000000010e2e                vApplicationStackOverflowHook
+                0x0000000000010e4a        0xa ./main.o
+                0x0000000000010e4a                vApplicationStackOverflowHook
  .text.vApplicationIdleHook
-                0x0000000000010e38       0x12 ./main.o
-                0x0000000000010e38                vApplicationIdleHook
- *fill*         0x0000000000010e4a        0x2 
+                0x0000000000010e54       0x12 ./main.o
+                0x0000000000010e54                vApplicationIdleHook
+ *fill*         0x0000000000010e66        0x2 
  .text.vMainConfigureTimerForRunTimeStats
-                0x0000000000010e4c       0x60 ./main.o
-                0x0000000000010e4c                vMainConfigureTimerForRunTimeStats
+                0x0000000000010e68       0x60 ./main.o
+                0x0000000000010e68                vMainConfigureTimerForRunTimeStats
  .text.ulGetRunTimeCounterValue
-                0x0000000000010eac       0x1a ./main.o
-                0x0000000000010eac                ulGetRunTimeCounterValue
- *fill*         0x0000000000010ec6        0x2 
+                0x0000000000010ec8       0x1a ./main.o
+                0x0000000000010ec8                ulGetRunTimeCounterValue
+ *fill*         0x0000000000010ee2        0x2 
  .text.get_ip_address
-                0x0000000000010ec8        0xc ./main.o
-                0x0000000000010ec8                get_ip_address
+                0x0000000000010ee4        0xc ./main.o
+                0x0000000000010ee4                get_ip_address
  .text.get_mac_address
-                0x0000000000010ed4       0x18 ./main.o
-                0x0000000000010ed4                get_mac_address
+                0x0000000000010ef0       0x18 ./main.o
+                0x0000000000010ef0                get_mac_address
  .text.mscc_post_hw_cfg_init
-                0x0000000000010eec        0x2 ./mscc_post_hw_cfg_init.o
-                0x0000000000010eec                mscc_post_hw_cfg_init
- *fill*         0x0000000000010eee        0x2 
+                0x0000000000010f08        0x2 ./mscc_post_hw_cfg_init.o
+                0x0000000000010f08                mscc_post_hw_cfg_init
+ *fill*         0x0000000000010f0a        0x2 
  .text.sys_cfg_get_mac_address
-                0x0000000000010ef0       0x1c ./sys_cfg.o
-                0x0000000000010ef0                sys_cfg_get_mac_address
+                0x0000000000010f0c       0x1c ./sys_cfg.o
+                0x0000000000010f0c                sys_cfg_get_mac_address
  .text.set_user_eth_speed_choice
-                0x0000000000010f0c       0x2c ./sys_cfg.o
-                0x0000000000010f0c                set_user_eth_speed_choice
+                0x0000000000010f28       0x2c ./sys_cfg.o
+                0x0000000000010f28                set_user_eth_speed_choice
  .text.tcp_server_thread
-                0x0000000000010f38       0xb6 ./tcp_server.o
-                0x0000000000010f38                tcp_server_thread
- *fill*         0x0000000000010fee        0x2 
+                0x0000000000010f54       0xb6 ./tcp_server.o
+                0x0000000000010f54                tcp_server_thread
+ *fill*         0x000000000001100a        0x2 
  .text.prvPPSTask
-                0x0000000000010ff0       0x48 ./tcp_server.o
-                0x0000000000010ff0                prvPPSTask
+                0x000000000001100c       0x48 ./tcp_server.o
+                0x000000000001100c                prvPPSTask
  .text.FabricIrq0_IRQHandler
-                0x0000000000011038       0x30 ./tcp_server.o
-                0x0000000000011038                FabricIrq0_IRQHandler
- .text.uart_tx_handler
-                0x0000000000011068       0x54 ./uart_task.o
+                0x0000000000011054       0x30 ./tcp_server.o
+                0x0000000000011054                FabricIrq0_IRQHandler
+ .text.uart0_tx_handler
+                0x0000000000011084       0x54 ./uart_task.o
+ .text.uart1_tx_handler
+                0x00000000000110d8       0x54 ./uart_task.o
  .text.send_msg
-                0x00000000000110bc       0x58 ./uart_task.o
+                0x000000000001112c       0x58 ./uart_task.o
  .text.display_reset_msg
-                0x0000000000011114       0x24 ./uart_task.o
+                0x0000000000011184       0x24 ./uart_task.o
  .text.tcpClientTest
-                0x0000000000011138       0x98 ./uart_task.o
-                0x0000000000011138                tcpClientTest
- .text.prvUARTTask
-                0x00000000000111d0      0x370 ./uart_task.o
-                0x00000000000111d0                prvUARTTask
+                0x00000000000111a8       0x98 ./uart_task.o
+                0x00000000000111a8                tcpClientTest
+ .text.prvUART0Task
+                0x0000000000011240       0x64 ./uart_task.o
+                0x0000000000011240                prvUART0Task
+ .text.prvUART1Task
+                0x00000000000112a4      0x370 ./uart_task.o
+                0x00000000000112a4                prvUART1Task
  .text.__libc_init_array
-                0x0000000000011540       0x48 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-init.o)
-                0x0000000000011540                __libc_init_array
- .text.memcmp   0x0000000000011588       0x1c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memcmp.o)
-                0x0000000000011588                memcmp
- .text.memcpy   0x00000000000115a4       0x1c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memcpy-stub.o)
-                0x00000000000115a4                memcpy
- .text.memset   0x00000000000115c0       0x10 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memset.o)
-                0x00000000000115c0                memset
+                0x0000000000011614       0x48 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-init.o)
+                0x0000000000011614                __libc_init_array
+ .text.memcmp   0x000000000001165c       0x1c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memcmp.o)
+                0x000000000001165c                memcmp
+ .text.memcpy   0x0000000000011678       0x1c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memcpy-stub.o)
+                0x0000000000011678                memcpy
+ .text.memset   0x0000000000011694       0x10 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memset.o)
+                0x0000000000011694                memset
  .text.snprintf
-                0x00000000000115d0       0x68 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-snprintf.o)
-                0x00000000000115d0                snprintf
-                0x00000000000115d0                sniprintf
- .text.strncpy  0x0000000000011638       0x26 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-strncpy.o)
-                0x0000000000011638                strncpy
+                0x00000000000116a4       0x68 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-snprintf.o)
+                0x00000000000116a4                snprintf
+                0x00000000000116a4                sniprintf
+ .text.strncpy  0x000000000001170c       0x26 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-strncpy.o)
+                0x000000000001170c                strncpy
  .text.__ssputs_r
-                0x000000000001165e       0xb6 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-svfprintf.o)
-                0x000000000001165e                __ssputs_r
+                0x0000000000011732       0xb6 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-svfprintf.o)
+                0x0000000000011732                __ssputs_r
  .text._svfprintf_r
-                0x0000000000011714      0x200 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-svfprintf.o)
-                0x0000000000011714                _svfprintf_r
-                0x0000000000011714                _svfiprintf_r
+                0x00000000000117e8      0x200 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-svfprintf.o)
+                0x00000000000117e8                _svfprintf_r
+                0x00000000000117e8                _svfiprintf_r
  .text._printf_common
-                0x0000000000011914       0xde /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-vfprintf_i.o)
-                0x0000000000011914                _printf_common
- *fill*         0x00000000000119f2        0x2 
+                0x00000000000119e8       0xde /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-vfprintf_i.o)
+                0x00000000000119e8                _printf_common
+ *fill*         0x0000000000011ac6        0x2 
  .text._printf_i
-                0x00000000000119f4      0x24c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-vfprintf_i.o)
-                0x00000000000119f4                _printf_i
- .text.memchr   0x0000000000011c40       0x1c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memchr-stub.o)
-                0x0000000000011c40                memchr
- .text.memmove  0x0000000000011c5c       0x34 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memmove.o)
-                0x0000000000011c5c                memmove
- .text._free_r  0x0000000000011c90       0x98 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-freer.o)
-                0x0000000000011c90                _free_r
+                0x0000000000011ac8      0x24c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-vfprintf_i.o)
+                0x0000000000011ac8                _printf_i
+ .text.memchr   0x0000000000011d14       0x1c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memchr-stub.o)
+                0x0000000000011d14                memchr
+ .text.memmove  0x0000000000011d30       0x34 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memmove.o)
+                0x0000000000011d30                memmove
+ .text._free_r  0x0000000000011d64       0x98 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-freer.o)
+                0x0000000000011d64                _free_r
  .text._malloc_r
-                0x0000000000011d28       0xb4 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-mallocr.o)
-                0x0000000000011d28                _malloc_r
+                0x0000000000011dfc       0xb4 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-mallocr.o)
+                0x0000000000011dfc                _malloc_r
  .text._realloc_r
-                0x0000000000011ddc       0x4c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-reallocr.o)
-                0x0000000000011ddc                _realloc_r
- .text._sbrk_r  0x0000000000011e28       0x20 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-sbrkr.o)
-                0x0000000000011e28                _sbrk_r
+                0x0000000000011eb0       0x4c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-reallocr.o)
+                0x0000000000011eb0                _realloc_r
+ .text._sbrk_r  0x0000000000011efc       0x20 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-sbrkr.o)
+                0x0000000000011efc                _sbrk_r
  .text.__malloc_lock
-                0x0000000000011e48        0xc /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-mlock.o)
-                0x0000000000011e48                __malloc_lock
+                0x0000000000011f1c        0xc /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-mlock.o)
+                0x0000000000011f1c                __malloc_lock
  .text.__malloc_unlock
-                0x0000000000011e54        0xc /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-mlock.o)
-                0x0000000000011e54                __malloc_unlock
+                0x0000000000011f28        0xc /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-mlock.o)
+                0x0000000000011f28                __malloc_unlock
  .text._malloc_usable_size_r
-                0x0000000000011e60       0x10 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-msizer.o)
-                0x0000000000011e60                _malloc_usable_size_r
+                0x0000000000011f34       0x10 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-msizer.o)
+                0x0000000000011f34                _malloc_usable_size_r
  .text.__retarget_lock_acquire_recursive
-                0x0000000000011e70        0x2 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-lock.o)
-                0x0000000000011e70                __retarget_lock_acquire_recursive
+                0x0000000000011f44        0x2 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-lock.o)
+                0x0000000000011f44                __retarget_lock_acquire_recursive
  .text.__retarget_lock_release_recursive
-                0x0000000000011e72        0x2 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-lock.o)
-                0x0000000000011e72                __retarget_lock_release_recursive
+                0x0000000000011f46        0x2 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-lock.o)
+                0x0000000000011f46                __retarget_lock_release_recursive
  *(.plt)
  *(.gnu.warning)
  *(.glue_7t)
- .glue_7t       0x0000000000011e74        0x0 linker stubs
+ .glue_7t       0x0000000000011f48        0x0 linker stubs
  *(.glue_7)
- .glue_7        0x0000000000011e74        0x0 linker stubs
+ .glue_7        0x0000000000011f48        0x0 linker stubs
  *(.vfp11_veneer)
- .vfp11_veneer  0x0000000000011e74        0x0 linker stubs
-                0x0000000000011e74                . = ALIGN (0x4)
+ .vfp11_veneer  0x0000000000011f48        0x0 linker stubs
+                0x0000000000011f48                . = ALIGN (0x4)
  *crtbegin.o(.ctors)
  *(EXCLUDE_FILE(*crtend.o) .ctors)
  *(SORT_BY_NAME(.ctors.*))
@@ -11061,398 +11066,402 @@ END GROUP
  *crtend.o(.dtors)
  *(.rodata .rodata.* .gnu.linkonce.r.*)
  .rodata.etharp_find_entry.str1.4
-                0x0000000000011e74       0x55 ./lwip-1.4.1/netif/etharp.o
- *fill*         0x0000000000011ec9        0x3 
+                0x0000000000011f48       0x55 ./lwip-1.4.1/netif/etharp.o
+ *fill*         0x0000000000011f9d        0x3 
  .rodata.etharp_send_ip.str1.4
-                0x0000000000011ecc       0x44 ./lwip-1.4.1/netif/etharp.o
+                0x0000000000011fa0       0x44 ./lwip-1.4.1/netif/etharp.o
  .rodata.etharp_request.str1.4
-                0x0000000000011f10       0x4b ./lwip-1.4.1/netif/etharp.o
- *fill*         0x0000000000011f5b        0x1 
+                0x0000000000011fe4       0x4b ./lwip-1.4.1/netif/etharp.o
+ *fill*         0x000000000001202f        0x1 
  .rodata.etharp_output_to_arp_index.str1.4
-                0x0000000000011f5c       0x30 ./lwip-1.4.1/netif/etharp.o
+                0x0000000000012030       0x30 ./lwip-1.4.1/netif/etharp.o
  .rodata.etharp_query.str1.4
-                0x0000000000011f8c       0x1a ./lwip-1.4.1/netif/etharp.o
- *fill*         0x0000000000011fa6        0x2 
+                0x0000000000012060       0x1a ./lwip-1.4.1/netif/etharp.o
+ *fill*         0x000000000001207a        0x2 
  .rodata.etharp_output.str1.4
-                0x0000000000011fa8       0x1b ./lwip-1.4.1/netif/etharp.o
- *fill*         0x0000000000011fc3        0x1 
+                0x000000000001207c       0x1b ./lwip-1.4.1/netif/etharp.o
+ *fill*         0x0000000000012097        0x1 
  .rodata.ethernet_input.str1.4
-                0x0000000000011fc4       0x4b ./lwip-1.4.1/netif/etharp.o
- *fill*         0x000000000001200f        0x1 
- .rodata        0x0000000000012010        0x6 ./lwip-1.4.1/netif/etharp.o
- *fill*         0x0000000000012016        0x2 
+                0x0000000000012098       0x4b ./lwip-1.4.1/netif/etharp.o
+ *fill*         0x00000000000120e3        0x1 
+ .rodata        0x00000000000120e4        0x6 ./lwip-1.4.1/netif/etharp.o
+ *fill*         0x00000000000120ea        0x2 
  .rodata.ethbroadcast
-                0x0000000000012018        0x6 ./lwip-1.4.1/netif/etharp.o
-                0x0000000000012018                ethbroadcast
- *fill*         0x000000000001201e        0x2 
+                0x00000000000120ec        0x6 ./lwip-1.4.1/netif/etharp.o
+                0x00000000000120ec                ethbroadcast
+ *fill*         0x00000000000120f2        0x2 
  .rodata.icmp_send_response.str1.4
-                0x0000000000012020       0x2c ./lwip-1.4.1/core/ipv4/icmp.o
+                0x00000000000120f4       0x2c ./lwip-1.4.1/core/ipv4/icmp.o
  .rodata.icmp_input.str1.4
-                0x000000000001204c       0xc6 ./lwip-1.4.1/core/ipv4/icmp.o
+                0x0000000000012120       0xc6 ./lwip-1.4.1/core/ipv4/icmp.o
                                          0xe9 (size before relaxing)
- *fill*         0x0000000000012112        0x2 
+ *fill*         0x00000000000121e6        0x2 
  .rodata.igmp_send.str1.4
-                0x0000000000012114       0x3a ./lwip-1.4.1/core/ipv4/igmp.o
- *fill*         0x000000000001214e        0x2 
+                0x00000000000121e8       0x3a ./lwip-1.4.1/core/ipv4/igmp.o
+ *fill*         0x0000000000012222        0x2 
  .rodata.ip_output_if_opt.str1.4
-                0x0000000000012150       0x39 ./lwip-1.4.1/core/ipv4/ip.o
- *fill*         0x0000000000012189        0x3 
+                0x0000000000012224       0x39 ./lwip-1.4.1/core/ipv4/ip.o
+ *fill*         0x000000000001225d        0x3 
  .rodata.ipaddr_aton.str1.4
-                0x000000000001218c        0xa ./lwip-1.4.1/core/ipv4/ip_addr.o
- *fill*         0x0000000000012196        0x2 
+                0x0000000000012260        0xa ./lwip-1.4.1/core/ipv4/ip_addr.o
+ *fill*         0x000000000001226a        0x2 
  .rodata.ip_addr_any
-                0x0000000000012198        0x4 ./lwip-1.4.1/core/ipv4/ip_addr.o
-                0x0000000000012198                ip_addr_any
+                0x000000000001226c        0x4 ./lwip-1.4.1/core/ipv4/ip_addr.o
+                0x000000000001226c                ip_addr_any
  .rodata.ip_addr_broadcast
-                0x000000000001219c        0x4 ./lwip-1.4.1/core/ipv4/ip_addr.o
-                0x000000000001219c                ip_addr_broadcast
+                0x0000000000012270        0x4 ./lwip-1.4.1/core/ipv4/ip_addr.o
+                0x0000000000012270                ip_addr_broadcast
  .rodata.ip_reass_dequeue_datagram.str1.4
-                0x00000000000121a0       0x19 ./lwip-1.4.1/core/ipv4/ip_frag.o
- *fill*         0x00000000000121b9        0x3 
+                0x0000000000012274       0x19 ./lwip-1.4.1/core/ipv4/ip_frag.o
+ *fill*         0x000000000001228d        0x3 
  .rodata.ip_reass_free_complete_datagram.str1.4
-                0x00000000000121bc       0x5b ./lwip-1.4.1/core/ipv4/ip_frag.o
+                0x0000000000012290       0x5b ./lwip-1.4.1/core/ipv4/ip_frag.o
  .rodata.ip_frag_free_pbuf_custom_ref.str1.4
-                0x0000000000012217       0x5b ./lwip-1.4.1/core/ipv4/ip_frag.o
+                0x00000000000122eb       0x5b ./lwip-1.4.1/core/ipv4/ip_frag.o
                                           0xa (size before relaxing)
- *fill*         0x0000000000012217        0x1 
+ *fill*         0x00000000000122eb        0x1 
  .rodata.ipfrag_free_pbuf_custom.str1.4
-                0x0000000000012218        0xc ./lwip-1.4.1/core/ipv4/ip_frag.o
+                0x00000000000122ec        0xc ./lwip-1.4.1/core/ipv4/ip_frag.o
  .rodata.ip_reass.str1.4
-                0x0000000000012224       0x61 ./lwip-1.4.1/core/ipv4/ip_frag.o
- *fill*         0x0000000000012285        0x3 
+                0x00000000000122f8       0x61 ./lwip-1.4.1/core/ipv4/ip_frag.o
+ *fill*         0x0000000000012359        0x3 
  .rodata.ip_frag.str1.4
-                0x0000000000012288       0x20 ./lwip-1.4.1/core/ipv4/ip_frag.o
+                0x000000000001235c       0x20 ./lwip-1.4.1/core/ipv4/ip_frag.o
  .rodata.dhcp_option.str1.4
-                0x00000000000122a8       0x48 ./lwip-1.4.1/core/dhcp.o
+                0x000000000001237c       0x48 ./lwip-1.4.1/core/dhcp.o
  .rodata.dhcp_option_byte.str1.4
-                0x00000000000122f0       0x3b ./lwip-1.4.1/core/dhcp.o
- *fill*         0x000000000001232b        0x1 
+                0x00000000000123c4       0x3b ./lwip-1.4.1/core/dhcp.o
+ *fill*         0x00000000000123ff        0x1 
  .rodata.dhcp_option_short.str1.4
-                0x000000000001232c       0x41 ./lwip-1.4.1/core/dhcp.o
- *fill*         0x000000000001236d        0x3 
+                0x0000000000012400       0x41 ./lwip-1.4.1/core/dhcp.o
+ *fill*         0x0000000000012441        0x3 
  .rodata.dhcp_option_long.str1.4
-                0x0000000000012370       0x40 ./lwip-1.4.1/core/dhcp.o
+                0x0000000000012444       0x40 ./lwip-1.4.1/core/dhcp.o
  .rodata.dhcp_option_trailer.str1.4
-                0x00000000000123b0       0x8f ./lwip-1.4.1/core/dhcp.o
- *fill*         0x000000000001243f        0x1 
+                0x0000000000012484       0x8f ./lwip-1.4.1/core/dhcp.o
+ *fill*         0x0000000000012513        0x1 
  .rodata.dhcp_create_msg.str1.4
-                0x0000000000012440       0xd0 ./lwip-1.4.1/core/dhcp.o
+                0x0000000000012514       0xd0 ./lwip-1.4.1/core/dhcp.o
  .rodata.dhcp_delete_msg.str1.4
-                0x0000000000012510       0x6f ./lwip-1.4.1/core/dhcp.o
- *fill*         0x000000000001257f        0x1 
- .rodata.dhcp_bind.str1.4
-                0x0000000000012580       0x34 ./lwip-1.4.1/core/dhcp.o
- .rodata.dhcp_recv.str1.4
-                0x00000000000125b4       0x9f ./lwip-1.4.1/core/dhcp.o
+                0x00000000000125e4       0x6f ./lwip-1.4.1/core/dhcp.o
  *fill*         0x0000000000012653        0x1 
- .rodata.dhcp_set_struct.str1.4
+ .rodata.dhcp_bind.str1.4
                 0x0000000000012654       0x34 ./lwip-1.4.1/core/dhcp.o
+ .rodata.dhcp_recv.str1.4
+                0x0000000000012688       0x9f ./lwip-1.4.1/core/dhcp.o
+ *fill*         0x0000000000012727        0x1 
+ .rodata.dhcp_set_struct.str1.4
+                0x0000000000012728       0x34 ./lwip-1.4.1/core/dhcp.o
                                          0x44 (size before relaxing)
  .rodata.dhcp_stop.str1.4
-                0x0000000000012688       0x19 ./lwip-1.4.1/core/dhcp.o
- *fill*         0x00000000000126a1        0x3 
+                0x000000000001275c       0x19 ./lwip-1.4.1/core/dhcp.o
+ *fill*         0x0000000000012775        0x3 
  .rodata.dhcp_start.str1.4
-                0x00000000000126a4       0x18 ./lwip-1.4.1/core/dhcp.o
+                0x0000000000012778       0x18 ./lwip-1.4.1/core/dhcp.o
  .rodata.sys_timeout.str1.4
-                0x00000000000126bc       0x3d ./lwip-1.4.1/core/lwip_timers.o
- *fill*         0x00000000000126f9        0x3 
+                0x0000000000012790       0x3d ./lwip-1.4.1/core/lwip_timers.o
+ *fill*         0x00000000000127cd        0x3 
  .rodata.mem_init.str1.4
-                0x00000000000126fc       0x1b ./lwip-1.4.1/core/mem.o
- *fill*         0x0000000000012717        0x1 
+                0x00000000000127d0       0x1b ./lwip-1.4.1/core/mem.o
+ *fill*         0x00000000000127eb        0x1 
  .rodata.mem_free.str1.4
-                0x0000000000012718       0xca ./lwip-1.4.1/core/mem.o
- *fill*         0x00000000000127e2        0x2 
+                0x00000000000127ec       0xca ./lwip-1.4.1/core/mem.o
+ *fill*         0x00000000000128b6        0x2 
  .rodata.mem_trim.str1.4
-                0x00000000000127e4       0x38 ./lwip-1.4.1/core/mem.o
+                0x00000000000128b8       0x38 ./lwip-1.4.1/core/mem.o
  .rodata.mem_malloc.str1.4
-                0x000000000001281c       0x83 ./lwip-1.4.1/core/mem.o
- *fill*         0x000000000001289f        0x1 
+                0x00000000000128f0       0x83 ./lwip-1.4.1/core/mem.o
+ *fill*         0x0000000000012973        0x1 
  .rodata.memp_malloc.str1.4
-                0x00000000000128a0       0x43 ./lwip-1.4.1/core/memp.o
- *fill*         0x00000000000128e3        0x1 
+                0x0000000000012974       0x43 ./lwip-1.4.1/core/memp.o
+ *fill*         0x00000000000129b7        0x1 
  .rodata.memp_free.str1.4
-                0x00000000000128e4       0x2c ./lwip-1.4.1/core/memp.o
+                0x00000000000129b8       0x2c ./lwip-1.4.1/core/memp.o
  .rodata.memp_num
-                0x0000000000012910       0x1e ./lwip-1.4.1/core/memp.o
- *fill*         0x000000000001292e        0x2 
+                0x00000000000129e4       0x1e ./lwip-1.4.1/core/memp.o
+ *fill*         0x0000000000012a02        0x2 
  .rodata.memp_sizes
-                0x0000000000012930       0x1e ./lwip-1.4.1/core/memp.o
- *fill*         0x000000000001294e        0x2 
+                0x0000000000012a04       0x1e ./lwip-1.4.1/core/memp.o
+ *fill*         0x0000000000012a22        0x2 
  .rodata.netif_add.str1.4
-                0x0000000000012950       0x17 ./lwip-1.4.1/core/netif.o
- *fill*         0x0000000000012967        0x1 
+                0x0000000000012a24       0x17 ./lwip-1.4.1/core/netif.o
+ *fill*         0x0000000000012a3b        0x1 
  .rodata.pbuf_alloced_custom.str1.4
-                0x0000000000012968       0x24 ./lwip-1.4.1/core/pbuf.o
+                0x0000000000012a3c       0x24 ./lwip-1.4.1/core/pbuf.o
  .rodata.pbuf_header.str1.4
-                0x000000000001298c       0x2e ./lwip-1.4.1/core/pbuf.o
+                0x0000000000012a60       0x2e ./lwip-1.4.1/core/pbuf.o
                                          0x3a (size before relaxing)
- *fill*         0x00000000000129ba        0x2 
+ *fill*         0x0000000000012a8e        0x2 
  .rodata.pbuf_free.str1.4
-                0x00000000000129bc       0x51 ./lwip-1.4.1/core/pbuf.o
- *fill*         0x0000000000012a0d        0x3 
+                0x0000000000012a90       0x51 ./lwip-1.4.1/core/pbuf.o
+ *fill*         0x0000000000012ae1        0x3 
  .rodata.pbuf_alloc.str1.4
-                0x0000000000012a10       0xaf ./lwip-1.4.1/core/pbuf.o
- *fill*         0x0000000000012abf        0x1 
+                0x0000000000012ae4       0xaf ./lwip-1.4.1/core/pbuf.o
+ *fill*         0x0000000000012b93        0x1 
  .rodata.pbuf_realloc.str1.4
-                0x0000000000012ac0       0x7c ./lwip-1.4.1/core/pbuf.o
+                0x0000000000012b94       0x7c ./lwip-1.4.1/core/pbuf.o
  .rodata.pbuf_cat.str1.4
-                0x0000000000012b3c       0x78 ./lwip-1.4.1/core/pbuf.o
+                0x0000000000012c10       0x78 ./lwip-1.4.1/core/pbuf.o
  .rodata.pbuf_copy.str1.4
-                0x0000000000012bb4       0x9f ./lwip-1.4.1/core/pbuf.o
- *fill*         0x0000000000012c53        0x1 
+                0x0000000000012c88       0x9f ./lwip-1.4.1/core/pbuf.o
+ *fill*         0x0000000000012d27        0x1 
  .rodata.pbuf_copy_partial.str1.4
-                0x0000000000012c54       0x43 ./lwip-1.4.1/core/pbuf.o
- *fill*         0x0000000000012c97        0x1 
+                0x0000000000012d28       0x43 ./lwip-1.4.1/core/pbuf.o
+ *fill*         0x0000000000012d6b        0x1 
  .rodata.raw_sendto.str1.4
-                0x0000000000012c98       0x26 ./lwip-1.4.1/core/raw.o
- *fill*         0x0000000000012cbe        0x2 
+                0x0000000000012d6c       0x26 ./lwip-1.4.1/core/raw.o
+ *fill*         0x0000000000012d92        0x2 
  .rodata.tcp_bind.str1.4
-                0x0000000000012cc0       0x28 ./lwip-1.4.1/core/tcp.o
+                0x0000000000012d94       0x28 ./lwip-1.4.1/core/tcp.o
  .rodata.tcp_listen_with_backlog.str1.4
-                0x0000000000012ce8       0x22 ./lwip-1.4.1/core/tcp.o
- *fill*         0x0000000000012d0a        0x2 
+                0x0000000000012dbc       0x22 ./lwip-1.4.1/core/tcp.o
+ *fill*         0x0000000000012dde        0x2 
  .rodata.tcp_update_rcv_ann_wnd.str1.4
-                0x0000000000012d0c       0x1a ./lwip-1.4.1/core/tcp.o
- *fill*         0x0000000000012d26        0x2 
+                0x0000000000012de0       0x1a ./lwip-1.4.1/core/tcp.o
+ *fill*         0x0000000000012dfa        0x2 
  .rodata.tcp_recved.str1.4
-                0x0000000000012d28       0x4c ./lwip-1.4.1/core/tcp.o
+                0x0000000000012dfc       0x4c ./lwip-1.4.1/core/tcp.o
  .rodata.tcp_recv.str1.4
-                0x0000000000012d74       0x27 ./lwip-1.4.1/core/tcp.o
- *fill*         0x0000000000012d9b        0x1 
+                0x0000000000012e48       0x27 ./lwip-1.4.1/core/tcp.o
+ *fill*         0x0000000000012e6f        0x1 
  .rodata.tcp_sent.str1.4
-                0x0000000000012d9c       0x27 ./lwip-1.4.1/core/tcp.o
- *fill*         0x0000000000012dc3        0x1 
+                0x0000000000012e70       0x27 ./lwip-1.4.1/core/tcp.o
+ *fill*         0x0000000000012e97        0x1 
  .rodata.tcp_err.str1.4
-                0x0000000000012dc4       0x26 ./lwip-1.4.1/core/tcp.o
- *fill*         0x0000000000012dea        0x2 
+                0x0000000000012e98       0x26 ./lwip-1.4.1/core/tcp.o
+ *fill*         0x0000000000012ebe        0x2 
  .rodata.tcp_poll.str1.4
-                0x0000000000012dec       0x1e ./lwip-1.4.1/core/tcp.o
- *fill*         0x0000000000012e0a        0x2 
+                0x0000000000012ec0       0x1e ./lwip-1.4.1/core/tcp.o
+ *fill*         0x0000000000012ede        0x2 
  .rodata.tcp_slowtmr.str1.4
-                0x0000000000012e0c      0x15e ./lwip-1.4.1/core/tcp.o
- *fill*         0x0000000000012f6a        0x2 
+                0x0000000000012ee0      0x15e ./lwip-1.4.1/core/tcp.o
+ *fill*         0x000000000001303e        0x2 
  .rodata.tcp_pcb_remove.str1.4
-                0x0000000000012f6c       0x4b ./lwip-1.4.1/core/tcp.o
- *fill*         0x0000000000012fb7        0x1 
+                0x0000000000013040       0x4b ./lwip-1.4.1/core/tcp.o
+ *fill*         0x000000000001308b        0x1 
  .rodata.tcp_close_shutdown.str1.4
-                0x0000000000012fb8       0x19 ./lwip-1.4.1/core/tcp.o
- *fill*         0x0000000000012fd1        0x3 
+                0x000000000001308c       0x19 ./lwip-1.4.1/core/tcp.o
+ *fill*         0x00000000000130a5        0x3 
  .rodata.tcp_abandon.str1.4
-                0x0000000000012fd4       0x31 ./lwip-1.4.1/core/tcp.o
- *fill*         0x0000000000013005        0x3 
+                0x00000000000130a8       0x31 ./lwip-1.4.1/core/tcp.o
+ *fill*         0x00000000000130d9        0x3 
  .rodata.tcp_connect.str1.4
-                0x0000000000013008       0x30 ./lwip-1.4.1/core/tcp.o
+                0x00000000000130dc       0x30 ./lwip-1.4.1/core/tcp.o
  .rodata.tcp_backoff
-                0x0000000000013038        0xd ./lwip-1.4.1/core/tcp.o
-                0x0000000000013038                tcp_backoff
- *fill*         0x0000000000013045        0x3 
+                0x000000000001310c        0xd ./lwip-1.4.1/core/tcp.o
+                0x000000000001310c                tcp_backoff
+ *fill*         0x0000000000013119        0x3 
  .rodata.tcp_pcb_lists
-                0x0000000000013048       0x10 ./lwip-1.4.1/core/tcp.o
-                0x0000000000013048                tcp_pcb_lists
+                0x000000000001311c       0x10 ./lwip-1.4.1/core/tcp.o
+                0x000000000001311c                tcp_pcb_lists
  .rodata.tcp_persist_backoff
-                0x0000000000013058        0x7 ./lwip-1.4.1/core/tcp.o
-                0x0000000000013058                tcp_persist_backoff
- *fill*         0x000000000001305f        0x1 
+                0x000000000001312c        0x7 ./lwip-1.4.1/core/tcp.o
+                0x000000000001312c                tcp_persist_backoff
+ *fill*         0x0000000000013133        0x1 
  .rodata.tcp_receive.str1.4
-                0x0000000000013060      0x161 ./lwip-1.4.1/core/tcp_in.o
- *fill*         0x00000000000131c1        0x3 
+                0x0000000000013134      0x161 ./lwip-1.4.1/core/tcp_in.o
+ *fill*         0x0000000000013295        0x3 
  .rodata.tcp_input.str1.4
-                0x00000000000131c4      0x16a ./lwip-1.4.1/core/tcp_in.o
- *fill*         0x000000000001332e        0x2 
+                0x0000000000013298      0x16a ./lwip-1.4.1/core/tcp_in.o
+ *fill*         0x0000000000013402        0x2 
  .rodata.tcp_pbuf_prealloc.str1.4
-                0x0000000000013330       0x14 ./lwip-1.4.1/core/tcp_out.o
+                0x0000000000013404       0x14 ./lwip-1.4.1/core/tcp_out.o
  .rodata.tcp_output_alloc_header.str1.4
-                0x0000000000013344       0x2e ./lwip-1.4.1/core/tcp_out.o
- *fill*         0x0000000000013372        0x2 
+                0x0000000000013418       0x2e ./lwip-1.4.1/core/tcp_out.o
+ *fill*         0x0000000000013446        0x2 
  .rodata.tcp_write.str1.4
-                0x0000000000013374      0x1ae ./lwip-1.4.1/core/tcp_out.o
- *fill*         0x0000000000013522        0x2 
+                0x0000000000013448      0x1ae ./lwip-1.4.1/core/tcp_out.o
+ *fill*         0x00000000000135f6        0x2 
  .rodata.tcp_enqueue_flags.str1.4
-                0x0000000000013524      0x100 ./lwip-1.4.1/core/tcp_out.o
+                0x00000000000135f8      0x100 ./lwip-1.4.1/core/tcp_out.o
  .rodata.tcp_output.str1.4
-                0x0000000000013624       0x3f ./lwip-1.4.1/core/tcp_out.o
- *fill*         0x0000000000013663        0x1 
+                0x00000000000136f8       0x3f ./lwip-1.4.1/core/tcp_out.o
+ *fill*         0x0000000000013737        0x1 
  .rodata.udp_input.str1.4
-                0x0000000000013664       0x28 ./lwip-1.4.1/core/udp.o
+                0x0000000000013738       0x28 ./lwip-1.4.1/core/udp.o
  .rodata.udp_bind.str1.4
-                0x000000000001368c        0xc ./lwip-1.4.1/core/udp.o
+                0x0000000000013760        0xc ./lwip-1.4.1/core/udp.o
  .rodata.udp_sendto_if.str1.4
-                0x0000000000013698       0x2e ./lwip-1.4.1/core/udp.o
- *fill*         0x00000000000136c6        0x2 
+                0x000000000001376c       0x2e ./lwip-1.4.1/core/udp.o
+ *fill*         0x000000000001379a        0x2 
  .rodata.netconn_recv_data.str1.4
-                0x00000000000136c8       0x6c ./lwip-1.4.1/api/api_lib.o
+                0x000000000001379c       0x6c ./lwip-1.4.1/api/api_lib.o
  .rodata.netconn_new_with_proto_and_callback.str1.4
-                0x0000000000013734       0x79 ./lwip-1.4.1/api/api_lib.o
- *fill*         0x00000000000137ad        0x3 
+                0x0000000000013808       0x79 ./lwip-1.4.1/api/api_lib.o
+ *fill*         0x0000000000013881        0x3 
  .rodata.netconn_getaddr.str1.4
-                0x00000000000137b0       0x5e ./lwip-1.4.1/api/api_lib.o
- *fill*         0x000000000001380e        0x2 
+                0x0000000000013884       0x5e ./lwip-1.4.1/api/api_lib.o
+ *fill*         0x00000000000138e2        0x2 
  .rodata.netconn_bind.str1.4
-                0x0000000000013810       0x1b ./lwip-1.4.1/api/api_lib.o
- *fill*         0x000000000001382b        0x1 
+                0x00000000000138e4       0x1b ./lwip-1.4.1/api/api_lib.o
+ *fill*         0x00000000000138ff        0x1 
  .rodata.netconn_connect.str1.4
-                0x000000000001382c       0x1e ./lwip-1.4.1/api/api_lib.o
- *fill*         0x000000000001384a        0x2 
+                0x0000000000013900       0x1e ./lwip-1.4.1/api/api_lib.o
+ *fill*         0x000000000001391e        0x2 
  .rodata.netconn_listen_with_backlog.str1.4
-                0x000000000001384c       0x1d ./lwip-1.4.1/api/api_lib.o
- *fill*         0x0000000000013869        0x3 
+                0x0000000000013920       0x1d ./lwip-1.4.1/api/api_lib.o
+ *fill*         0x000000000001393d        0x3 
  .rodata.netconn_accept.str1.4
-                0x000000000001386c       0x63 ./lwip-1.4.1/api/api_lib.o
+                0x0000000000013940       0x63 ./lwip-1.4.1/api/api_lib.o
  .rodata.netconn_recv.str1.4
-                0x00000000000138cf        0xa ./lwip-1.4.1/api/api_lib.o
- *fill*         0x00000000000138cf        0x1 
+                0x00000000000139a3        0xa ./lwip-1.4.1/api/api_lib.o
+ *fill*         0x00000000000139a3        0x1 
  .rodata.netconn_send.str1.4
-                0x00000000000138d0       0x1b ./lwip-1.4.1/api/api_lib.o
- *fill*         0x00000000000138eb        0x1 
+                0x00000000000139a4       0x1b ./lwip-1.4.1/api/api_lib.o
+ *fill*         0x00000000000139bf        0x1 
  .rodata.netconn_write_partly.str1.4
-                0x00000000000138ec       0x3e ./lwip-1.4.1/api/api_lib.o
- *fill*         0x000000000001392a        0x2 
+                0x00000000000139c0       0x3e ./lwip-1.4.1/api/api_lib.o
+ *fill*         0x00000000000139fe        0x2 
  .rodata.recv_udp.str1.4
-                0x000000000001392c       0x62 ./lwip-1.4.1/api/api_msg.o
- *fill*         0x000000000001398e        0x2 
+                0x0000000000013a00       0x62 ./lwip-1.4.1/api/api_msg.o
+ *fill*         0x0000000000013a62        0x2 
  .rodata.err_tcp.str1.4
-                0x0000000000013990       0x46 ./lwip-1.4.1/api/api_msg.o
- *fill*         0x00000000000139d6        0x2 
+                0x0000000000013a64       0x46 ./lwip-1.4.1/api/api_msg.o
+ *fill*         0x0000000000013aaa        0x2 
  .rodata.do_connected.str1.4
-                0x00000000000139d8       0x5d ./lwip-1.4.1/api/api_msg.o
- *fill*         0x0000000000013a35        0x3 
+                0x0000000000013aac       0x5d ./lwip-1.4.1/api/api_msg.o
+ *fill*         0x0000000000013b09        0x3 
  .rodata.do_writemore.str1.4
-                0x0000000000013a38       0x8a ./lwip-1.4.1/api/api_msg.o
- *fill*         0x0000000000013ac2        0x2 
+                0x0000000000013b0c       0x8a ./lwip-1.4.1/api/api_msg.o
+ *fill*         0x0000000000013b96        0x2 
  .rodata.do_close_internal.str1.4
-                0x0000000000013ac4       0x7b ./lwip-1.4.1/api/api_msg.o
+                0x0000000000013b98       0x7b ./lwip-1.4.1/api/api_msg.o
                                          0x8b (size before relaxing)
- *fill*         0x0000000000013b3f        0x1 
+ *fill*         0x0000000000013c13        0x1 
  .rodata.recv_tcp.str1.4
-                0x0000000000013b40       0x62 ./lwip-1.4.1/api/api_msg.o
- *fill*         0x0000000000013ba2        0x2 
+                0x0000000000013c14       0x62 ./lwip-1.4.1/api/api_msg.o
+ *fill*         0x0000000000013c76        0x2 
  .rodata.netconn_free.str1.4
-                0x0000000000013ba4       0xa8 ./lwip-1.4.1/api/api_msg.o
+                0x0000000000013c78       0xa8 ./lwip-1.4.1/api/api_msg.o
  .rodata.netconn_drain.str1.4
-                0x0000000000013c4c       0x2d ./lwip-1.4.1/api/api_msg.o
- *fill*         0x0000000000013c79        0x3 
+                0x0000000000013d20       0x2d ./lwip-1.4.1/api/api_msg.o
+ *fill*         0x0000000000013d4d        0x3 
  .rodata.do_delconn.str1.4
-                0x0000000000013c7c       0x5b ./lwip-1.4.1/api/api_msg.o
- *fill*         0x0000000000013cd7        0x1 
+                0x0000000000013d50       0x5b ./lwip-1.4.1/api/api_msg.o
+ *fill*         0x0000000000013dab        0x1 
  .rodata.do_connect.str1.4
-                0x0000000000013cd8       0x15 ./lwip-1.4.1/api/api_msg.o
- *fill*         0x0000000000013ced        0x3 
+                0x0000000000013dac       0x15 ./lwip-1.4.1/api/api_msg.o
+ *fill*         0x0000000000013dc1        0x3 
  .rodata.do_write.str1.4
-                0x0000000000013cf0       0x14 ./lwip-1.4.1/api/api_msg.o
+                0x0000000000013dc4       0x14 ./lwip-1.4.1/api/api_msg.o
  .rodata.do_getaddr.str1.4
-                0x0000000000013d04       0x15 ./lwip-1.4.1/api/api_msg.o
- *fill*         0x0000000000013d19        0x3 
+                0x0000000000013dd8       0x15 ./lwip-1.4.1/api/api_msg.o
+ *fill*         0x0000000000013ded        0x3 
  .rodata.netbuf_free.str1.4
-                0x0000000000013d1c       0x19 ./lwip-1.4.1/api/netbuf.o
- *fill*         0x0000000000013d35        0x3 
+                0x0000000000013df0       0x19 ./lwip-1.4.1/api/netbuf.o
+ *fill*         0x0000000000013e09        0x3 
  .rodata.netbuf_ref.str1.4
-                0x0000000000013d38       0x18 ./lwip-1.4.1/api/netbuf.o
+                0x0000000000013e0c       0x18 ./lwip-1.4.1/api/netbuf.o
  .rodata.event_callback.str1.4
-                0x0000000000013d50        0xe ./lwip-1.4.1/api/sockets.o
- *fill*         0x0000000000013d5e        0x2 
+                0x0000000000013e24        0xe ./lwip-1.4.1/api/sockets.o
+ *fill*         0x0000000000013e32        0x2 
  .rodata.lwip_accept.str1.4
-                0x0000000000013d60       0x68 ./lwip-1.4.1/api/sockets.o
+                0x0000000000013e34       0x68 ./lwip-1.4.1/api/sockets.o
  .rodata.lwip_bind.str1.4
-                0x0000000000013dc8       0x1b ./lwip-1.4.1/api/sockets.o
- *fill*         0x0000000000013de3        0x1 
+                0x0000000000013e9c       0x1b ./lwip-1.4.1/api/sockets.o
+ *fill*         0x0000000000013eb7        0x1 
  .rodata.lwip_close.str1.4
-                0x0000000000013de4       0x17 ./lwip-1.4.1/api/sockets.o
- *fill*         0x0000000000013dfb        0x1 
+                0x0000000000013eb8       0x17 ./lwip-1.4.1/api/sockets.o
+ *fill*         0x0000000000013ecf        0x1 
  .rodata.lwip_connect.str1.4
-                0x0000000000013dfc       0x1e ./lwip-1.4.1/api/sockets.o
- *fill*         0x0000000000013e1a        0x2 
+                0x0000000000013ed0       0x1e ./lwip-1.4.1/api/sockets.o
+ *fill*         0x0000000000013eee        0x2 
  .rodata.lwip_recvfrom.str1.4
-                0x0000000000013e1c       0x25 ./lwip-1.4.1/api/sockets.o
+                0x0000000000013ef0       0x25 ./lwip-1.4.1/api/sockets.o
                                          0x31 (size before relaxing)
- *fill*         0x0000000000013e41        0x3 
+ *fill*         0x0000000000013f15        0x3 
  .rodata.lwip_sendto.str1.4
-                0x0000000000013e44       0x41 ./lwip-1.4.1/api/sockets.o
- *fill*         0x0000000000013e85        0x3 
+                0x0000000000013f18       0x41 ./lwip-1.4.1/api/sockets.o
+ *fill*         0x0000000000013f59        0x3 
  .rodata.err_to_errno_table
-                0x0000000000013e88       0x40 ./lwip-1.4.1/api/sockets.o
+                0x0000000000013f5c       0x40 ./lwip-1.4.1/api/sockets.o
  .rodata.tcpip_thread.str1.4
-                0x0000000000013ec8       0x1e ./lwip-1.4.1/api/tcpip.o
- *fill*         0x0000000000013ee6        0x2 
+                0x0000000000013f9c       0x1e ./lwip-1.4.1/api/tcpip.o
+ *fill*         0x0000000000013fba        0x2 
  .rodata.tcpip_init.str1.4
-                0x0000000000013ee8       0x31 ./lwip-1.4.1/api/tcpip.o
- *fill*         0x0000000000013f19        0x3 
+                0x0000000000013fbc       0x31 ./lwip-1.4.1/api/tcpip.o
+ *fill*         0x0000000000013fed        0x3 
  .rodata.g_m2s_serdes_0_config
-                0x0000000000013f1c      0x208 ./drivers_config/sys_config/sys_config_SERDESIF_0.o
-                0x0000000000013f1c                g_m2s_serdes_0_config
+                0x0000000000013ff0      0x208 ./drivers_config/sys_config/sys_config_SERDESIF_0.o
+                0x0000000000013ff0                g_m2s_serdes_0_config
  .rodata.vTaskStartScheduler.str1.4
-                0x0000000000014124        0x5 ./FreeRTOS/tasks.o
- *fill*         0x0000000000014129        0x3 
+                0x00000000000141f8        0x5 ./FreeRTOS/tasks.o
+ *fill*         0x00000000000141fd        0x3 
  .rodata.ucExpectedStackBytes.6262
-                0x000000000001412c       0x14 ./FreeRTOS/tasks.o
+                0x0000000000014200       0x14 ./FreeRTOS/tasks.o
  .rodata.xTimerCreateTimerTask.str1.4
-                0x0000000000014140        0x8 ./FreeRTOS/timers.o
+                0x0000000000014214        0x8 ./FreeRTOS/timers.o
  .rodata._sbrk.str1.4
-                0x0000000000014148       0x30 ./CMSIS/startup_gcc/newlib_stubs.o
- .rodata        0x0000000000014178        0x8 ./CMSIS/system_m2sxxx.o
+                0x000000000001421c       0x30 ./CMSIS/startup_gcc/newlib_stubs.o
+ .rodata        0x000000000001424c        0x8 ./CMSIS/system_m2sxxx.o
  .rodata.main.str1.4
-                0x0000000000014180       0x18 ./main.o
+                0x0000000000014254       0x18 ./main.o
  .rodata.tcpClientTest.str1.4
-                0x0000000000014198       0x8c ./uart_task.o
- .rodata.prvUARTTask.str1.4
-                0x0000000000014224      0x27d ./uart_task.o
- *fill*         0x00000000000144a1        0x3 
+                0x000000000001426c       0x8c ./uart_task.o
+ .rodata.prvUART0Task.str1.4
+                0x00000000000142f8        0xe ./uart_task.o
+ *fill*         0x0000000000014306        0x2 
+ .rodata.prvUART1Task.str1.4
+                0x0000000000014308      0x26d ./uart_task.o
+ *fill*         0x0000000000014575        0x3 
  .rodata.g_instructions_msg
-                0x00000000000144a4      0x1e9 ./uart_task.o
- *fill*         0x000000000001468d        0x3 
+                0x0000000000014578      0x1e9 ./uart_task.o
+ *fill*         0x0000000000014761        0x3 
  .rodata.g_reset_msg
-                0x0000000000014690       0x2b ./uart_task.o
+                0x0000000000014764       0x2b ./uart_task.o
  .rodata._svfprintf_r.str1.1
-                0x00000000000146bb       0x11 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-svfprintf.o)
+                0x000000000001478f       0x11 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-svfprintf.o)
  .rodata._printf_i.str1.1
-                0x00000000000146cc       0x22 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-vfprintf_i.o)
+                0x00000000000147a0       0x22 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-vfprintf_i.o)
  *(.ARM.extab* .gnu.linkonce.armextab.*)
  *(.gcc_except_table)
  *(.eh_frame_hdr)
  *(.eh_frame)
- *fill*         0x00000000000146ee        0x2 
- .eh_frame      0x00000000000146f0        0x0 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crtbegin.o
+ *fill*         0x00000000000147c2        0x2 
+ .eh_frame      0x00000000000147c4        0x0 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crtbegin.o
  *(.vector_table)
  *(.init)
- .init          0x00000000000146f0        0x4 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crti.o
-                0x00000000000146f0                _init
- .init          0x00000000000146f4        0x8 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crtn.o
+ .init          0x00000000000147c4        0x4 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crti.o
+                0x00000000000147c4                _init
+ .init          0x00000000000147c8        0x8 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crtn.o
  *(.fini)
- .fini          0x00000000000146fc        0x4 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crti.o
-                0x00000000000146fc                _fini
- .fini          0x0000000000014700        0x8 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crtn.o
-                0x0000000000014708                PROVIDE (__preinit_array_start = .)
+ .fini          0x00000000000147d0        0x4 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crti.o
+                0x00000000000147d0                _fini
+ .fini          0x00000000000147d4        0x8 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crtn.o
+                0x00000000000147dc                PROVIDE (__preinit_array_start = .)
  *(.preinit_array)
-                0x0000000000014708                PROVIDE (__preinit_array_end = .)
-                0x0000000000014708                PROVIDE (__init_array_start = .)
+                0x00000000000147dc                PROVIDE (__preinit_array_end = .)
+                0x00000000000147dc                PROVIDE (__init_array_start = .)
  *(SORT_BY_NAME(.init_array.*))
  *(.init_array)
- .init_array    0x0000000000014708        0x4 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crtbegin.o
-                0x000000000001470c                PROVIDE (__init_array_end = .)
+ .init_array    0x00000000000147dc        0x4 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crtbegin.o
+                0x00000000000147e0                PROVIDE (__init_array_end = .)
                 [!provide]                        PROVIDE (__fini_array_start = .)
  *(.fini_array)
- .fini_array    0x000000000001470c        0x4 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crtbegin.o
+ .fini_array    0x00000000000147e0        0x4 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crtbegin.o
  *(SORT_BY_NAME(.fini_array.*))
                 [!provide]                        PROVIDE (__fini_array_end = .)
-                0x0000000000014710                . = ALIGN (0x10)
-                0x0000000000014710                __exidx_start = .
+                0x00000000000147f0                . = ALIGN (0x10)
+ *fill*         0x00000000000147e4        0xc 
+                0x00000000000147f0                __exidx_start = .
 
-.v4_bx          0x0000000000014710        0x0 load address 0x0000000060014710
- .v4_bx         0x0000000000014710        0x0 linker stubs
+.v4_bx          0x00000000000147f0        0x0 load address 0x00000000600147f0
+ .v4_bx         0x00000000000147f0        0x0 linker stubs
 
-.iplt           0x0000000000014710        0x0 load address 0x0000000060014710
- .iplt          0x0000000000014710        0x0 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crtbegin.o
+.iplt           0x00000000000147f0        0x0 load address 0x00000000600147f0
+ .iplt          0x00000000000147f0        0x0 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crtbegin.o
 
-.rel.dyn        0x0000000000014710        0x0 load address 0x0000000060014710
- .rel.iplt      0x0000000000014710        0x0 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crtbegin.o
+.rel.dyn        0x00000000000147f0        0x0 load address 0x00000000600147f0
+ .rel.iplt      0x00000000000147f0        0x0 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crtbegin.o
 
 .ARM.exidx
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-                0x0000000000014710                __exidx_end = .
-                0x0000000000014710                _etext = .
+                0x00000000000147f0                __exidx_end = .
+                0x00000000000147f0                _etext = .
 
-.data           0x0000000020000000       0xa0 load address 0x0000000060014710
-                0x0000000060014710                __data_load = LOADADDR (.data)
-                0x0000000060014710                _sidata = LOADADDR (.data)
+.data           0x0000000020000000       0xa0 load address 0x00000000600147f0
+                0x00000000600147f0                __data_load = LOADADDR (.data)
+                0x00000000600147f0                _sidata = LOADADDR (.data)
                 0x0000000020000000                __data_start = .
                 0x0000000020000000                _sdata = .
  *(.jcr)
@@ -11511,13 +11520,13 @@ END GROUP
                 0x00000000200000a0                . = ALIGN (0x10)
                 0x00000000200000a0                _edata = .
 
-.igot.plt       0x00000000200000a0        0x0 load address 0x00000000600147b0
+.igot.plt       0x00000000200000a0        0x0 load address 0x0000000060014890
  .igot.plt      0x00000000200000a0        0x0 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7-m/nofp/crtbegin.o
 
-.noinit         0x00000000200000a0        0x8 load address 0x00000000600147b0
+.noinit         0x00000000200000a0        0x8 load address 0x0000000060014890
  .noinit        0x00000000200000a0        0x8 ./sys_cfg.o
 
-.bss            0x00000000200000b0     0x93c0 load address 0x00000000600147c0
+.bss            0x00000000200000b0     0x93c0 load address 0x00000000600148a0
                 0x00000000200000b0                __bss_start__ = .
                 0x00000000200000b0                _sbss = .
  *(.shbss)
@@ -11726,12 +11735,12 @@ END GROUP
                 0x00000000200080d8        0x4 ./uart_task.o
  .bss.ip_addr_msg
                 0x00000000200080dc       0x80 ./uart_task.o
- .bss.length.8810
+ .bss.length.8823
                 0x000000002000815c        0x1 ./uart_task.o
  *fill*         0x000000002000815d        0x3 
- .bss.mac_addr.8809
+ .bss.mac_addr.8822
                 0x0000000020008160       0x3c ./uart_task.o
- .bss.mac_addr_msg.8811
+ .bss.mac_addr_msg.8824
                 0x000000002000819c       0x80 ./uart_task.o
  .bss.__malloc_free_list
                 0x000000002000821c        0x4 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-mallocr.o)
@@ -11796,7 +11805,7 @@ END GROUP
                 0x0000000020009470                _ebss = .
                 [!provide]                        PROVIDE (end = .)
 
-.heap           0x0000000020009470     0x5b90 load address 0x00000000600147c0
+.heap           0x0000000020009470     0x5b90 load address 0x00000000600148a0
                 0x0000000020009470                __heap_start__ = .
                 0x000000002000a470                . = (. + MIN_SIZE_HEAP)
  *fill*         0x0000000020009470     0x1000 
@@ -11804,7 +11813,7 @@ END GROUP
  *fill*         0x000000002000a470     0x4b90 
                 0x000000002000f000                _eheap = .
 
-.stack          0x000000002000f000     0x1000 load address 0x00000000600147c0
+.stack          0x000000002000f000     0x1000 load address 0x00000000600148a0
                 0x000000002000f000                __stack_start__ = .
                 0x0000000020010000                . = (. + MAIN_STACK_SIZE)
  *fill*         0x000000002000f000     0x1000 
@@ -11828,7 +11837,7 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x0000000000000000     0x15b0
+.debug_aranges  0x0000000000000000     0x15c0
  *(.debug_aranges)
  .debug_aranges
                 0x0000000000000000       0xb0 ./lwip-1.4.1/port/FreeRTOS/M2SXXX/sys_arch.o
@@ -11925,12 +11934,12 @@ END GROUP
  .debug_aranges
                 0x0000000000001540       0x30 ./tcp_server.o
  .debug_aranges
-                0x0000000000001570       0x40 ./uart_task.o
+                0x0000000000001570       0x50 ./uart_task.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000    0x55d3c
+.debug_info     0x0000000000000000    0x55efa
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x0000000000000000     0x13ea ./lwip-1.4.1/port/FreeRTOS/M2SXXX/sys_arch.o
  .debug_info    0x00000000000013ea     0x277f ./lwip-1.4.1/netif/etharp.o
@@ -11975,11 +11984,11 @@ END GROUP
  .debug_info    0x000000000004a853     0x1831 ./CMSIS/startup_gcc/newlib_stubs.o
  .debug_info    0x000000000004c084       0x26 ./CMSIS/startup_gcc/startup_m2sxxx.o
  .debug_info    0x000000000004c0aa     0x23ad ./CMSIS/system_m2sxxx.o
- .debug_info    0x000000000004e457     0x390f ./main.o
- .debug_info    0x0000000000051d66       0x94 ./mscc_post_hw_cfg_init.o
- .debug_info    0x0000000000051dfa      0xbd2 ./sys_cfg.o
- .debug_info    0x00000000000529cc     0x160a ./tcp_server.o
- .debug_info    0x0000000000053fd6     0x1d66 ./uart_task.o
+ .debug_info    0x000000000004e457     0x3948 ./main.o
+ .debug_info    0x0000000000051d9f       0x94 ./mscc_post_hw_cfg_init.o
+ .debug_info    0x0000000000051e33      0xbd2 ./sys_cfg.o
+ .debug_info    0x0000000000052a05     0x160a ./tcp_server.o
+ .debug_info    0x000000000005400f     0x1eeb ./uart_task.o
 
 .debug_abbrev   0x0000000000000000     0xa8d5
  *(.debug_abbrev)
@@ -12032,7 +12041,7 @@ END GROUP
  .debug_abbrev  0x000000000000a190      0x32c ./tcp_server.o
  .debug_abbrev  0x000000000000a4bc      0x419 ./uart_task.o
 
-.debug_line     0x0000000000000000    0x328fc
+.debug_line     0x0000000000000000    0x329ba
  *(.debug_line)
  .debug_line    0x0000000000000000      0x9b4 ./lwip-1.4.1/port/FreeRTOS/M2SXXX/sys_arch.o
  .debug_line    0x00000000000009b4     0x1799 ./lwip-1.4.1/netif/etharp.o
@@ -12077,13 +12086,13 @@ END GROUP
  .debug_line    0x000000000002f009      0x73d ./CMSIS/startup_gcc/newlib_stubs.o
  .debug_line    0x000000000002f746      0x18e ./CMSIS/startup_gcc/startup_m2sxxx.o
  .debug_line    0x000000000002f8d4      0x550 ./CMSIS/system_m2sxxx.o
- .debug_line    0x000000000002fe24     0x12db ./main.o
- .debug_line    0x00000000000310ff      0x231 ./mscc_post_hw_cfg_init.o
- .debug_line    0x0000000000031330      0x36a ./sys_cfg.o
- .debug_line    0x000000000003169a      0x861 ./tcp_server.o
- .debug_line    0x0000000000031efb      0xa01 ./uart_task.o
+ .debug_line    0x000000000002fe24     0x12dc ./main.o
+ .debug_line    0x0000000000031100      0x231 ./mscc_post_hw_cfg_init.o
+ .debug_line    0x0000000000031331      0x36a ./sys_cfg.o
+ .debug_line    0x000000000003169b      0x861 ./tcp_server.o
+ .debug_line    0x0000000000031efc      0xabe ./uart_task.o
 
-.debug_frame    0x0000000000000000     0x456c
+.debug_frame    0x0000000000000000     0x45a8
  *(.debug_frame)
  .debug_frame   0x0000000000000000      0x1e8 ./lwip-1.4.1/port/FreeRTOS/M2SXXX/sys_arch.o
  .debug_frame   0x00000000000001e8      0x184 ./lwip-1.4.1/netif/etharp.o
@@ -12130,27 +12139,27 @@ END GROUP
  .debug_frame   0x0000000000003f40       0x20 ./mscc_post_hw_cfg_init.o
  .debug_frame   0x0000000000003f60       0x40 ./sys_cfg.o
  .debug_frame   0x0000000000003fa0       0x6c ./tcp_server.o
- .debug_frame   0x000000000000400c       0xb0 ./uart_task.o
- .debug_frame   0x00000000000040bc       0x2c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-init.o)
- .debug_frame   0x00000000000040e8       0x2c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memcmp.o)
- .debug_frame   0x0000000000004114       0x28 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memcpy-stub.o)
- .debug_frame   0x000000000000413c       0x20 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memset.o)
- .debug_frame   0x000000000000415c       0x7c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-snprintf.o)
- .debug_frame   0x00000000000041d8       0x28 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-strncpy.o)
- .debug_frame   0x0000000000004200       0x90 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-svfprintf.o)
- .debug_frame   0x0000000000004290       0x60 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-vfprintf_i.o)
- .debug_frame   0x00000000000042f0       0x28 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memchr-stub.o)
- .debug_frame   0x0000000000004318       0x28 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memmove.o)
- .debug_frame   0x0000000000004340       0x38 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-freer.o)
- .debug_frame   0x0000000000004378       0x30 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-mallocr.o)
- .debug_frame   0x00000000000043a8       0x3c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-reallocr.o)
- .debug_frame   0x00000000000043e4       0x2c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-sbrkr.o)
- .debug_frame   0x0000000000004410       0x30 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-mlock.o)
- .debug_frame   0x0000000000004440       0x20 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-msizer.o)
- .debug_frame   0x0000000000004460       0x5c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-reent.o)
- .debug_frame   0x00000000000044bc       0xb0 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-lock.o)
+ .debug_frame   0x000000000000400c       0xec ./uart_task.o
+ .debug_frame   0x00000000000040f8       0x2c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-init.o)
+ .debug_frame   0x0000000000004124       0x2c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memcmp.o)
+ .debug_frame   0x0000000000004150       0x28 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memcpy-stub.o)
+ .debug_frame   0x0000000000004178       0x20 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memset.o)
+ .debug_frame   0x0000000000004198       0x7c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-snprintf.o)
+ .debug_frame   0x0000000000004214       0x28 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-strncpy.o)
+ .debug_frame   0x000000000000423c       0x90 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-svfprintf.o)
+ .debug_frame   0x00000000000042cc       0x60 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-vfprintf_i.o)
+ .debug_frame   0x000000000000432c       0x28 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memchr-stub.o)
+ .debug_frame   0x0000000000004354       0x28 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-memmove.o)
+ .debug_frame   0x000000000000437c       0x38 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-freer.o)
+ .debug_frame   0x00000000000043b4       0x30 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-mallocr.o)
+ .debug_frame   0x00000000000043e4       0x3c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-reallocr.o)
+ .debug_frame   0x0000000000004420       0x2c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-sbrkr.o)
+ .debug_frame   0x000000000000444c       0x30 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-mlock.o)
+ .debug_frame   0x000000000000447c       0x20 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-nano-msizer.o)
+ .debug_frame   0x000000000000449c       0x5c /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-reent.o)
+ .debug_frame   0x00000000000044f8       0xb0 /home/jerryneedell/bin/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(lib_a-lock.o)
 
-.debug_str      0x0000000000000000    0x2a46d
+.debug_str      0x0000000000000000    0x2a4e5
  *(.debug_str)
  .debug_str     0x0000000000000000    0x118f8 ./lwip-1.4.1/port/FreeRTOS/M2SXXX/sys_arch.o
                                       0x11cdc (size before relaxing)
@@ -12238,18 +12247,18 @@ END GROUP
                                          0x83 (size before relaxing)
  .debug_str     0x0000000000027e39     0x1e15 ./CMSIS/system_m2sxxx.o
                                        0xa146 (size before relaxing)
- .debug_str     0x0000000000029c4e      0x4f5 ./main.o
-                                      0x16461 (size before relaxing)
- .debug_str     0x000000000002a143       0x1b ./mscc_post_hw_cfg_init.o
+ .debug_str     0x0000000000029c4e      0x540 ./main.o
+                                      0x164ac (size before relaxing)
+ .debug_str     0x000000000002a18e       0x1b ./mscc_post_hw_cfg_init.o
                                        0x7a03 (size before relaxing)
- .debug_str     0x000000000002a15e       0xd6 ./sys_cfg.o
+ .debug_str     0x000000000002a1a9       0xd6 ./sys_cfg.o
                                        0x93f3 (size before relaxing)
- .debug_str     0x000000000002a234       0xfe ./tcp_server.o
+ .debug_str     0x000000000002a27f       0xfe ./tcp_server.o
                                       0x15a6e (size before relaxing)
- .debug_str     0x000000000002a332      0x13b ./uart_task.o
-                                      0x15b39 (size before relaxing)
+ .debug_str     0x000000000002a37d      0x168 ./uart_task.o
+                                      0x15b66 (size before relaxing)
 
-.debug_loc      0x0000000000000000    0x25b05
+.debug_loc      0x0000000000000000    0x25bba
  *(.debug_loc)
  .debug_loc     0x0000000000000000      0x5ff ./lwip-1.4.1/port/FreeRTOS/M2SXXX/sys_arch.o
  .debug_loc     0x00000000000005ff     0x1653 ./lwip-1.4.1/netif/etharp.o
@@ -12294,7 +12303,7 @@ END GROUP
  .debug_loc     0x0000000000024647     0x1024 ./main.o
  .debug_loc     0x000000000002566b       0x5d ./sys_cfg.o
  .debug_loc     0x00000000000256c8      0x152 ./tcp_server.o
- .debug_loc     0x000000000002581a      0x2eb ./uart_task.o
+ .debug_loc     0x000000000002581a      0x3a0 ./uart_task.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -12550,7 +12559,7 @@ END GROUP
  *(.note.GNU-stack)
 OUTPUT(SCSim.elf elf32-littlearm)
 
-.debug_ranges   0x0000000000000000     0x4f28
+.debug_ranges   0x0000000000000000     0x4f50
  .debug_ranges  0x0000000000000000       0xb8 ./lwip-1.4.1/port/FreeRTOS/M2SXXX/sys_arch.o
  .debug_ranges  0x00000000000000b8      0x380 ./lwip-1.4.1/netif/etharp.o
  .debug_ranges  0x0000000000000438       0x88 ./lwip-1.4.1/netif/m2sxxx_ethernetif.o
@@ -12596,9 +12605,9 @@ OUTPUT(SCSim.elf elf32-littlearm)
  .debug_ranges  0x0000000000004e08       0x10 ./mscc_post_hw_cfg_init.o
  .debug_ranges  0x0000000000004e18       0x20 ./sys_cfg.o
  .debug_ranges  0x0000000000004e38       0x40 ./tcp_server.o
- .debug_ranges  0x0000000000004e78       0xb0 ./uart_task.o
+ .debug_ranges  0x0000000000004e78       0xd8 ./uart_task.o
 
-.debug_macro    0x0000000000000000    0x10d33
+.debug_macro    0x0000000000000000    0x10d3f
  .debug_macro   0x0000000000000000      0x381 ./lwip-1.4.1/port/FreeRTOS/M2SXXX/sys_arch.o
  .debug_macro   0x0000000000000381      0xa9c ./lwip-1.4.1/port/FreeRTOS/M2SXXX/sys_arch.o
  .debug_macro   0x0000000000000e1d       0x16 ./lwip-1.4.1/port/FreeRTOS/M2SXXX/sys_arch.o
@@ -12778,12 +12787,12 @@ OUTPUT(SCSim.elf elf32-littlearm)
  .debug_macro   0x000000000000fb6f       0x10 ./CMSIS/startup_gcc/newlib_stubs.o
  .debug_macro   0x000000000000fb7f      0x241 ./CMSIS/startup_gcc/newlib_stubs.o
  .debug_macro   0x000000000000fdc0      0x189 ./CMSIS/system_m2sxxx.o
- .debug_macro   0x000000000000ff49      0x476 ./main.o
- .debug_macro   0x00000000000103bf       0x80 ./mscc_post_hw_cfg_init.o
- .debug_macro   0x000000000001043f       0xa7 ./sys_cfg.o
- .debug_macro   0x00000000000104e6      0x433 ./tcp_server.o
- .debug_macro   0x0000000000010919      0x40a ./uart_task.o
- .debug_macro   0x0000000000010d23       0x10 ./uart_task.o
+ .debug_macro   0x000000000000ff49      0x482 ./main.o
+ .debug_macro   0x00000000000103cb       0x80 ./mscc_post_hw_cfg_init.o
+ .debug_macro   0x000000000001044b       0xa7 ./sys_cfg.o
+ .debug_macro   0x00000000000104f2      0x433 ./tcp_server.o
+ .debug_macro   0x0000000000010925      0x40a ./uart_task.o
+ .debug_macro   0x0000000000010d2f       0x10 ./uart_task.o
 
 .comment        0x0000000000000000       0x79
  .comment       0x0000000000000000       0x79 ./lwip-1.4.1/port/FreeRTOS/M2SXXX/sys_arch.o

@@ -30,14 +30,16 @@
  */
 /* Priorities used by the various different tasks. */
 #define mainuIP_TASK_PRIORITY                   (tskIDLE_PRIORITY + 2)
-#define mainUART_TASK_PRIORITY                  (tskIDLE_PRIORITY + 2)
+#define mainUART0_TASK_PRIORITY                  (tskIDLE_PRIORITY + 2)
+#define mainUART1_TASK_PRIORITY                  (tskIDLE_PRIORITY + 2)
 #define mainPPS_TASK_PRIORITY                   (tskIDLE_PRIORITY + 1)
 
 
 /* Web server task stack size. */
 #define TCP_STACK_SIZE                          400
 #define PPS_STACK_SIZE                          400
-#define UART_TASK_STACK_SIZE                    200
+#define UART0_TASK_STACK_SIZE                    200
+#define UART1_TASK_STACK_SIZE                    200
 
 #define ETHERNET_STATUS_QUEUE_LENGTH    1
 #define DONT_BLOCK                      0
@@ -75,7 +77,8 @@ static struct netif s_EMAC_if;
 /*==============================================================================
  *
  */
-void prvUARTTask(void * pvParameters);
+void prvUART0Task(void * pvParameters);
+void prvUART1Task(void * pvParameters);
 void prvPPSTask(void * pvParameters);
 void prvLinkStatusTask(void * pvParameters);
 void tcp_server_thread(void *arg);
@@ -98,11 +101,19 @@ int main()
     if(xEthStatusQueue != NULL)
     {
         /* Create the task handling user interractions through the UART. */
-        xTaskCreate(prvUARTTask,
-                    (signed char *) "UART",
-                    UART_TASK_STACK_SIZE,
+        xTaskCreate(prvUART0Task,
+                    (signed char *) "UART1",
+                    UART0_TASK_STACK_SIZE,
                     NULL,
-                    mainUART_TASK_PRIORITY,
+                    mainUART0_TASK_PRIORITY,
+                    NULL);
+
+        /* Create the task handling user interractions through the UART. */
+        xTaskCreate(prvUART1Task,
+                    (signed char *) "UART1",
+                    UART1_TASK_STACK_SIZE,
+                    NULL,
+                    mainUART1_TASK_PRIORITY,
                     NULL);
 
         /* Create the web server task. */
