@@ -29,12 +29,14 @@
  *
  */
 /* Priorities used by the various different tasks. */
-#define mainuIP_TASK_PRIORITY                   (tskIDLE_PRIORITY + 1)
+#define mainuIP_TASK_PRIORITY                   (tskIDLE_PRIORITY + 2)
 #define mainUART_TASK_PRIORITY                  (tskIDLE_PRIORITY + 2)
+#define mainPPS_TASK_PRIORITY                   (tskIDLE_PRIORITY + 1)
 
 
 /* Web server task stack size. */
-#define HTTPD_STACK_SIZE                        400
+#define TCP_STACK_SIZE                          400
+#define PPS_STACK_SIZE                          400
 #define UART_TASK_STACK_SIZE                    200
 
 #define ETHERNET_STATUS_QUEUE_LENGTH    1
@@ -74,6 +76,7 @@ static struct netif s_EMAC_if;
  *
  */
 void prvUARTTask(void * pvParameters);
+void prvPPSTask(void * pvParameters);
 void prvLinkStatusTask(void * pvParameters);
 void tcp_server_thread(void *arg);
 
@@ -106,9 +109,17 @@ int main()
         tcpip_init(prvEthernetConfigureInterface, NULL);
         xTaskCreate(tcp_server_thread,
                     (signed char *) "tcp_server",
-                    HTTPD_STACK_SIZE,
+                    TCP_STACK_SIZE,
                     NULL,
                     mainuIP_TASK_PRIORITY,
+                    NULL );
+
+        /* Create the pps task. */
+        xTaskCreate(prvPPSTask,
+                    (signed char *) "pps",
+                    PPS_STACK_SIZE,
+                    NULL,
+                    mainPPS_TASK_PRIORITY,
                     NULL );
 
 

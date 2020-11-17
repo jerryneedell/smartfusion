@@ -30,6 +30,13 @@
 #define HTTPD_DEBUG         LWIP_DBG_OFF
 #endif
 
+#define LED 0
+#define PPS_CLEAR 0x10000C/4
+
+volatile unsigned long *fpgabase = (volatile unsigned long *)0x30000000;
+
+
+
 extern xQueueHandle xEthStatusQueue;
 
 ethernet_status_t g_ethernet_status;
@@ -40,13 +47,13 @@ ethernet_status_t g_ethernet_status;
 
 uint32_t get_ip_address(void);
 void get_mac_address(uint8_t * mac_addr);
-
+void tcpClientTest(uint8_t *packet, uint32_t packet_size, uint32_t port);
 
 
 /*------------------------------------------------------------------------------
  *
  */
-
+volatile uint32_t pps_received = 0;
 /** The main function, never returns! */
 
 void
@@ -98,9 +105,43 @@ tcp_server_thread(void *arg)
 
 
 /** Initialize the TCP server (start its thread) */
-void
-tcp_server_init(void)
+//void
+//tcp_server_init(void)
+//{
+//  sys_thread_new("tcp_server", tcp_server_thread, NULL, DEFAULT_THREAD_STACKSIZE, DEFAULT_THREAD_PRIO);/
+//}
+
+
+void prvPPSTask( void * pvParameters)
+
 {
-  sys_thread_new("tcp_server", tcp_server_thread, NULL, DEFAULT_THREAD_STACKSIZE, DEFAULT_THREAD_PRIO);
+
+pps_received = 0;
+while(1)
+{
+    if(pps_received)
+    {
+        tcpClientTest("PPS",3,30024);
+        pps_received = 0;
+    }
 }
 
+
+}
+
+/** Initialize the PPS  (start its thread) */
+//void
+//pps_init(void)
+//{
+//  sys_thread_new("pps", prvPPSTask, NULL, DEFAULT_THREAD_STACKSIZE, DEFAULT_THREAD_PRIO);
+//}
+
+void FabricIrq0_IRQHandler(void)
+{
+    // reset the PPS signal
+    fpgabase[PPS_CLEAR] = 0;
+    // toggle LEDs
+    fpgabase[LED] ^= 0xff;
+    NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
+    pps_received = 1;
+}

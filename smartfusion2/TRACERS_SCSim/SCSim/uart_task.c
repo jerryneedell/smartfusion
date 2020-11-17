@@ -40,7 +40,7 @@ static void uart_tx_handler(mss_uart_instance_t * this_uart);
 static void display_link_status(void);
 static void display_instructions(void);
 static void display_reset_msg(void);
-static void tcpClientTest();
+void tcpClientTest(uint8_t *packet, uint32_t packet_size, uint32_t port);
 /*==============================================================================
  * Global variables.
  */
@@ -160,7 +160,22 @@ void prvUARTTask( void * pvParameters)
                 
                 case 't':
                 case 'T':
-                    tcpClientTest("Hello, world!", 12);
+                    tcpClientTest("Hello, world!", 12, 30023);
+                break;
+
+                case 'P':
+                    /* Clear Pending PPS Interrupt*/
+                    NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
+
+                    /* Enable Fabric Interrupt*/
+                    NVIC_EnableIRQ(FabricIrq0_IRQn);
+                break;
+
+                case 'p':
+                    /* Disabling PPS Interrupt*/
+                    NVIC_DisableIRQ(FabricIrq0_IRQn);
+                    /* Clear Pending Fabric Interrupts*/
+                    NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
                 break;
 
                 default:
@@ -345,7 +360,7 @@ static void display_reset_msg(void)
 }
 
 
-static void tcpClientTest(uint8_t *packet, uint32_t packet_size)
+void tcpClientTest(uint8_t *packet, uint32_t packet_size, uint32_t port)
 {
 	int sockfd, connfd;
 	struct sockaddr_in servaddr, cli;
@@ -363,11 +378,13 @@ static void tcpClientTest(uint8_t *packet, uint32_t packet_size)
 	// assign IP, PORT
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_addr.s_addr = inet_addr("10.42.0.1");
-	servaddr.sin_port = htons(30023);
+	servaddr.sin_port = htons(port);
 
 	// connect the client socket to server socket
 	if (connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) != 0) {
 		send_msg((const uint8_t *)"connection with the server failed...\n");
+        	// close the socket
+	        lwip_close(sockfd);
 		return;
 	}
 	else
