@@ -30,8 +30,8 @@
  */
 /* Priorities used by the various different tasks. */
 #define mainuIP_TASK_PRIORITY                   (tskIDLE_PRIORITY + 2)
-#define mainUART0_TASK_PRIORITY                  (tskIDLE_PRIORITY + 2)
-#define mainUART1_TASK_PRIORITY                  (tskIDLE_PRIORITY + 2)
+#define mainUART0_TASK_PRIORITY                  (tskIDLE_PRIORITY + 3)
+#define mainUART1_TASK_PRIORITY                  (tskIDLE_PRIORITY + 3)
 #define mainPPS_TASK_PRIORITY                   (tskIDLE_PRIORITY + 1)
 
 

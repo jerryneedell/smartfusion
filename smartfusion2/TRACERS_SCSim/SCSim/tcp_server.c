@@ -31,6 +31,8 @@
 #endif
 
 #define LED 0
+#define BUTTON 0x20/4
+#define SW5 0x24/4
 #define PPS_CLEAR 0x10000C/4
 
 volatile unsigned long *fpgabase = (volatile unsigned long *)0x30000000;
@@ -115,11 +117,11 @@ tcp_server_thread(void *arg)
 void prvPPSTask( void * pvParameters)
 
 {
-uint32_t pps_counter = 0;
-uint8_t pps_packet[4];
-pps_received = 0;
-while(1)
-{
+  uint32_t pps_counter = 0;
+  uint8_t pps_packet[4];
+  pps_received = 0;
+  while(1)
+  {
     if(pps_received)
     {
         uint32_t i;
@@ -127,9 +129,18 @@ while(1)
         for (i=0;i<4;i++)
             pps_packet[i]= (pps_counter >> 8*(3-i))&0xff;
         tcpClientTest(pps_packet,4,30024);
+        for (i=0;i<4;i++)
+            pps_packet[i]= (fpgabase[BUTTON] >> 8*(3-i))&0xff;
+        tcpClientTest(pps_packet,4,30023);
+        for (i=0;i<4;i++)
+            pps_packet[i]= (fpgabase[SW5] >> 8*(3-i))&0xff;
+        tcpClientTest(pps_packet,4,30023);
         pps_received = 0;
     }
-}
+    /* Run through loop every 50 milliseconds. */
+    vTaskDelay(50 / portTICK_RATE_MS);
+
+  }
 
 
 }
