@@ -7,18 +7,21 @@ C_SRCS += \
 ../main.c \
 ../mscc_post_hw_cfg_init.c \
 ../sys_cfg.c \
+../tcp_server.c \
 ../uart_task.c 
 
 OBJS += \
 ./main.o \
 ./mscc_post_hw_cfg_init.o \
 ./sys_cfg.o \
+./tcp_server.o \
 ./uart_task.o 
 
 C_DEPS += \
 ./main.d \
 ./mscc_post_hw_cfg_init.d \
 ./sys_cfg.d \
+./tcp_server.d \
 ./uart_task.d 
 
 

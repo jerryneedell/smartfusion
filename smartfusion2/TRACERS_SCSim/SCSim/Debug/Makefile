@@ -25,7 +25,6 @@ RM := rm -rf
 -include drivers/mss_nvm/subdir.mk
 -include drivers/mss_gpio/subdir.mk
 -include drivers/mss_ethernet_mac/subdir.mk
--include tcp_stuff/subdir.mk
 -include FreeRTOS/portable/MemMang/subdir.mk
 -include FreeRTOS/portable/GCC/ARM_CM3/subdir.mk
 -include FreeRTOS/subdir.mk
@@ -81,7 +80,7 @@ SCSim.siz: SCSim.elf
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(SECONDARY_FLASH)$(SECONDARY_SIZE)$(ASM_DEPS)$(S_UPPER_DEPS)$(C_DEPS) SCSim.elf
+	-$(RM) $(OBJS)$(SECONDARY_FLASH)$(SECONDARY_SIZE)$(ASM_DEPS)$(S_UPPER_DEPS)$(C_DEPS) SCSim.elf SCSim.map
 	-@echo ' '
 
 secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_SIZE)
