@@ -3,7 +3,7 @@ main.o: ../main.c ../FreeRTOS/include/FreeRTOS.h \
  ../FreeRTOS/include/portable.h \
  ../FreeRTOS/portable/GCC/ARM_CM3/portmacro.h \
  ../FreeRTOS/include/mpu_wrappers.h ../FreeRTOS/include/task.h \
- ../FreeRTOS/include/list.h ../FreeRTOS/include/queue.h \
+ ../FreeRTOS/include/list.h ../FreeRTOS/include/queue.h ../tracers_fpga.h \
  ../lwip-1.4.1/include/lwip/tcpip.h ../lwip-1.4.1/include/lwip/opt.h \
  ../lwip-1.4.1/lwipopts.h ../lwip-1.4.1/lwipopts.h \
  ../lwip-1.4.1/include/lwip/debug.h ../lwip-1.4.1/include/lwip/arch.h \
@@ -44,6 +44,8 @@ main.o: ../main.c ../FreeRTOS/include/FreeRTOS.h \
 ../FreeRTOS/include/list.h:
 
 ../FreeRTOS/include/queue.h:
+
+../tracers_fpga.h:
 
 ../lwip-1.4.1/include/lwip/tcpip.h:
 

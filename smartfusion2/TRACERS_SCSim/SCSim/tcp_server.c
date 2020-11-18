@@ -23,20 +23,14 @@
 #include "ethernet_status.h"
 
 #include <assert.h>
-
+#include "tracers_fpga.h"
 
 
 #ifndef HTTPD_DEBUG
 #define HTTPD_DEBUG         LWIP_DBG_OFF
 #endif
 
-#define LED 0
-#define BUTTON 0x20/4
-#define SW5 0x24/4
-#define PPS_CLEAR 0x10000C/4
-
-volatile unsigned long *fpgabase = (volatile unsigned long *)0x30000000;
-
+volatile unsigned long *fpgabase;
 
 
 extern xQueueHandle xEthStatusQueue;

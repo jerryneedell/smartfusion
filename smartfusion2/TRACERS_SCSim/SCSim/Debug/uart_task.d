@@ -16,8 +16,8 @@ uart_task.o: ../uart_task.c ../FreeRTOS/include/FreeRTOS.h \
  ../lwip-1.4.1/include/lwip/pbuf.h \
  ../lwip-1.4.1/include/ipv4/lwip/ip_addr.h \
  ../lwip-1.4.1/include/lwip/def.h ../lwip-1.4.1/include/lwip/sockets.h \
- ../lwip-1.4.1/include/ipv4/lwip/inet.h ../drivers/mss_uart/mss_uart.h \
- ../drivers/mss_uart/../../CMSIS/m2sxxx.h \
+ ../lwip-1.4.1/include/ipv4/lwip/inet.h ../tracers_fpga.h \
+ ../drivers/mss_uart/mss_uart.h ../drivers/mss_uart/../../CMSIS/m2sxxx.h \
  ../drivers/mss_ethernet_mac/mss_ethernet_mac.h \
  ../drivers/mss_ethernet_mac/mss_ethernet_mac_types.h
 
@@ -80,6 +80,8 @@ uart_task.o: ../uart_task.c ../FreeRTOS/include/FreeRTOS.h \
 ../lwip-1.4.1/include/lwip/sockets.h:
 
 ../lwip-1.4.1/include/ipv4/lwip/inet.h:
+
+../tracers_fpga.h:
 
 ../drivers/mss_uart/mss_uart.h:
 

@@ -17,11 +17,13 @@
 #include "lwip/sockets.h"
 #include <stdio.h>
 #include <string.h>
-
+#include "tracers_fpga.h"
 
 /* Driver includes */
 #include "drivers/mss_uart/mss_uart.h"
 #include "drivers/mss_ethernet_mac/mss_ethernet_mac.h"
+
+volatile unsigned long *fpgabase;
 
 
 uint32_t get_ip_address(void);
@@ -433,6 +435,11 @@ static void display_reset_msg(void)
 
 void tcpClientTest(uint8_t *packet, uint32_t packet_size, uint32_t port)
 {
+
+
+        uint8_t ip_string[20];
+
+
 	int sockfd, connfd;
 	struct sockaddr_in servaddr, cli;
 	uint8_t buff[80];
@@ -448,7 +455,25 @@ void tcpClientTest(uint8_t *packet, uint32_t packet_size, uint32_t port)
 
 	// assign IP, PORT
 	servaddr.sin_family = AF_INET;
-	servaddr.sin_addr.s_addr = inet_addr("10.42.0.1");
+        /* Create and configure the EMAC interface. */
+//#ifdef NET_USE_DHCP
+//        IP4_ADDR( &xIpAddr, 0, 0, 0, 0 );
+//        IP4_ADDR( &xGateway, 192, 168, 1, 254 );
+//#else
+//        uint8_t low_address;
+//        low_address = 130 + fpgabase[SW5]^7;  // XOR to invert bits
+//        IP4_ADDR( &xIpAddr, 192, 168, 250, low_address );
+//#endif
+
+
+
+//	servaddr.sin_addr.s_addr = inet_addr("10.42.0.1");
+///	servaddr.sin_addr.s_addr = inet_addr("192.168.250.130");
+        uint8_t low_address;
+        low_address = (fpgabase[SW5]&7)^7;  // get low 3 bits then XOR to invert bits
+	sprintf(&ip_string,"192.168.250.13%d",low_address);
+        send_msg(ip_string);
+        servaddr.sin_addr.s_addr = inet_addr(ip_string);
 	servaddr.sin_port = htons(port);
 
 	// connect the client socket to server socket

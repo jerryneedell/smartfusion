@@ -12,7 +12,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
-
+#include "tracers_fpga.h"
 /* lwIP includes. */
 #include "lwip/tcpip.h"
 #include "lwip/dhcp.h"
@@ -43,6 +43,9 @@
 
 #define ETHERNET_STATUS_QUEUE_LENGTH    1
 #define DONT_BLOCK                      0
+
+
+volatile unsigned long *fpgabase = (volatile unsigned long *)0x30000000;
 
 /*==============================================================================
  *
@@ -351,13 +354,15 @@ static void prvEthernetConfigureInterface(void * param)
     ( void ) param;
 
     /* Create and configure the EMAC interface. */
-#ifdef NET_USE_DHCP
-    IP4_ADDR( &xIpAddr, 0, 0, 0, 0 );
-    IP4_ADDR( &xGateway, 192, 168, 1, 254 );
-#else
-    IP4_ADDR( &xIpAddr, 10, 42, 0, 100 );
-    IP4_ADDR( &xGateway, 10, 42, 0, 1 );
-#endif
+//#ifdef NET_USE_DHCP
+//    IP4_ADDR( &xIpAddr, 0, 0, 0, 0 );
+//    IP4_ADDR( &xGateway, 192, 168, 1, 254 );
+//#else
+//#endif
+    uint8_t low_address;
+    low_address = 120 + (fpgabase[SW5]&7)^7;  // get low 3 bis then XOR to invert bits
+    IP4_ADDR( &xIpAddr, 192, 168, 250, low_address );
+    IP4_ADDR( &xGateway, 192, 168, 250, low_address );
 
     IP4_ADDR( &xNetMast, 255, 255, 255, 0 );
 
@@ -365,11 +370,12 @@ static void prvEthernetConfigureInterface(void * param)
 
     /* bring it up */
 
-#ifdef NET_USE_DHCP
-    dhcp_start(&s_EMAC_if);
-#else
+//#ifdef NET_USE_DHCP
+//    dhcp_start(&s_EMAC_if);
+//#else
+//    netif_set_up(&s_EMAC_if);
+//#endif
     netif_set_up(&s_EMAC_if);
-#endif
 
     /* make it the default interface */
     netif_set_default(&s_EMAC_if);

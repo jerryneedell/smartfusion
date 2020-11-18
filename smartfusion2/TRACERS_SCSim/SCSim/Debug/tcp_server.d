@@ -20,7 +20,7 @@ tcp_server.o: ../tcp_server.c ../lwip-1.4.1/include/lwip/opt.h \
  ../drivers/mss_uart/mss_uart.h ../drivers/mss_uart/../../CMSIS/m2sxxx.h \
  ../drivers/mss_ethernet_mac/mss_ethernet_mac.h \
  ../drivers/mss_ethernet_mac/mss_ethernet_mac_types.h \
- ../ethernet_status.h
+ ../ethernet_status.h ../tracers_fpga.h
 
 ../lwip-1.4.1/include/lwip/opt.h:
 
@@ -93,3 +93,5 @@ tcp_server.o: ../tcp_server.c ../lwip-1.4.1/include/lwip/opt.h \
 ../drivers/mss_ethernet_mac/mss_ethernet_mac_types.h:
 
 ../ethernet_status.h:
+
+../tracers_fpga.h:
