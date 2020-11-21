@@ -33,17 +33,17 @@ void get_mac_address(uint8_t * mac_addr);
 static void  display_received_mac_addresses(void);
 void read_mac_address(uint8_t * mac_addr, uint8_t *length);
 void clear_mac_buf(void);
+void tcpClientSend(uint8_t *packet, uint32_t packet_size, uint32_t port);
 
 /*==============================================================================
  * Local functions.
  */
-static void send_msg(const uint8_t * p_msg);
+void send_msg(const uint8_t * p_msg);
 static void uart0_tx_handler(mss_uart_instance_t * this_uart);
 static void uart1_tx_handler(mss_uart_instance_t * this_uart);
 static void display_link_status(void);
 static void display_instructions(void);
 static void display_reset_msg(void);
-void tcpClientTest(uint8_t *packet, uint32_t packet_size, uint32_t port);
 /*==============================================================================
  * Global variables.
  */
@@ -119,7 +119,7 @@ void prvUART0Task( void * pvParameters)
             {
                 case 't':
                 case 'T':
-                    tcpClientTest("Hello, world!", 12, 30023);
+                    tcpClientSend("Hello, world!", 12, 8003);
                 break;
 
                 default:
@@ -145,7 +145,7 @@ void prvUART1Task( void * pvParameters)
     MSS_UART_set_tx_handler(gp_my_uart, uart1_tx_handler);
 
     send_msg((const uint8_t*)"\r\n\r\n**********************************************************************\r\n");
-    send_msg((const uint8_t*)"**************SmartFusion2 MSS MAC WebServer Example *****************\r\n");
+    send_msg((const uint8_t*)"************** TRACERS SC SIMULATOR  *********************************\r\n");
     send_msg((const uint8_t*)"**********************************************************************\r\n\n");
 
     display_instructions();
@@ -206,7 +206,7 @@ void prvUART1Task( void * pvParameters)
                 
                 case 't':
                 case 'T':
-                    tcpClientTest("Hello, world!", 12, 30023);
+                    tcpClientSend("Hello, world!", 12, 8003);
                 break;
 
                 case 'P':
@@ -332,7 +332,7 @@ static void display_link_status(void)
 /*==============================================================================
  *
  */
-static void send_msg
+void send_msg
 (
     const uint8_t * p_msg
 )
@@ -432,66 +432,4 @@ static void display_reset_msg(void)
     }
 }
 
-
-void tcpClientTest(uint8_t *packet, uint32_t packet_size, uint32_t port)
-{
-
-
-        uint8_t ip_string[20];
-
-
-	int sockfd, connfd;
-	struct sockaddr_in servaddr, cli;
-	uint8_t buff[80];
-	// socket create and varification
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockfd == -1) {
-		send_msg((const uint8_t *)"socket creation failed...\r\n");
-		return;
-	}
-	else
-		send_msg((const uint8_t *)"Socket successfully created..\r\n");
-	memset((uint8_t *)&servaddr, 0,sizeof(servaddr));
-
-	// assign IP, PORT
-	servaddr.sin_family = AF_INET;
-        /* Create and configure the EMAC interface. */
-//#ifdef NET_USE_DHCP
-//        IP4_ADDR( &xIpAddr, 0, 0, 0, 0 );
-//        IP4_ADDR( &xGateway, 192, 168, 1, 254 );
-//#else
-//        uint8_t low_address;
-//        low_address = 130 + fpgabase[SW5]^7;  // XOR to invert bits
-//        IP4_ADDR( &xIpAddr, 192, 168, 250, low_address );
-//#endif
-
-
-
-//	servaddr.sin_addr.s_addr = inet_addr("10.42.0.1");
-///	servaddr.sin_addr.s_addr = inet_addr("192.168.250.130");
-        uint8_t low_address;
-        low_address = (fpgabase[SW5]&7)^7;  // get low 3 bits then XOR to invert bits
-	sprintf(&ip_string,"192.168.250.13%d",low_address);
-        send_msg(ip_string);
-        servaddr.sin_addr.s_addr = inet_addr(ip_string);
-	servaddr.sin_port = htons(port);
-
-	// connect the client socket to server socket
-	if (connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) != 0) {
-		send_msg((const uint8_t *)"connection with the server failed...\r\n");
-        	// close the socket
-	        lwip_close(sockfd);
-		return;
-	}
-	else
-		send_msg((const uint8_t *)"connected to the server..\r\n");
-
-	lwip_send(sockfd, packet, packet_size,0);
-
-
-
-
-	// close the socket
-	lwip_close(sockfd);
-}
 
