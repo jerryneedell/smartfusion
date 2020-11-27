@@ -39,6 +39,7 @@ void tcpClientSend(uint8_t *packet, uint32_t packet_size, uint32_t port);
  * Local functions.
  */
 void send_msg(const uint8_t * p_msg);
+void send_uart0(const uint8_t * p_msg);
 static void uart0_tx_handler(mss_uart_instance_t * this_uart);
 static void uart1_tx_handler(mss_uart_instance_t * this_uart);
 static void display_link_status(void);
@@ -49,6 +50,8 @@ static void display_reset_msg(void);
  */
 static volatile const uint8_t * g_tx_buffer;
 static volatile size_t g_tx_size = 0;
+static volatile const uint8_t * g_tx_uart0_buffer;
+static volatile size_t g_tx_uart0_size = 0;
 static char ip_addr_msg[128];
 
 /*Broadcast address*/
@@ -119,7 +122,7 @@ void prvUART0Task( void * pvParameters)
             {
                 case 't':
                 case 'T':
-                    tcpClientSend("Hello, world!", 12, 8003);
+                    tcpClientSend("Hello, world!", 12, 8000);
                 break;
 
                 default:
@@ -206,7 +209,7 @@ void prvUART1Task( void * pvParameters)
                 
                 case 't':
                 case 'T':
-                    tcpClientSend("Hello, world!", 12, 8003);
+                    tcpClientSend("Housekeeping", 12, 8000);
                 break;
 
                 case 'P':
@@ -261,6 +264,7 @@ static void  display_received_mac_addresses(void)
 static void display_instructions(void)
 {
     send_msg(g_instructions_msg);
+    //send_uart0(g_instructions_msg);
 }
 
 /*==============================================================================
@@ -364,6 +368,38 @@ void send_msg
         MSS_UART_enable_irq(gp_my_uart, MSS_UART_TBE_IRQ);
     }
 }
+void send_uart0
+(
+    const uint8_t * p_msg
+)
+{
+    size_t msg_size;
+    size_t size_sent;
+
+    while(g_tx_uart0_size > 0u)
+    {
+        /* Wait for previous message to complete tx. */
+        ;
+    }
+
+    msg_size = 0u;
+    while(p_msg[msg_size] != 0u)
+    {
+        ++msg_size;
+    }
+
+    g_tx_uart0_buffer = p_msg;
+    g_tx_uart0_size = msg_size;
+
+    size_sent = MSS_UART_fill_tx_fifo(gp_comm_uart, p_msg, msg_size);
+    g_tx_uart0_size = g_tx_uart0_size - size_sent;
+    g_tx_uart0_buffer = &g_tx_uart0_buffer[size_sent];
+
+    if(g_tx_uart0_size > 0u)
+    {
+        MSS_UART_enable_irq(gp_comm_uart, MSS_UART_TBE_IRQ);
+    }
+}
 
 /*==============================================================================
  *
@@ -372,26 +408,26 @@ static void uart0_tx_handler(mss_uart_instance_t * this_uart)
 {
     size_t size_in_fifo;
 
-    if(g_tx_size > 0)
+    if(g_tx_uart0_size > 0)
     {
         size_in_fifo = MSS_UART_fill_tx_fifo(this_uart,
-                                             (const uint8_t *)g_tx_buffer,
-                                             g_tx_size);
+                                             (const uint8_t *)g_tx_uart0_buffer,
+                                             g_tx_uart0_size);
 
-        if(size_in_fifo  ==  g_tx_size)
+        if(size_in_fifo  ==  g_tx_uart0_size)
         {
-            g_tx_size = 0;
+            g_tx_uart0_size = 0;
             MSS_UART_disable_irq(this_uart, MSS_UART_TBE_IRQ);
         }
         else
         {
-            g_tx_buffer = &g_tx_buffer[size_in_fifo];
-            g_tx_size = g_tx_size - size_in_fifo;
+            g_tx_uart0_buffer = &g_tx_uart0_buffer[size_in_fifo];
+            g_tx_uart0_size = g_tx_uart0_size - size_in_fifo;
         }
     }
     else
     {
-        g_tx_size = 0;
+        g_tx_uart0_size = 0;
         MSS_UART_disable_irq(this_uart, MSS_UART_TBE_IRQ);
     }
 }

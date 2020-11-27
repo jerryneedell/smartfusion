@@ -46,6 +46,7 @@ void get_mac_address(uint8_t * mac_addr);
 void tcpClientSend(uint8_t *packet, uint32_t packet_size, uint32_t port);
 
 void send_msg(const uint8_t * p_msg);
+void send_uart0(const uint8_t * p_msg);
 
 /*------------------------------------------------------------------------------
  *
@@ -68,7 +69,7 @@ tcp_server_thread(void *arg)
 	sLocalAddr.sin_family = AF_INET;
 	sLocalAddr.sin_len = sizeof(sLocalAddr);
 	sLocalAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	sLocalAddr.sin_port = htons(8001);
+	sLocalAddr.sin_port = htons(8003);
 
 	if (lwip_bind(lSocket, (struct sockaddr *)&sLocalAddr, sizeof(sLocalAddr)) < 0) {
 	        lwip_close(lSocket);
@@ -95,7 +96,7 @@ tcp_server_thread(void *arg)
 	                if (nbytes>0)
                         {
                           buffer[nbytes]=0;
-                          send_msg(buffer);
+                          send_uart0(buffer);
                         }
 	            }  while (nbytes>0);
 
@@ -128,13 +129,13 @@ void prvPPSTask( void * pvParameters)
         pps_counter++;
         for (i=0;i<4;i++)
             pps_packet[i]= (pps_counter >> 8*(3-i))&0xff;
-        tcpClientSend(pps_packet,4,8000);
+        tcpClientSend(pps_packet,4,8002);
         for (i=0;i<4;i++)
             pps_packet[i]= (fpgabase[BUTTON] >> 8*(3-i))&0xff;
-        tcpClientSend(pps_packet,4,8003);
+        tcpClientSend(pps_packet,4,8001);
         for (i=0;i<4;i++)
             pps_packet[i]= (fpgabase[SW5] >> 8*(3-i))&0xff;
-        tcpClientSend(pps_packet,4,8002);
+        tcpClientSend(pps_packet,4,8000);
         pps_received = 0;
     }
     /* Run through loop every 50 milliseconds. */
