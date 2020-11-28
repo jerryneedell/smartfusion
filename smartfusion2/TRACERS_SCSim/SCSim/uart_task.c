@@ -110,7 +110,7 @@ void prvUART0Task( void * pvParameters)
                   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
 
     MSS_UART_set_tx_handler(gp_comm_uart, uart0_tx_handler);
-    MSS_UART_set_rx_handler(gp_comm_uart, uart0_rx_handler,MSS_UART_FIFO_FOURTEEN_BYTES);
+    MSS_UART_set_rx_handler(gp_comm_uart, uart0_rx_handler,MSS_UART_FIFO_SINGLE_BYTE);
     MSS_UART_enable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
 
     for( ;; )
@@ -122,15 +122,10 @@ void prvUART0Task( void * pvParameters)
         if(g_rx_uart0_size > 0)
         {
               uint32_t i;
-              MSS_UART_disable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
               for( i= 0; i< g_rx_uart0_size;  i++)
               {
                  rx_buffer[rx_size + i ] = g_rx_uart0_buffer[i];
               }
-              rx_size += g_rx_uart0_size;
-              g_rx_uart0_size = 0;
-              // see if an more in buffer
-              g_rx_uart0_size = MSS_UART_get_rx( gp_comm_uart, &rx_buffer[rx_size], sizeof(rx_buffer)-rx_size );
               rx_size += g_rx_uart0_size;
               g_rx_uart0_size = 0;
 
@@ -143,7 +138,6 @@ void prvUART0Task( void * pvParameters)
 //             }
                 tcpClientSend(rx_buffer, rx_size, 8000);
                 rx_size = 0;
-                MSS_UART_enable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
 
 
         }
