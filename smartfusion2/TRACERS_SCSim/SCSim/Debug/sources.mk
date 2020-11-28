@@ -30,6 +30,9 @@ drivers/mss_spi \
 drivers/mss_sys_services \
 drivers/mss_uart \
 drivers_config/sys_config \
+drivers_config/CoreUARTapb \
+hal/CortexM3/GNU \
+hal/CortexM3 \
 lwip-1.4.1/api \
 lwip-1.4.1/core \
 lwip-1.4.1/core/ipv4 \

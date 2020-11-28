@@ -15,8 +15,8 @@ RM := rm -rf
 -include lwip-1.4.1/core/ipv4/subdir.mk
 -include lwip-1.4.1/core/subdir.mk
 -include lwip-1.4.1/api/subdir.mk
-#-include hal/CortexM3/GNU/subdir.mk
-#-include hal/CortexM3/subdir.mk
+-include hal/CortexM3/GNU/subdir.mk
+-include hal/CortexM3/subdir.mk
 -include drivers_config/sys_config/subdir.mk
 -include drivers/mss_uart/subdir.mk
 -include drivers/mss_sys_services/subdir.mk
@@ -25,6 +25,7 @@ RM := rm -rf
 -include drivers/mss_nvm/subdir.mk
 -include drivers/mss_gpio/subdir.mk
 -include drivers/mss_ethernet_mac/subdir.mk
+-include drivers/CoreUARTapb/subdir.mk
 -include FreeRTOS/portable/MemMang/subdir.mk
 -include FreeRTOS/portable/GCC/ARM_CM3/subdir.mk
 -include FreeRTOS/subdir.mk
