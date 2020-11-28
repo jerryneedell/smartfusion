@@ -163,6 +163,7 @@ void prvUART1Task( void * pvParameters)
     send_msg((const uint8_t*)"************** TRACERS SC SIMULATOR  *********************************\r\n");
     send_msg((const uint8_t*)"**********************************************************************\r\n\n");
 
+    display_link_status();
     display_instructions();
 
     for( ;; )
