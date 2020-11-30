@@ -1,5 +1,5 @@
 /*=============================================================*/
-/* Created by Microsemi SmartDesign Fri Nov 06 13:22:59 2020   */
+/* Created by Microsemi SmartDesign Sat Nov 28 15:53:11 2020   */
 /*                                                             */
 /* Warning: Do not modify this file, it may lead to unexpected */
 /*          functional failures in your design.                */
@@ -24,6 +24,7 @@ const cfg_addr_value_pair_t g_m2s_serdes_0_config[] =
     { (uint32_t*)( 0x40028000 + 0x1014 ), 0x29 } /* LANE0_PLL_M_N */ ,
     { (uint32_t*)( 0x40028000 + 0x1018 ), 0x20 } /* LANE0_CNT250NS_MAX */ ,
     { (uint32_t*)( 0x40028000 + 0x1024 ), 0x80 } /* LANE0_TX_AMP_RATIO */ ,
+    { (uint32_t*)( 0x40028000 + 0x1028 ), 0x15 } /* LANE0_TX_PST_RATIO */ ,
     { (uint32_t*)( 0x40028000 + 0x1030 ), 0x10 } /* LANE0_ENDCALIB_MAX */ ,
     { (uint32_t*)( 0x40028000 + 0x1034 ), 0x38 } /* LANE0_CALIB_STABILITY_COUNT */ ,
     { (uint32_t*)( 0x40028000 + 0x103c ), 0x70 } /* LANE0_RX_OFFSET_COUNT */ ,
@@ -40,6 +41,7 @@ const cfg_addr_value_pair_t g_m2s_serdes_0_config[] =
     { (uint32_t*)( 0x40028000 + 0x1414 ), 0x29 } /* LANE1_PLL_M_N */ ,
     { (uint32_t*)( 0x40028000 + 0x1418 ), 0x20 } /* LANE1_CNT250NS_MAX */ ,
     { (uint32_t*)( 0x40028000 + 0x1424 ), 0x80 } /* LANE1_TX_AMP_RATIO */ ,
+    { (uint32_t*)( 0x40028000 + 0x1428 ), 0x15 } /* LANE1_TX_PST_RATIO */ ,
     { (uint32_t*)( 0x40028000 + 0x1430 ), 0x10 } /* LANE1_ENDCALIB_MAX */ ,
     { (uint32_t*)( 0x40028000 + 0x1434 ), 0x38 } /* LANE1_CALIB_STABILITY_COUNT */ ,
     { (uint32_t*)( 0x40028000 + 0x143c ), 0x70 } /* LANE1_RX_OFFSET_COUNT */ ,
@@ -56,6 +58,7 @@ const cfg_addr_value_pair_t g_m2s_serdes_0_config[] =
     { (uint32_t*)( 0x40028000 + 0x1814 ), 0x29 } /* LANE2_PLL_M_N */ ,
     { (uint32_t*)( 0x40028000 + 0x1818 ), 0x20 } /* LANE2_CNT250NS_MAX */ ,
     { (uint32_t*)( 0x40028000 + 0x1824 ), 0x80 } /* LANE2_TX_AMP_RATIO */ ,
+    { (uint32_t*)( 0x40028000 + 0x1828 ), 0x15 } /* LANE2_TX_PST_RATIO */ ,
     { (uint32_t*)( 0x40028000 + 0x1830 ), 0x10 } /* LANE2_ENDCALIB_MAX */ ,
     { (uint32_t*)( 0x40028000 + 0x1834 ), 0x38 } /* LANE2_CALIB_STABILITY_COUNT */ ,
     { (uint32_t*)( 0x40028000 + 0x183c ), 0x70 } /* LANE2_RX_OFFSET_COUNT */ ,
@@ -72,6 +75,7 @@ const cfg_addr_value_pair_t g_m2s_serdes_0_config[] =
     { (uint32_t*)( 0x40028000 + 0x1c14 ), 0x29 } /* LANE3_PLL_M_N */ ,
     { (uint32_t*)( 0x40028000 + 0x1c18 ), 0x20 } /* LANE3_CNT250NS_MAX */ ,
     { (uint32_t*)( 0x40028000 + 0x1c24 ), 0x80 } /* LANE3_TX_AMP_RATIO */ ,
+    { (uint32_t*)( 0x40028000 + 0x1c28 ), 0x15 } /* LANE3_TX_PST_RATIO */ ,
     { (uint32_t*)( 0x40028000 + 0x1c30 ), 0x10 } /* LANE3_ENDCALIB_MAX */ ,
     { (uint32_t*)( 0x40028000 + 0x1c34 ), 0x38 } /* LANE3_CALIB_STABILITY_COUNT */ ,
     { (uint32_t*)( 0x40028000 + 0x1c3c ), 0x70 } /* LANE3_RX_OFFSET_COUNT */ ,
