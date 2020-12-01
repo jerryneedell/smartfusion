@@ -27,8 +27,6 @@ volatile unsigned long *fpgabase;
 
 
 uint32_t get_ip_address(void);
-void set_user_eth_filter_choice(uint32_t filter_choice);
-void set_user_eth_speed_choice(uint32_t speed_choice);
 void get_mac_address(uint8_t * mac_addr);
 static void  display_received_mac_addresses(void);
 void read_mac_address(uint8_t * mac_addr, uint8_t *length);
@@ -39,7 +37,7 @@ void tcpClientSend(uint8_t *packet, uint32_t packet_size, uint32_t port);
  * Local functions.
  */
 void send_msg(const uint8_t * p_msg);
-void send_uart0(const uint8_t * p_msg);
+void send_uart0(const uint8_t * p_msg, size_t msg_size);
 static void uart0_tx_handler(mss_uart_instance_t * this_uart);
 static void uart0_rx_handler(mss_uart_instance_t * this_uart);
 static void uart1_tx_handler(mss_uart_instance_t * this_uart);
@@ -57,14 +55,6 @@ static volatile const uint8_t g_rx_uart0_buffer[100];
 static volatile size_t g_rx_uart0_size = 0;
 static char ip_addr_msg[128];
 
-/*Broadcast address*/
-uint8_t address_filter_broad[6] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
-
-/*Unicast, multicast and broadcast address*/
-uint8_t address_filter_hash [4][6] = {{0x10, 0x10, 0x10, 0x10, 0x10, 0x10},
-                  {0x43, 0x40, 0x40, 0x40, 0x40, 0x43},
-                  {0xC0, 0xB1, 0x3C, 0x60, 0x60, 0x60},
-                  {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
 
 static const uint8_t g_instructions_msg[] =
 "----------------------------------------------------------------------\r\n\
@@ -132,7 +122,7 @@ void prvUART0Task( void * pvParameters)
 //                 tcpClientSend(rx_buffer, rx_size, 8000);
 //                 rx_size = 0;
 //             }
-                tcpClientSend(rx_buffer, rx_size, 8000);
+                tcpClientSend(rx_buffer, rx_size, HK_PORT);
                 rx_size = 0;
 
 
@@ -186,7 +176,7 @@ void prvUART1Task( void * pvParameters)
                 
                 case 'h':
                 case 'H':
-                    tcpClientSend("Housekeeping", 12, 8000);
+                    tcpClientSend("Housekeeping", 12, HK_PORT);
                 break;
 
                 case 'P':
@@ -303,7 +293,7 @@ static void display_link_status(void)
         {
             send_msg((const uint8_t*)"Half Duplex\r\n");
         }
-        send_msg((const uint8_t*)"Use above IP address to access the WebServer using browser\r\n");
+        send_msg((const uint8_t*)"Use above IP address to access the CMD Server\r\n");
     }
     else
     {
@@ -349,10 +339,9 @@ void send_msg
 }
 void send_uart0
 (
-    const uint8_t * p_msg
+    const uint8_t * p_msg,  size_t msg_size
 )
 {
-    size_t msg_size;
     size_t size_sent;
 
     while(g_tx_uart0_size > 0u)
@@ -361,11 +350,6 @@ void send_uart0
         ;
     }
 
-    msg_size = 0u;
-    while(p_msg[msg_size] != 0u)
-    {
-        ++msg_size;
-    }
 
     g_tx_uart0_buffer = p_msg;
     g_tx_uart0_size = msg_size;

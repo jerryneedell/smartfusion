@@ -78,16 +78,3 @@ uint32_t get_user_eth_speed_choice(void)
     return speed_choice;
 }
 
-/*==============================================================================
- * 
- */
-void set_user_eth_speed_choice(uint32_t speed_choice)
-{
-	/* MAC configuration record */
-	extern mss_mac_cfg_t g_mac_config;
-
-    g_ethernet_speed_choice = speed_choice;
-    g_valid_choice_key = VALID_SPEED_CHOICE_KEY;
-    NVIC_SystemReset();
-
-}
