@@ -24,6 +24,7 @@
 #include <assert.h>
 #include "tracers_fpga.h"
 
+#define FRAMESYNC 0xc830fafe
 
 #ifndef HTTPD_DEBUG
 #define HTTPD_DEBUG         LWIP_DBG_OFF
@@ -39,12 +40,17 @@ ethernet_status_t g_ethernet_status;
  * External functions.
  */
 
+uint16_t generate_crc(uint8_t *packet, uint16_t length);
+uint16_t crc_ccitt_update(uint16_t crc, uint8_t  x);
+void generate_itf(uint32_t frame_sync, uint16_t apid, uint16_t sequence_number, uint8_t *data, uint16_t length, uint8_t *itf);
+
 uint32_t get_ip_address(void);
 void get_mac_address(uint8_t * mac_addr);
 void tcpClientSend(uint8_t *packet, uint32_t packet_size, uint32_t port);
 
 void send_msg(const uint8_t * p_msg);
 void send_uart0(const uint8_t * p_msg, size_t msg_size);
+
 
 /*------------------------------------------------------------------------------
  *
@@ -110,6 +116,9 @@ void prvPPSTask( void * pvParameters)
 {
   uint32_t pps_counter = 0;
   uint8_t pps_packet[4];
+  uint8_t tlm_packet[4];
+  uint8_t hk_packet[4];
+  uint8_t itf[100];
   pps_received = 0;
   while(1)
   {
@@ -120,13 +129,16 @@ void prvPPSTask( void * pvParameters)
         for (i=0;i<4;i++)
             pps_packet[i]= (pps_counter >> 8*(3-i))&0xff;
         tcpClientSend(pps_packet,4,STATUS_PORT);
-        for (i=0;i<4;i++)
-            pps_packet[i]= (fpgabase[BUTTON] >> 8*(3-i))&0xff;
-        tcpClientSend(pps_packet,4,TLM_PORT);
-        for (i=0;i<4;i++)
-            pps_packet[i]= (fpgabase[SW5] >> 8*(3-i))&0xff;
-        tcpClientSend(pps_packet,4,HK_PORT);
         pps_received = 0;
+
+        for (i=0;i<4;i++)
+            tlm_packet[i]= (fpgabase[BUTTON] >> 8*(3-i))&0xff;
+        generate_itf(FRAMESYNC, 0x1aa, (uint16_t)pps_counter&0x3fff, tlm_packet, 4, itf);
+        tcpClientSend(itf,16,TLM_PORT);
+        for (i=0;i<4;i++)
+            hk_packet[i]= (fpgabase[SW5] >> 8*(3-i))&0xff;
+        generate_itf(FRAMESYNC, 0x1ab, (uint16_t)pps_counter&0x3fff, hk_packet, 4, itf);
+        tcpClientSend(itf,16,HK_PORT);
     }
     /* Run through loop every 50 milliseconds. */
     vTaskDelay(50 / portTICK_RATE_MS);
@@ -196,3 +208,57 @@ void tcpClientSend(uint8_t *packet, uint32_t packet_size, uint32_t port)
 	lwip_close(sockfd);
 }
 
+
+
+uint16_t generate_crc(uint8_t *Data, uint16_t length)
+{
+
+    uint16_t crc;
+    uint16_t index = 0;
+    crc = 0xFFFF; //Initialization of crc to 0xFFFF for CCITT
+	while (index < length){
+		crc = crc_ccitt_update(crc,Data[index]);
+		index++;
+	}
+
+    return crc;
+}
+
+
+
+
+uint16_t crc_ccitt_update(uint16_t crc, uint8_t  x)
+{
+  uint16_t crc_new = (uint8_t)(crc >> 8) | (crc << 8);
+  crc_new ^= x;
+  crc_new ^= (uint8_t)(crc_new & 0xff) >> 4;
+  crc_new ^= crc_new << 12;
+  crc_new ^= (crc_new & 0xff) << 5;
+  crc = crc_new;
+  return crc;
+}
+
+void generate_itf(uint32_t frame_sync, uint16_t apid, uint16_t sequence_number, uint8_t *data, uint16_t length, uint8_t *itf)
+{
+        uint32_t i;
+        uint16_t crc;
+        for (i=0;i<4;i++)
+            itf[i]= (frame_sync >> 8*(3-i))&0xff;
+
+        apid = (apid&0x1ff)|0x0800; //set sec header flag
+        itf[4] = (apid>>8)&0xff;
+        itf[5] = apid&0xff;
+        sequence_number = (sequence_number&0x3fff)|0xc000; //set grouping flags
+        itf[6] = (sequence_number>>8)&0xff;
+        itf[7] = sequence_number&0xff;
+        itf[8] = ((length-1)>>8)&0xff;
+        itf[9] = (length-1)&0xff;
+
+        for (i=0;i<length;i++)
+            itf[i+10]= data[i];
+
+        crc= generate_crc(itf,length+10);
+        itf[length+10]= (crc>>8)&0xff;
+        itf[length+11]= crc&0xff;
+
+}
