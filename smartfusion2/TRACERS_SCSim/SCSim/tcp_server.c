@@ -10,7 +10,6 @@
 #include "lwip/arch.h"
 #include "lwip/api.h"
 #include "lwip/sockets.h"
-#include "tcp_server.h"
 #include "drivers/mss_uart/mss_uart.h"
 
 /* FreeRTOS includes. */
@@ -33,7 +32,6 @@
 volatile unsigned long *fpgabase;
 
 
-extern xQueueHandle xEthStatusQueue;
 
 ethernet_status_t g_ethernet_status;
 
@@ -54,8 +52,7 @@ void send_uart0(const uint8_t * p_msg);
 volatile uint32_t pps_received = 0;
 /** The main function, never returns! */
 
-void
-tcp_server_thread(void *arg)
+void prvTCPServerTask( void * pvParameters)
 
 {
 
@@ -92,7 +89,6 @@ tcp_server_thread(void *arg)
 	        if (clientfd>0){
 	            do{
 	                nbytes=lwip_recv(clientfd, buffer, sizeof(buffer),0);
-//	                if (nbytes>0) lwip_send(clientfd, buffer, nbytes, 0);
 	                if (nbytes>0)
                         {
                           buffer[nbytes]=0;
@@ -107,12 +103,6 @@ tcp_server_thread(void *arg)
 	}
 
 
-/** Initialize the TCP server (start its thread) */
-//void
-//tcp_server_init(void)
-//{
-//  sys_thread_new("tcp_server", tcp_server_thread, NULL, DEFAULT_THREAD_STACKSIZE, DEFAULT_THREAD_PRIO);/
-//}
 
 
 void prvPPSTask( void * pvParameters)
@@ -146,19 +136,13 @@ void prvPPSTask( void * pvParameters)
 
 }
 
-/** Initialize the PPS  (start its thread) */
-//void
-//pps_init(void)
-//{
-//  sys_thread_new("pps", prvPPSTask, NULL, DEFAULT_THREAD_STACKSIZE, DEFAULT_THREAD_PRIO);
-//}
 
 void FabricIrq0_IRQHandler(void)
 {
     // reset the PPS signal
     fpgabase[PPS_CLEAR] = 0;
     // toggle LEDs
-    fpgabase[LED] ^= 0xff;
+    fpgabase[LED] ^= 0x1;
     NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
     pps_received = 1;
 }

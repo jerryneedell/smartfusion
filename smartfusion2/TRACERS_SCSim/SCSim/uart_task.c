@@ -69,14 +69,10 @@ uint8_t address_filter_hash [4][6] = {{0x10, 0x10, 0x10, 0x10, 0x10, 0x10},
 static const uint8_t g_instructions_msg[] =
 "----------------------------------------------------------------------\r\n\
 Press a key to select:\r\n\n\
- Options to choose PHY interface parameters:\r\n\n\
-  [1]: Enable auto-negotiation to all speeds\r\n\
-  [2]: Select 1000Mpbs, Full-duplex \r\n\
-  [3]: Select 1000Mpbs Half-duplex \r\n\
-  [4]: Select 100Mpbs Full-duplex \r\n\
-  [5]: Select 100Mpbs Half-duplex \r\n\
-  [6]: Select 10Mpbs Full-duplex \r\n\
-  [7]: Select 10Mpbs Half-duplex \r\n\
+  [P]: Enable PPS\r\n\
+  [p]: Disable PPS\r\n\
+  [H]: Generate HK packetS\r\n\
+  [T]: Generate Telemetry Packet\r\n\
   [s]: Display link status (MAC address and IP)\r\n\
   [m]: Received MAC addresses \r\n\
 ";
@@ -106,12 +102,12 @@ void prvUART0Task( void * pvParameters)
      * Initialize and configure UART.
      */
     MSS_UART_init(gp_comm_uart,
-                  MSS_UART_115200_BAUD,
+                  MSS_UART_38400_BAUD,
                   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
 
     MSS_UART_set_tx_handler(gp_comm_uart, uart0_tx_handler);
     MSS_UART_set_rx_handler(gp_comm_uart, uart0_rx_handler,MSS_UART_FIFO_SINGLE_BYTE);
-    MSS_UART_enable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
+    //MSS_UART_enable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
 
     for( ;; )
     {
@@ -140,6 +136,8 @@ void prvUART0Task( void * pvParameters)
                 rx_size = 0;
 
 
+            // toggle LED
+            fpgabase[LED]^=0x2;
         }
         sys_msleep(5);
     }
@@ -180,48 +178,14 @@ void prvUART1Task( void * pvParameters)
         {
             switch(rx_buff[0])
             {
-                case '1':
-                    display_reset_msg();
-                    set_user_eth_speed_choice(MSS_MAC_ANEG_ALL_SPEEDS);
-                break;
-
-                case '2':
-                    display_reset_msg();
-                    set_user_eth_speed_choice(MSS_MAC_ANEG_1000M_FD);
-                break;
-
-                case '3':
-                    display_reset_msg();
-                    set_user_eth_speed_choice(MSS_MAC_ANEG_1000M_HD);
-                break;
-
-                case '4':
-                    display_reset_msg();
-                    set_user_eth_speed_choice(MSS_MAC_ANEG_100M_FD);
-                break;
-
-                case '5':
-                    display_reset_msg();
-                    set_user_eth_speed_choice(MSS_MAC_ANEG_100M_HD);
-                break;
-
-                case '6':
-                    display_reset_msg();
-                    set_user_eth_speed_choice(MSS_MAC_ANEG_10M_FD);
-                break;
-
-                case '7':
-                    display_reset_msg();
-                    set_user_eth_speed_choice(MSS_MAC_ANEG_10M_HD);
-                break;   
                 
                 case 'm':
                 case 'M':
                     display_received_mac_addresses();
                 break;
                 
-                case 't':
-                case 'T':
+                case 'h':
+                case 'H':
                     tcpClientSend("Housekeeping", 12, 8000);
                 break;
 
@@ -245,6 +209,8 @@ void prvUART1Task( void * pvParameters)
                 break;
             }
             sys_msleep(5);
+            // toggle LED
+            fpgabase[LED]^=0x4;
             display_instructions();
         }
     }
@@ -485,5 +451,4 @@ static void display_reset_msg(void)
         ;
     }
 }
-
 

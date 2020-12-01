@@ -246,7 +246,8 @@ low_level_init(struct netif *netif)
     //g_mac_config.interface = TBI;
     g_mac_config.phy_addr = M88E1340_PHY_ADDR;
 
-    g_mac_config.speed_duplex_select = MSS_MAC_ANEG_ALL_SPEEDS;
+//    g_mac_config.speed_duplex_select = MSS_MAC_ANEG_ALL_SPEEDS;
+    g_mac_config.speed_duplex_select = MSS_MAC_ANEG_10M_HD;
     g_mac_config.mac_addr[0] = own_hw_adr[0];
     g_mac_config.mac_addr[1] = own_hw_adr[1];
     g_mac_config.mac_addr[2] = own_hw_adr[2];

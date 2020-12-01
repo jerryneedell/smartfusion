@@ -29,9 +29,9 @@
  *
  */
 /* Priorities used by the various different tasks. */
-#define mainuIP_TASK_PRIORITY                   (tskIDLE_PRIORITY + 2)
-#define mainUART0_TASK_PRIORITY                  (tskIDLE_PRIORITY + 3)
-#define mainUART1_TASK_PRIORITY                  (tskIDLE_PRIORITY + 3)
+#define mainuIP_TASK_PRIORITY                   (tskIDLE_PRIORITY + 1)
+#define mainUART0_TASK_PRIORITY                  (tskIDLE_PRIORITY + 2)
+#define mainUART1_TASK_PRIORITY                  (tskIDLE_PRIORITY + 2)
 #define mainPPS_TASK_PRIORITY                   (tskIDLE_PRIORITY + 1)
 
 
@@ -83,8 +83,7 @@ static struct netif s_EMAC_if;
 void prvUART0Task(void * pvParameters);
 void prvUART1Task(void * pvParameters);
 void prvPPSTask(void * pvParameters);
-void prvLinkStatusTask(void * pvParameters);
-void tcp_server_thread(void *arg);
+void prvTCPServerTask(void *pvParameters);
 
 /*==============================================================================
  *
@@ -95,14 +94,18 @@ int main()
     /* Configure hardware platform. */
     prvSetupHardware();
 
-    /*
-     * Create the queue used by the EthLinkStatus task to communicate link
-     * speed/duplex changes to the http_server task.
-     */
-    xEthStatusQueue = xQueueCreate(ETHERNET_STATUS_QUEUE_LENGTH, sizeof(ethernet_status_t));
-
-    if(xEthStatusQueue != NULL)
-    {
+    /* Disabling PPS Interrupt*/
+    NVIC_DisableIRQ(FabricIrq0_IRQn);
+    /* Clear Pending Fabric Interrupts*/
+    NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
+    /* Disabling TLM Interrupt*/
+    NVIC_DisableIRQ(FabricIrq1_IRQn);
+    /* Clear Pending Fabric Interrupts*/
+    NVIC_ClearPendingIRQ(FabricIrq1_IRQn);
+    /* Disabling APBUART Interrupt*/
+    NVIC_DisableIRQ(FabricIrq2_IRQn);
+    /* Clear Pending Fabric Interrupts*/
+    NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
         /* Create the task handling user interractions through the UART. */
         xTaskCreate(prvUART0Task,
                     (signed char *) "UART1",
@@ -119,15 +122,6 @@ int main()
                     mainUART1_TASK_PRIORITY,
                     NULL);
 
-        /* Create the web server task. */
-        tcpip_init(prvEthernetConfigureInterface, NULL);
-        xTaskCreate(tcp_server_thread,
-                    (signed char *) "tcp_server",
-                    TCP_STACK_SIZE,
-                    NULL,
-                    mainuIP_TASK_PRIORITY,
-                    NULL );
-
         /* Create the pps task. */
         xTaskCreate(prvPPSTask,
                     (signed char *) "pps",
@@ -136,10 +130,17 @@ int main()
                     mainPPS_TASK_PRIORITY,
                     NULL );
 
+        /* Create the tcp server task. */
+        tcpip_init(prvEthernetConfigureInterface, NULL);
+        xTaskCreate(prvTCPServerTask,
+                    (signed char *) "tcp_server",
+                    TCP_STACK_SIZE,
+                    NULL,
+                    mainuIP_TASK_PRIORITY,
+                    NULL );
 
         /* Start the tasks and timer running. */
         vTaskStartScheduler();
-    }
 
     /*
      * If all is well, the scheduler will now be running, and the following line
@@ -402,33 +403,3 @@ void get_mac_address(uint8_t * mac_addr)
     }
 }
 
-/*==============================================================================
- *
- */
-void prvLinkStatusTask(void * pvParameters)
-{
-    ethernet_status_t status;
-
-    status.speed = MSS_MAC_10MBPS;
-    status.duplex_mode = 0xFFU;
-
-    for(;;)
-    {
-        volatile uint8_t linkup;
-        uint8_t fullduplex;
-        mss_mac_speed_t speed;
-
-        /* Run through loop every 500 milliseconds. */
-        vTaskDelay(500 / portTICK_RATE_MS);
-
-        linkup = MSS_MAC_get_link_status(&speed,  &fullduplex);
-        if((speed != status.speed) || (fullduplex != status.duplex_mode))
-        {
-            status.speed = speed;
-            status.duplex_mode = fullduplex;
-            xQueueSend(xEthStatusQueue, &status, DONT_BLOCK );
-        }
-
-        ethernetif_tick();
-    }
-}
