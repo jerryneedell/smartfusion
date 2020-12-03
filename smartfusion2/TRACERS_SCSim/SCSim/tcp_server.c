@@ -116,8 +116,8 @@ void prvPPSTask( void * pvParameters)
 {
   uint32_t pps_counter = 0;
   uint8_t pps_packet[4];
-  uint8_t tlm_packet[4];
-  uint8_t hk_packet[4];
+  uint8_t tlm_packet[12];
+  uint8_t hk_packet[12];
   uint8_t itf[100];
   pps_received = 0;
   while(1)
@@ -131,14 +131,22 @@ void prvPPSTask( void * pvParameters)
         tcpClientSend(pps_packet,4,STATUS_PORT);
         pps_received = 0;
 
+        for (i=0;i<4;i++) // coarse time
+            tlm_packet[i]= ((pps_counter&0x7ffffff) >> 8*(3-i))&0xff;
+        for (i=0;i<4;i++)  // fine time
+            tlm_packet[4+i]= 0;
         for (i=0;i<4;i++)
-            tlm_packet[i]= (fpgabase[BUTTON] >> 8*(3-i))&0xff;
-        generate_itf(FRAMESYNC, 0x1aa, (uint16_t)pps_counter&0x3fff, tlm_packet, 4, itf);
-        tcpClientSend(itf,16,TLM_PORT);
+            tlm_packet[8+i]= (fpgabase[BUTTON] >> 8*(3-i))&0xff;
+        generate_itf(FRAMESYNC, 0x1aa, (uint16_t)pps_counter&0x3fff, tlm_packet, 12, itf);
+        tcpClientSend(itf,24,TLM_PORT);
+        for (i=0;i<4;i++) // coarse time
+            hk_packet[i]= ((pps_counter&0x7ffffff) >> 8*(3-i))&0xff;
+        for (i=0;i<4;i++)  // fine time
+            hk_packet[4+i]= 0;
         for (i=0;i<4;i++)
-            hk_packet[i]= (fpgabase[SW5] >> 8*(3-i))&0xff;
-        generate_itf(FRAMESYNC, 0x1ab, (uint16_t)pps_counter&0x3fff, hk_packet, 4, itf);
-        tcpClientSend(itf,16,HK_PORT);
+            hk_packet[8+i]= (fpgabase[SW5] >> 8*(3-i))&0xff;
+        generate_itf(FRAMESYNC, 0x1ab, (uint16_t)pps_counter&0x3fff, hk_packet, 12, itf);
+        tcpClientSend(itf,24,HK_PORT);
     }
     /* Run through loop every 50 milliseconds. */
     vTaskDelay(50 / portTICK_RATE_MS);

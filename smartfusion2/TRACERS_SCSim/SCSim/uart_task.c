@@ -50,8 +50,10 @@ static void display_reset_msg(void);
 static volatile const uint8_t * g_tx_buffer;
 static volatile size_t g_tx_size = 0;
 static volatile const uint8_t * g_tx_uart0_buffer;
-static volatile size_t g_tx_uart0_size = 0;
 static volatile const uint8_t g_rx_uart0_buffer[100];
+uint8_t uart0_rx_buffer[100];
+size_t uart0_rx_size = 0;
+static volatile size_t g_tx_uart0_size = 0;
 static volatile size_t g_rx_uart0_size = 0;
 static char ip_addr_msg[128];
 
@@ -86,8 +88,6 @@ static mss_uart_instance_t * const gp_my_uart = &g_mss_uart1;
 void prvUART0Task( void * pvParameters)
 {
 
-    uint8_t  rx_buffer[100];
-    uint32_t rx_size = 0;
     /*--------------------------------------------------------------------------
      * Initialize and configure UART.
      */
@@ -105,25 +105,12 @@ void prvUART0Task( void * pvParameters)
         /* Run through loop every 500 milliseconds. */
         //vTaskDelay(500 / portTICK_RATE_MS);
 
-        if(g_rx_uart0_size > 0)
+        if(uart0_rx_size > 0)
         {
-              uint32_t i;
-              for( i= 0; i< g_rx_uart0_size;  i++)
-              {
-                 rx_buffer[rx_size + i ] = g_rx_uart0_buffer[i];
-              }
-              rx_size += g_rx_uart0_size;
-              g_rx_uart0_size = 0;
-
-
-
-//              if( rx_size > 10 )
-//             {
-//                 tcpClientSend(rx_buffer, rx_size, 8000);
-//                 rx_size = 0;
-//             }
-                tcpClientSend(rx_buffer, rx_size, HK_PORT);
-                rx_size = 0;
+                MSS_UART_disable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
+                tcpClientSend(uart0_rx_buffer, uart0_rx_size, HK_PORT);
+                uart0_rx_size = 0;
+                MSS_UART_enable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
 
 
             // toggle LED
@@ -397,6 +384,17 @@ static void uart0_tx_handler(mss_uart_instance_t * this_uart)
 static void uart0_rx_handler(mss_uart_instance_t * this_uart)
 {
     g_rx_uart0_size = MSS_UART_get_rx( this_uart, g_rx_uart0_buffer, sizeof(g_rx_uart0_buffer) );
+    if(g_rx_uart0_size > 0)
+        {
+              uint32_t i;
+              for( i= 0; i< g_rx_uart0_size;  i++)
+              {
+                 uart0_rx_buffer[uart0_rx_size + i ] = g_rx_uart0_buffer[i];
+              }
+              uart0_rx_size += g_rx_uart0_size;
+              g_rx_uart0_size = 0;
+        }
+
 
 }
 static void uart1_tx_handler(mss_uart_instance_t * this_uart)
