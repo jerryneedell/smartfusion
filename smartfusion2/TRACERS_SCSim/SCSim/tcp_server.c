@@ -36,6 +36,9 @@ volatile unsigned long *fpgabase;
 
 ethernet_status_t g_ethernet_status;
 
+int32_t tlm_sockfd = -1;
+int32_t hk_sockfd = -1;
+int32_t pps_sockfd = -1;
 /*------------------------------------------------------------------------------
  * External functions.
  */
@@ -47,6 +50,7 @@ void generate_itf(uint32_t frame_sync, uint16_t apid, uint16_t sequence_number, 
 uint32_t get_ip_address(void);
 void get_mac_address(uint8_t * mac_addr);
 void tcpClientSend(uint8_t *packet, uint32_t packet_size, uint32_t port);
+int32_t tcpClientOpen(uint32_t port);
 
 void send_msg(const uint8_t * p_msg);
 void send_uart0(const uint8_t * p_msg, size_t msg_size);
@@ -128,7 +132,10 @@ void prvPPSTask( void * pvParameters)
         pps_counter++;
         for (i=0;i<4;i++)
             pps_packet[i]= (pps_counter >> 8*(3-i))&0xff;
-        tcpClientSend(pps_packet,4,STATUS_PORT);
+        if(pps_sockfd == -1)
+            pps_sockfd=tcpClientOpen(STATUS_PORT);
+        if(pps_sockfd != -1)
+            lwip_send(pps_sockfd, pps_packet, 4,0);
         pps_received = 0;
 
         for (i=0;i<4;i++) // coarse time
@@ -138,7 +145,11 @@ void prvPPSTask( void * pvParameters)
         for (i=0;i<4;i++)
             tlm_packet[8+i]= (fpgabase[BUTTON] >> 8*(3-i))&0xff;
         generate_itf(FRAMESYNC, 0x1aa, (uint16_t)pps_counter&0x3fff, tlm_packet, 12, itf);
-        tcpClientSend(itf,24,TLM_PORT);
+        if(tlm_sockfd == -1)
+            tlm_sockfd=tcpClientOpen(TLM_PORT);
+        if(tlm_sockfd != -1)
+            lwip_send(tlm_sockfd, itf, 24,0);
+/*
         for (i=0;i<4;i++) // coarse time
             hk_packet[i]= ((pps_counter&0x7ffffff) >> 8*(3-i))&0xff;
         for (i=0;i<4;i++)  // fine time
@@ -146,7 +157,11 @@ void prvPPSTask( void * pvParameters)
         for (i=0;i<4;i++)
             hk_packet[8+i]= (fpgabase[SW5] >> 8*(3-i))&0xff;
         generate_itf(FRAMESYNC, 0x1ab, (uint16_t)pps_counter&0x3fff, hk_packet, 12, itf);
-        tcpClientSend(itf,24,HK_PORT);
+        if(hk_sockfd == -1)
+            hk_sockfd=tcpClientOpen(HK_PORT);
+        if(hk_sockfd != -1)
+            lwip_send(hk_sockfd, itf, 24,0);
+*/
     }
     /* Run through loop every 50 milliseconds. */
     vTaskDelay(50 / portTICK_RATE_MS);
@@ -174,7 +189,7 @@ void tcpClientSend(uint8_t *packet, uint32_t packet_size, uint32_t port)
         uint8_t ip_string[20];
 
 
-	int sockfd, connfd;
+	int32_t sockfd, connfd;
 	struct sockaddr_in servaddr, cli;
 	uint8_t buff[80];
 	// socket create and varification
@@ -214,6 +229,48 @@ void tcpClientSend(uint8_t *packet, uint32_t packet_size, uint32_t port)
 
 	// close the socket
 	lwip_close(sockfd);
+}
+
+int32_t tcpClientOpen(uint32_t port)
+{
+
+        uint8_t ip_string[20];
+
+
+	int32_t sockfd, connfd;
+	struct sockaddr_in servaddr, cli;
+	uint8_t buff[80];
+	// socket create and varification
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (sockfd == -1) {
+		send_msg((const uint8_t *)"socket creation failed...\r\n");
+		return sockfd;
+	}
+	else
+		send_msg((const uint8_t *)"Socket successfully created..\r\n");
+	memset((uint8_t *)&servaddr, 0,sizeof(servaddr));
+
+	// assign IP, PORT
+	servaddr.sin_family = AF_INET;
+        /* Create and configure the EMAC interface. */
+        uint8_t low_address;
+        low_address = (fpgabase[SW5]&7)^7;  // get low 3 bits then XOR to invert bits
+	sprintf(&ip_string,"192.168.250.13%d",low_address);
+        servaddr.sin_addr.s_addr = inet_addr(ip_string);
+	servaddr.sin_port = htons(port);
+
+	// connect the client socket to server socket
+	if (connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) != 0) {
+		send_msg((const uint8_t *)"connection with the server failed...\r\n");
+        	// close the socket
+	        lwip_close(sockfd);
+                sockfd = -1;
+		return sockfd;
+	}
+	else
+		send_msg((const uint8_t *)"connected to the server..\r\n");
+
+	return sockfd;
 }
 
 

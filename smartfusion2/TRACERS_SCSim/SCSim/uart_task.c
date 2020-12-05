@@ -32,6 +32,7 @@ static void  display_received_mac_addresses(void);
 void read_mac_address(uint8_t * mac_addr, uint8_t *length);
 void clear_mac_buf(void);
 void tcpClientSend(uint8_t *packet, uint32_t packet_size, uint32_t port);
+int32_t tcpClientOpen(uint32_t port);
 
 /*==============================================================================
  * Local functions.
@@ -47,6 +48,9 @@ static void display_reset_msg(void);
 /*==============================================================================
  * Global variables.
  */
+int32_t tlm_sockfd;
+int32_t hk_sockfd;
+int32_t pps_sockfd;
 static volatile const uint8_t * g_tx_buffer;
 static volatile size_t g_tx_size = 0;
 static volatile const uint8_t * g_tx_uart0_buffer;
@@ -56,8 +60,6 @@ size_t uart0_rx_size = 0;
 static volatile size_t g_tx_uart0_size = 0;
 static volatile size_t g_rx_uart0_size = 0;
 static char ip_addr_msg[128];
-
-
 static const uint8_t g_instructions_msg[] =
 "----------------------------------------------------------------------\r\n\
 Press a key to select:\r\n\n\
@@ -108,7 +110,18 @@ void prvUART0Task( void * pvParameters)
         if(uart0_rx_size > 0)
         {
                 MSS_UART_disable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
-                tcpClientSend(uart0_rx_buffer, uart0_rx_size, HK_PORT);
+
+                if(hk_sockfd == -1)
+                    hk_sockfd=tcpClientOpen(HK_PORT);
+                if(hk_sockfd != -1)
+                {
+                    if(lwip_send(hk_sockfd,uart0_rx_buffer, uart0_rx_size ,0)==-1)
+                    {
+                      send_msg("HK socket error - closing socket\n\r");
+                      lwip_close(hk_sockfd);
+                      hk_sockfd = -1;
+                    }
+                }
                 uart0_rx_size = 0;
                 MSS_UART_enable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
 
@@ -167,6 +180,14 @@ void prvUART1Task( void * pvParameters)
                 break;
 
                 case 'P':
+                    if(tlm_sockfd == -1)
+                       tlm_sockfd=tcpClientOpen(TLM_PORT);
+                    if(hk_sockfd == -1)
+                       hk_sockfd=tcpClientOpen(HK_PORT);
+                    if(pps_sockfd == -1)
+                       pps_sockfd=tcpClientOpen(STATUS_PORT);
+
+
                     /* Clear Pending PPS Interrupt*/
                     NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
 
@@ -179,6 +200,12 @@ void prvUART1Task( void * pvParameters)
                     NVIC_DisableIRQ(FabricIrq0_IRQn);
                     /* Clear Pending Fabric Interrupts*/
                     NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
+                    lwip_close(tlm_sockfd);
+                    lwip_close(hk_sockfd);
+                    lwip_close(pps_sockfd);
+                    pps_sockfd = -1;
+                    tlm_sockfd = -1;
+                    hk_sockfd = -1;
                 break;
 
                 default:
