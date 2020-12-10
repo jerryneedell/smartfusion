@@ -39,6 +39,9 @@ ethernet_status_t g_ethernet_status;
 int32_t tlm_sockfd = -1;
 int32_t hk_sockfd = -1;
 int32_t pps_sockfd = -1;
+volatile uint32_t g_tlm_packet_arrived = 0;
+volatile uint32_t g_tlm_packet_size = 0;
+volatile uint8_t g_tlm_packet_buffer[0x100];  //  need to adjust
 /*------------------------------------------------------------------------------
  * External functions.
  */
@@ -49,7 +52,6 @@ void generate_itf(uint32_t frame_sync, uint16_t apid, uint16_t sequence_number, 
 
 uint32_t get_ip_address(void);
 void get_mac_address(uint8_t * mac_addr);
-void tcpClientSend(uint8_t *packet, uint32_t packet_size, uint32_t port);
 int32_t tcpClientOpen(uint32_t port);
 
 void send_msg(const uint8_t * p_msg);
@@ -59,7 +61,7 @@ void send_uart0(const uint8_t * p_msg, size_t msg_size);
 /*------------------------------------------------------------------------------
  *
  */
-volatile uint32_t pps_received = 0;
+volatile uint32_t g_pps_received = 0;
 /** The main function, never returns! */
 
 void prvTCPServerTask( void * pvParameters)
@@ -103,6 +105,8 @@ void prvTCPServerTask( void * pvParameters)
                         {
                           buffer[nbytes]=0;
                           send_uart0(buffer, nbytes);
+                          // toggle LED
+                          fpgabase[LED] ^= 0x10;
                         }
 	            }  while (nbytes>0);
 
@@ -120,13 +124,10 @@ void prvPPSTask( void * pvParameters)
 {
   uint32_t pps_counter = 0;
   uint8_t pps_packet[4];
-  uint8_t tlm_packet[12];
-  uint8_t hk_packet[12];
-  uint8_t itf[100];
-  pps_received = 0;
+  g_pps_received = 0;
   while(1)
   {
-    if(pps_received)
+    if(g_pps_received)
     {
         uint32_t i;
         pps_counter++;
@@ -136,35 +137,37 @@ void prvPPSTask( void * pvParameters)
             pps_sockfd=tcpClientOpen(STATUS_PORT);
         if(pps_sockfd != -1)
             lwip_send(pps_sockfd, pps_packet, 4,0);
-        pps_received = 0;
+        g_pps_received = 0;
 
-        for (i=0;i<4;i++) // coarse time
-            tlm_packet[i]= ((pps_counter&0x7ffffff) >> 8*(3-i))&0xff;
-        for (i=0;i<4;i++)  // fine time
-            tlm_packet[4+i]= 0;
-        for (i=0;i<4;i++)
-            tlm_packet[8+i]= (fpgabase[BUTTON] >> 8*(3-i))&0xff;
-        generate_itf(FRAMESYNC, 0x1aa, (uint16_t)pps_counter&0x3fff, tlm_packet, 12, itf);
+    }
+
+  }
+
+
+}
+void prvTLMTask( void * pvParameters)
+
+{
+
+  g_tlm_packet_arrived = 0;
+  g_tlm_packet_size = 0;
+
+  while(1)
+  {
+    // manually trigger ISR
+    if(fpgabase[TLM_INTERRUPT])
+      FabricIrq1_IRQHandler();
+
+    if(g_tlm_packet_arrived)
+    {
         if(tlm_sockfd == -1)
             tlm_sockfd=tcpClientOpen(TLM_PORT);
         if(tlm_sockfd != -1)
-            lwip_send(tlm_sockfd, itf, 24,0);
-/*
-        for (i=0;i<4;i++) // coarse time
-            hk_packet[i]= ((pps_counter&0x7ffffff) >> 8*(3-i))&0xff;
-        for (i=0;i<4;i++)  // fine time
-            hk_packet[4+i]= 0;
-        for (i=0;i<4;i++)
-            hk_packet[8+i]= (fpgabase[SW5] >> 8*(3-i))&0xff;
-        generate_itf(FRAMESYNC, 0x1ab, (uint16_t)pps_counter&0x3fff, hk_packet, 12, itf);
-        if(hk_sockfd == -1)
-            hk_sockfd=tcpClientOpen(HK_PORT);
-        if(hk_sockfd != -1)
-            lwip_send(hk_sockfd, itf, 24,0);
-*/
+            lwip_send(tlm_sockfd, g_tlm_packet_buffer, g_tlm_packet_size,0);
+        g_tlm_packet_arrived = 0;
+        g_tlm_packet_size = 0;
+
     }
-    /* Run through loop every 50 milliseconds. */
-    vTaskDelay(50 / portTICK_RATE_MS);
 
   }
 
@@ -179,57 +182,44 @@ void FabricIrq0_IRQHandler(void)
     // toggle LEDs
     fpgabase[LED] ^= 0x1;
     NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
-    pps_received = 1;
+    g_pps_received = 1;
 }
 
-
-void tcpClientSend(uint8_t *packet, uint32_t packet_size, uint32_t port)
+void FabricIrq1_IRQHandler(void)
 {
+    uint32_t words_in_fifo;
+    uint32_t fifo_status;
+    words_in_fifo = fpgabase[TLM_FIFO_COUNTERS]&0x1fff;  // FiFO Read Counter
+    // toggle LED
+    fpgabase[LED] ^= 0x8;
+    uint32_t i;
+    for(i = 0; i < words_in_fifo; i++)
+    {
+        uint32_t j;
+        uint32_t one_word;
+        one_word = fpgabase[TLM_FIFO_READ];
+        // put bytes intp buffer MSB first
+        for (j=0;j<4;j++)
+        {
+          g_tlm_packet_buffer[4*i+j]= (one_word >> 8*(3-j))&0xff;
+        }
 
-        uint8_t ip_string[20];
-
-
-	int32_t sockfd, connfd;
-	struct sockaddr_in servaddr, cli;
-	uint8_t buff[80];
-	// socket create and varification
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockfd == -1) {
-		send_msg((const uint8_t *)"socket creation failed...\r\n");
-		return;
-	}
-//	else
-//		send_msg((const uint8_t *)"Socket successfully created..\r\n");
-	memset((uint8_t *)&servaddr, 0,sizeof(servaddr));
-
-	// assign IP, PORT
-	servaddr.sin_family = AF_INET;
-        /* Create and configure the EMAC interface. */
-        uint8_t low_address;
-        low_address = (fpgabase[SW5]&7)^7;  // get low 3 bits then XOR to invert bits
-	sprintf(&ip_string,"192.168.250.13%d",low_address);
-//        send_msg(ip_string);
-        servaddr.sin_addr.s_addr = inet_addr(ip_string);
-	servaddr.sin_port = htons(port);
-
-	// connect the client socket to server socket
-	if (connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) != 0) {
-		send_msg((const uint8_t *)"connection with the server failed...\r\n");
-        	// close the socket
-	        lwip_close(sockfd);
-		return;
-	}
-//	else
-//		send_msg((const uint8_t *)"connected to the server..\r\n");
-
-	lwip_send(sockfd, packet, packet_size,0);
-
-
-
-
-	// close the socket
-	lwip_close(sockfd);
+    }
+    g_tlm_packet_arrived = 1;
+    g_tlm_packet_size = 4*words_in_fifo;
+    // reset the TLM FIFO
+    fpgabase[TLM_FIFO_CLEAR] = 0;
+    fpgabase[TLM_INTERRUPT_CLEAR] = 0;
+    NVIC_ClearPendingIRQ(FabricIrq1_IRQn);
 }
+
+void FabricIrq2_IRQHandler(void)
+{
+    fpgabase[LED] ^= 0x20;
+    NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
+}
+
+
 
 int32_t tcpClientOpen(uint32_t port)
 {
@@ -239,7 +229,6 @@ int32_t tcpClientOpen(uint32_t port)
 
 	int32_t sockfd, connfd;
 	struct sockaddr_in servaddr, cli;
-	uint8_t buff[80];
 	// socket create and varification
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1) {

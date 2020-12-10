@@ -30,19 +30,18 @@
  */
 /* Priorities used by the various different tasks. */
 #define mainuIP_TASK_PRIORITY                   (tskIDLE_PRIORITY + 1)
-#define mainUART0_TASK_PRIORITY                  (tskIDLE_PRIORITY + 2)
-#define mainUART1_TASK_PRIORITY                  (tskIDLE_PRIORITY + 2)
+#define mainUART0_TASK_PRIORITY                 (tskIDLE_PRIORITY + 1)
 #define mainPPS_TASK_PRIORITY                   (tskIDLE_PRIORITY + 1)
+#define mainTLM_TASK_PRIORITY                   (tskIDLE_PRIORITY + 1)
+#define mainUART1_TASK_PRIORITY                 (tskIDLE_PRIORITY + 2) // make uart1 task higher prority
 
 
 /* Web server task stack size. */
 #define TCP_STACK_SIZE                          400
-#define PPS_STACK_SIZE                          400
+#define PPS_STACK_SIZE                          200
+#define TLM_STACK_SIZE                          200
 #define UART0_TASK_STACK_SIZE                    200
 #define UART1_TASK_STACK_SIZE                    200
-
-#define ETHERNET_STATUS_QUEUE_LENGTH    1
-#define DONT_BLOCK                      0
 
 
 volatile unsigned long *fpgabase = (volatile unsigned long *)0x30000000;
@@ -83,6 +82,7 @@ static struct netif s_EMAC_if;
 void prvUART0Task(void * pvParameters);
 void prvUART1Task(void * pvParameters);
 void prvPPSTask(void * pvParameters);
+void prvTLMTask(void * pvParameters);
 void prvTCPServerTask(void *pvParameters);
 
 /*==============================================================================
@@ -128,6 +128,14 @@ int main()
                     PPS_STACK_SIZE,
                     NULL,
                     mainPPS_TASK_PRIORITY,
+                    NULL );
+
+        /* Create the TLM task. */
+        xTaskCreate(prvTLMTask,
+                    (signed char *) "tlm",
+                    TLM_STACK_SIZE,
+                    NULL,
+                    mainTLM_TASK_PRIORITY,
                     NULL );
 
         /* Create the tcp server task. */
@@ -355,11 +363,6 @@ static void prvEthernetConfigureInterface(void * param)
     ( void ) param;
 
     /* Create and configure the EMAC interface. */
-//#ifdef NET_USE_DHCP
-//    IP4_ADDR( &xIpAddr, 0, 0, 0, 0 );
-//    IP4_ADDR( &xGateway, 192, 168, 1, 254 );
-//#else
-//#endif
     uint8_t low_address;
     low_address = 120 + (fpgabase[SW5]&7)^7;  // get low 3 bis then XOR to invert bits
     IP4_ADDR( &xIpAddr, 192, 168, 250, low_address );
@@ -371,11 +374,6 @@ static void prvEthernetConfigureInterface(void * param)
 
     /* bring it up */
 
-//#ifdef NET_USE_DHCP
-//    dhcp_start(&s_EMAC_if);
-//#else
-//    netif_set_up(&s_EMAC_if);
-//#endif
     netif_set_up(&s_EMAC_if);
 
     /* make it the default interface */

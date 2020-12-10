@@ -23,6 +23,8 @@
 #include "drivers/mss_uart/mss_uart.h"
 #include "drivers/mss_ethernet_mac/mss_ethernet_mac.h"
 
+#define FRAMESYNC 0xc830fafe
+
 volatile unsigned long *fpgabase;
 
 
@@ -31,8 +33,9 @@ void get_mac_address(uint8_t * mac_addr);
 static void  display_received_mac_addresses(void);
 void read_mac_address(uint8_t * mac_addr, uint8_t *length);
 void clear_mac_buf(void);
-void tcpClientSend(uint8_t *packet, uint32_t packet_size, uint32_t port);
 int32_t tcpClientOpen(uint32_t port);
+void generate_itf(uint32_t frame_sync, uint16_t apid, uint16_t sequence_number, uint8_t *data, uint16_t length, uint8_t *itf);
+
 
 /*==============================================================================
  * Local functions.
@@ -65,10 +68,11 @@ static const uint8_t g_instructions_msg[] =
 Press a key to select:\r\n\n\
   [P]: Enable PPS\r\n\
   [p]: Disable PPS\r\n\
-  [H]: Generate HK packetS\r\n\
-  [T]: Generate Telemetry Packet\r\n\
-  [s]: Display link status (MAC address and IP)\r\n\
+  [T]: Enable Telemetry IRQ\r\n\
+  [t]: Disable Telemetry IRQ\r\n\
+  [X]: Generate TLM packet\r\n\
   [m]: Received MAC addresses \r\n\
+  [anything]: Display link status (MAC address and IP)\r\n\
 ";
 
 static const uint8_t g_reset_msg[] =
@@ -104,9 +108,6 @@ void prvUART0Task( void * pvParameters)
     for( ;; )
     {
 
-        /* Run through loop every 500 milliseconds. */
-        //vTaskDelay(500 / portTICK_RATE_MS);
-
         if(uart0_rx_size > 0)
         {
                 MSS_UART_disable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
@@ -137,6 +138,7 @@ void prvUART0Task( void * pvParameters)
  */
 void prvUART1Task( void * pvParameters)
 {
+    uint32_t seq_counter = 0;
 
     /*--------------------------------------------------------------------------
      * Initialize and configure UART.
@@ -146,10 +148,6 @@ void prvUART1Task( void * pvParameters)
                   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
 
     MSS_UART_set_tx_handler(gp_my_uart, uart1_tx_handler);
-
-    send_msg((const uint8_t*)"\r\n\r\n**********************************************************************\r\n");
-    send_msg((const uint8_t*)"************** TRACERS SC SIMULATOR  *********************************\r\n");
-    send_msg((const uint8_t*)"**********************************************************************\r\n\n");
 
     display_link_status();
     display_instructions();
@@ -168,20 +166,43 @@ void prvUART1Task( void * pvParameters)
         {
             switch(rx_buff[0])
             {
-                
                 case 'm':
                 case 'M':
                     display_received_mac_addresses();
                 break;
-                
-                case 'h':
-                case 'H':
-                    tcpClientSend("Housekeeping", 12, HK_PORT);
+                case 'x':
+                case 'X':
+                    seq_counter++;
+                    uint8_t itf[24];
+                    uint8_t tlm_packet[12];
+                    uint32_t tlm_fifo_packet[6];
+                    uint32_t i;
+                    fpgabase[TLM_XMIT_CLEAR] = 0; // clear the TLM fifo
+                    for (i=0;i<4;i++) // coarse time
+                        tlm_packet[i]= ((seq_counter&0x7ffffff) >> 8*(3-i))&0xff;
+                    for (i=0;i<4;i++)  // fine time
+                        tlm_packet[4+i]= 0;
+                    for (i=0;i<4;i++)
+                        tlm_packet[8+i]= (fpgabase[BUTTON] >> 8*(3-i))&0xff;
+                    generate_itf(FRAMESYNC, 0x1aa, (uint16_t)seq_counter&0x3fff, tlm_packet, 12, itf);
+                    for(i=0;i<6;i++)
+                    {
+                        tlm_fifo_packet[i] = (((uint32_t)itf[4*i])<<24) +
+                                             (((uint32_t)itf[4*i+1])<<16) +
+                                             (((uint32_t)itf[4*i+2])<<8) +
+                                             (((uint32_t)itf[4*i+3]));
+                     }
+
+
+                    for(i=0;i<6;i++)
+                    {
+                        fpgabase[TLM_XMIT_WRITE] = tlm_fifo_packet[i];
+                    }
+                    fpgabase[TLM_XMIT_START] = 1;
+
                 break;
 
                 case 'P':
-                    if(tlm_sockfd == -1)
-                       tlm_sockfd=tcpClientOpen(TLM_PORT);
                     if(hk_sockfd == -1)
                        hk_sockfd=tcpClientOpen(HK_PORT);
                     if(pps_sockfd == -1)
@@ -200,12 +221,45 @@ void prvUART1Task( void * pvParameters)
                     NVIC_DisableIRQ(FabricIrq0_IRQn);
                     /* Clear Pending Fabric Interrupts*/
                     NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
-                    lwip_close(tlm_sockfd);
                     lwip_close(hk_sockfd);
                     lwip_close(pps_sockfd);
                     pps_sockfd = -1;
-                    tlm_sockfd = -1;
                     hk_sockfd = -1;
+                break;
+
+                case 'T':
+                    if(tlm_sockfd == -1)
+                       tlm_sockfd=tcpClientOpen(TLM_PORT);
+                    fpgabase[4] |= 2; // enable TLM loopback
+                    /* Clear Pending TLM Interrupt*/
+                    //NVIC_ClearPendingIRQ(FabricIrq1_IRQn);
+
+                    /* Enable Fabric Interrupt*/
+                    //NVIC_EnableIRQ(FabricIrq1_IRQn);
+                break;
+
+                case 't':
+                    /* Disabling TLM Interrupt*/
+                    NVIC_DisableIRQ(FabricIrq1_IRQn);
+                    /* Clear Pending Fabric Interrupts*/
+                    NVIC_ClearPendingIRQ(FabricIrq1_IRQn);
+                    lwip_close(tlm_sockfd);
+                    tlm_sockfd = -1;
+                    fpgabase[4] &= 1; // disable TLM loopback
+                break;
+                case 'Z':
+                    /* Clear Pending TLM Interrupt*/
+                    NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
+
+                    /* Enable Fabric Interrupt*/
+                    NVIC_EnableIRQ(FabricIrq2_IRQn);
+                break;
+
+                case 'z':
+                    /* Disabling TLM Interrupt*/
+                    NVIC_DisableIRQ(FabricIrq2_IRQn);
+                    /* Clear Pending Fabric Interrupts*/
+                    NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
                 break;
 
                 default:
