@@ -40,7 +40,7 @@
 #define STATUS_PORT			8002
 #define CMD_PORT			8003
 
-
+#define TLM_MAX_WORDS			0x40
 
 
 #endif /* __TRACERS_FPGA_H__ */

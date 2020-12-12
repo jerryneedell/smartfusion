@@ -39,9 +39,9 @@
 /* Web server task stack size. */
 #define TCP_STACK_SIZE                          400
 #define PPS_STACK_SIZE                          200
-#define TLM_STACK_SIZE                          200
+#define TLM_STACK_SIZE                          400
 #define UART0_TASK_STACK_SIZE                    200
-#define UART1_TASK_STACK_SIZE                    200
+#define UART1_TASK_STACK_SIZE                    400
 
 
 volatile unsigned long *fpgabase = (volatile unsigned long *)0x30000000;

@@ -40,8 +40,7 @@ int32_t tlm_sockfd = -1;
 int32_t hk_sockfd = -1;
 int32_t pps_sockfd = -1;
 volatile uint32_t g_tlm_packet_arrived = 0;
-volatile uint32_t g_tlm_packet_size = 0;
-volatile uint8_t g_tlm_packet_buffer[0x100];  //  need to adjust
+volatile uint32_t g_words_in_fifo;
 /*------------------------------------------------------------------------------
  * External functions.
  */
@@ -148,9 +147,12 @@ void prvPPSTask( void * pvParameters)
 void prvTLMTask( void * pvParameters)
 
 {
-
+  uint32_t tlm_packet_size = 0;
+  uint8_t tlm_packet_buffer[4*TLM_MAX_WORDS];
+  uint32_t words_sent;
+  uint32_t words_to_send;
+  uint32_t words_this_time;
   g_tlm_packet_arrived = 0;
-  g_tlm_packet_size = 0;
 
   while(1)
   {
@@ -160,20 +162,39 @@ void prvTLMTask( void * pvParameters)
 
     if(g_tlm_packet_arrived)
     {
+
+      words_sent = 0;
+      words_to_send = g_words_in_fifo;
+      while(words_to_send)
+      {
+        words_this_time = (words_to_send > TLM_MAX_WORDS)?TLM_MAX_WORDS:words_to_send;
+        words_to_send -= words_this_time; // save remaining words to be sent
+        uint32_t i;
+        for(i = 0; i < words_this_time; i++)
+        {
+           uint32_t j;
+           uint32_t one_word;
+           one_word = fpgabase[TLM_FIFO_READ];
+           // put bytes intp buffer MSB first
+           for (j=0;j<4;j++)
+           {
+              tlm_packet_buffer[4*i+j]= (one_word >> 8*(3-j))&0xff;
+           }
+
+        }
+
         if(tlm_sockfd == -1)
             tlm_sockfd=tcpClientOpen(TLM_PORT);
         if(tlm_sockfd != -1)
-            lwip_send(tlm_sockfd, g_tlm_packet_buffer, g_tlm_packet_size,0);
-        g_tlm_packet_arrived = 0;
-        g_tlm_packet_size = 0;
+            lwip_send(tlm_sockfd, tlm_packet_buffer, 4*words_this_time,0);
 
+      }
+
+      g_tlm_packet_arrived = 0;
+      NVIC_EnableIRQ(FabricIrq1_IRQn); // re-enable TLM interrupt
     }
-
   }
-
-
 }
-
 
 void FabricIrq0_IRQHandler(void)
 {
@@ -187,30 +208,13 @@ void FabricIrq0_IRQHandler(void)
 
 void FabricIrq1_IRQHandler(void)
 {
-    uint32_t words_in_fifo;
-    uint32_t fifo_status;
-    words_in_fifo = fpgabase[TLM_FIFO_COUNTERS]&0x1fff;  // FiFO Read Counter
+    NVIC_DisableIRQ(FabricIrq1_IRQn);  // disable TLM interrupt
+    fpgabase[TLM_INTERRUPT_CLEAR] = 0; // clear the interrupt
+    NVIC_ClearPendingIRQ(FabricIrq1_IRQn);
+    g_words_in_fifo = fpgabase[TLM_FIFO_COUNTERS]&0x1fff;  // FiFO Read Counter
     // toggle LED
     fpgabase[LED] ^= 0x8;
-    uint32_t i;
-    for(i = 0; i < words_in_fifo; i++)
-    {
-        uint32_t j;
-        uint32_t one_word;
-        one_word = fpgabase[TLM_FIFO_READ];
-        // put bytes intp buffer MSB first
-        for (j=0;j<4;j++)
-        {
-          g_tlm_packet_buffer[4*i+j]= (one_word >> 8*(3-j))&0xff;
-        }
-
-    }
     g_tlm_packet_arrived = 1;
-    g_tlm_packet_size = 4*words_in_fifo;
-    // reset the TLM FIFO
-    fpgabase[TLM_FIFO_CLEAR] = 0;
-    fpgabase[TLM_INTERRUPT_CLEAR] = 0;
-    NVIC_ClearPendingIRQ(FabricIrq1_IRQn);
 }
 
 void FabricIrq2_IRQHandler(void)

@@ -173,9 +173,9 @@ void prvUART1Task( void * pvParameters)
                 case 'x':
                 case 'X':
                     seq_counter++;
-                    uint8_t itf[24];
-                    uint8_t tlm_packet[12];
-                    uint32_t tlm_fifo_packet[6];
+                    uint8_t itf[152];
+                    uint8_t tlm_packet[140];
+                    uint32_t tlm_fifo_packet[38];
                     uint32_t i;
                     fpgabase[TLM_XMIT_CLEAR] = 0; // clear the TLM fifo
                     for (i=0;i<4;i++) // coarse time
@@ -184,8 +184,10 @@ void prvUART1Task( void * pvParameters)
                         tlm_packet[4+i]= 0;
                     for (i=0;i<4;i++)
                         tlm_packet[8+i]= (fpgabase[BUTTON] >> 8*(3-i))&0xff;
-                    generate_itf(FRAMESYNC, 0x1aa, (uint16_t)seq_counter&0x3fff, tlm_packet, 12, itf);
-                    for(i=0;i<6;i++)
+                    for(i=0;i<128;i++)
+                        tlm_packet[12+i]=i;
+                    generate_itf(FRAMESYNC, 0x1aa, (uint16_t)seq_counter&0x3fff, tlm_packet, 140, itf);
+                    for(i=0;i<38;i++)
                     {
                         tlm_fifo_packet[i] = (((uint32_t)itf[4*i])<<24) +
                                              (((uint32_t)itf[4*i+1])<<16) +
@@ -194,7 +196,7 @@ void prvUART1Task( void * pvParameters)
                      }
 
 
-                    for(i=0;i<6;i++)
+                    for(i=0;i<38;i++)
                     {
                         fpgabase[TLM_XMIT_WRITE] = tlm_fifo_packet[i];
                     }
