@@ -41,6 +41,7 @@
 #define CMD_PORT			8003
 
 #define TLM_MAX_WORDS			0x40
+#define UART0_RX_BYTES			0x100
 
 
 #endif /* __TRACERS_FPGA_H__ */

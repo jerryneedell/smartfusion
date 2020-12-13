@@ -42,9 +42,9 @@ void generate_itf(uint32_t frame_sync, uint16_t apid, uint16_t sequence_number, 
  */
 void send_msg(const uint8_t * p_msg);
 void send_uart0(const uint8_t * p_msg, size_t msg_size);
-static void uart0_tx_handler(mss_uart_instance_t * this_uart);
+//static void uart0_tx_handler(mss_uart_instance_t * this_uart);
 static void uart0_rx_handler(mss_uart_instance_t * this_uart);
-static void uart1_tx_handler(mss_uart_instance_t * this_uart);
+//static void uart1_tx_handler(mss_uart_instance_t * this_uart);
 static void display_link_status(void);
 static void display_instructions(void);
 static void display_reset_msg(void);
@@ -57,9 +57,9 @@ int32_t pps_sockfd;
 static volatile const uint8_t * g_tx_buffer;
 static volatile size_t g_tx_size = 0;
 static volatile const uint8_t * g_tx_uart0_buffer;
-static volatile const uint8_t g_rx_uart0_buffer[100];
-uint8_t uart0_rx_buffer[100];
-size_t uart0_rx_size = 0;
+static volatile const uint8_t g_rx_uart0_buffer[UART0_RX_BYTES];
+//uint8_t uart0_rx_buffer[100];
+//size_t uart0_rx_size = 0;
 static volatile size_t g_tx_uart0_size = 0;
 static volatile size_t g_rx_uart0_size = 0;
 static char ip_addr_msg[128];
@@ -78,13 +78,6 @@ Press a key to select:\r\n\n\
 static const uint8_t g_reset_msg[] =
 "\r\nApplying changes and resetting system.\r\n";
 
-/*------------------------------------------------------------------------------
-  UART selection.
-  Replace the line below with this one if you want to use UART1 instead of
-  UART0:
-  mss_uart_instance_t * const gp_my_uart = &g_mss_uart1;
- */
-//static mss_uart_instance_t * const gp_my_uart = &g_mss_uart0;
 static mss_uart_instance_t * const gp_comm_uart = &g_mss_uart0;
 static mss_uart_instance_t * const gp_my_uart = &g_mss_uart1;
 
@@ -101,36 +94,29 @@ void prvUART0Task( void * pvParameters)
                   MSS_UART_38400_BAUD,
                   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
 
-    MSS_UART_set_tx_handler(gp_comm_uart, uart0_tx_handler);
-    MSS_UART_set_rx_handler(gp_comm_uart, uart0_rx_handler,MSS_UART_FIFO_SINGLE_BYTE);
-    //MSS_UART_enable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
 
     for( ;; )
     {
 
-        if(uart0_rx_size > 0)
+        g_rx_uart0_size = MSS_UART_get_rx( gp_comm_uart, g_rx_uart0_buffer, sizeof(g_rx_uart0_buffer) );
+        if(g_rx_uart0_size > 0)
         {
-                MSS_UART_disable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
 
                 if(hk_sockfd == -1)
                     hk_sockfd=tcpClientOpen(HK_PORT);
                 if(hk_sockfd != -1)
                 {
-                    if(lwip_send(hk_sockfd,uart0_rx_buffer, uart0_rx_size ,0)==-1)
+                    if(lwip_send(hk_sockfd,g_rx_uart0_buffer, g_rx_uart0_size ,0)==-1)
                     {
                       send_msg("HK socket error - closing socket\n\r");
                       lwip_close(hk_sockfd);
                       hk_sockfd = -1;
                     }
                 }
-                uart0_rx_size = 0;
-                MSS_UART_enable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
-
-
+            g_rx_uart0_size=0;
             // toggle LED
             fpgabase[LED]^=0x2;
         }
-        sys_msleep(5);
     }
 }
 /*==============================================================================
@@ -147,7 +133,6 @@ void prvUART1Task( void * pvParameters)
                   MSS_UART_115200_BAUD,
                   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
 
-    MSS_UART_set_tx_handler(gp_my_uart, uart1_tx_handler);
 
     display_link_status();
     display_instructions();
@@ -156,6 +141,7 @@ void prvUART1Task( void * pvParameters)
     {
         size_t rx_size;
         uint8_t rx_buff[1];
+        uint32_t npackets;
 
         /* Run through loop every 500 milliseconds. */
         vTaskDelay(500 / portTICK_RATE_MS);
@@ -172,6 +158,8 @@ void prvUART1Task( void * pvParameters)
                 break;
                 case 'x':
                 case 'X':
+                    for(npackets=0;npackets<10;npackets++)
+                    {
                     seq_counter++;
                     uint8_t itf[152];
                     uint8_t tlm_packet[140];
@@ -201,7 +189,8 @@ void prvUART1Task( void * pvParameters)
                         fpgabase[TLM_XMIT_WRITE] = tlm_fifo_packet[i];
                     }
                     fpgabase[TLM_XMIT_START] = 1;
-
+                    sys_msleep(1);
+                    }
                 break;
 
                 case 'P':
@@ -303,7 +292,6 @@ static void  display_received_mac_addresses(void)
 static void display_instructions(void)
 {
     send_msg(g_instructions_msg);
-    //send_uart0(g_instructions_msg);
 }
 
 /*==============================================================================
@@ -383,11 +371,13 @@ void send_msg
     size_t msg_size;
     size_t size_sent;
 
-    while(g_tx_size > 0u)
+
+    while(!MSS_UART_tx_complete(gp_my_uart))
     {
         /* Wait for previous message to complete tx. */
         ;
     }
+
 
     msg_size = 0u;
     while(p_msg[msg_size] != 0u)
@@ -395,17 +385,8 @@ void send_msg
         ++msg_size;
     }
 
-    g_tx_buffer = p_msg;
-    g_tx_size = msg_size;
+    MSS_UART_irq_tx(gp_my_uart, p_msg, msg_size);
 
-    size_sent = MSS_UART_fill_tx_fifo(gp_my_uart, p_msg, msg_size);
-    g_tx_size = g_tx_size - size_sent;
-    g_tx_buffer = &g_tx_buffer[size_sent];
-
-    if(g_tx_size > 0u)
-    {
-        MSS_UART_enable_irq(gp_my_uart, MSS_UART_TBE_IRQ);
-    }
 }
 void send_uart0
 (
@@ -414,100 +395,20 @@ void send_uart0
 {
     size_t size_sent;
 
-    while(g_tx_uart0_size > 0u)
+    while(!MSS_UART_tx_complete(gp_comm_uart))
     {
         /* Wait for previous message to complete tx. */
         ;
     }
 
-
-    g_tx_uart0_buffer = p_msg;
-    g_tx_uart0_size = msg_size;
-
-    size_sent = MSS_UART_fill_tx_fifo(gp_comm_uart, p_msg, msg_size);
-    g_tx_uart0_size = g_tx_uart0_size - size_sent;
-    g_tx_uart0_buffer = &g_tx_uart0_buffer[size_sent];
-
-    if(g_tx_uart0_size > 0u)
-    {
-        MSS_UART_enable_irq(gp_comm_uart, MSS_UART_TBE_IRQ);
-    }
+    MSS_UART_irq_tx(gp_comm_uart, p_msg, msg_size);
 }
 
-/*==============================================================================
- *
- */
-static void uart0_tx_handler(mss_uart_instance_t * this_uart)
-{
-    size_t size_in_fifo;
-
-    if(g_tx_uart0_size > 0)
-    {
-        size_in_fifo = MSS_UART_fill_tx_fifo(this_uart,
-                                             (const uint8_t *)g_tx_uart0_buffer,
-                                             g_tx_uart0_size);
-
-        if(size_in_fifo  ==  g_tx_uart0_size)
-        {
-            g_tx_uart0_size = 0;
-            MSS_UART_disable_irq(this_uart, MSS_UART_TBE_IRQ);
-        }
-        else
-        {
-            g_tx_uart0_buffer = &g_tx_uart0_buffer[size_in_fifo];
-            g_tx_uart0_size = g_tx_uart0_size - size_in_fifo;
-        }
-    }
-    else
-    {
-        g_tx_uart0_size = 0;
-        MSS_UART_disable_irq(this_uart, MSS_UART_TBE_IRQ);
-    }
-}
 static void uart0_rx_handler(mss_uart_instance_t * this_uart)
 {
     g_rx_uart0_size = MSS_UART_get_rx( this_uart, g_rx_uart0_buffer, sizeof(g_rx_uart0_buffer) );
-    if(g_rx_uart0_size > 0)
-        {
-              uint32_t i;
-              for( i= 0; i< g_rx_uart0_size;  i++)
-              {
-                 uart0_rx_buffer[uart0_rx_size + i ] = g_rx_uart0_buffer[i];
-              }
-              uart0_rx_size += g_rx_uart0_size;
-              g_rx_uart0_size = 0;
-        }
-
 
 }
-static void uart1_tx_handler(mss_uart_instance_t * this_uart)
-{
-    size_t size_in_fifo;
-
-    if(g_tx_size > 0)
-    {
-        size_in_fifo = MSS_UART_fill_tx_fifo(this_uart,
-                                             (const uint8_t *)g_tx_buffer,
-                                             g_tx_size);
-
-        if(size_in_fifo  ==  g_tx_size)
-        {
-            g_tx_size = 0;
-            MSS_UART_disable_irq(this_uart, MSS_UART_TBE_IRQ);
-        }
-        else
-        {
-            g_tx_buffer = &g_tx_buffer[size_in_fifo];
-            g_tx_size = g_tx_size - size_in_fifo;
-        }
-    }
-    else
-    {
-        g_tx_size = 0;
-        MSS_UART_disable_irq(this_uart, MSS_UART_TBE_IRQ);
-    }
-}
-
 static void display_reset_msg(void)
 {
     MSS_UART_polled_tx(gp_my_uart, g_reset_msg, sizeof(g_reset_msg));
