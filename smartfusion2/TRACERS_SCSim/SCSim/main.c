@@ -106,6 +106,14 @@ int main()
     NVIC_DisableIRQ(FabricIrq2_IRQn);
     /* Clear Pending Fabric Interrupts*/
     NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
+        /* Create the tcp server task. */
+        tcpip_init(prvEthernetConfigureInterface, NULL);
+        xTaskCreate(prvTCPServerTask,
+                    (signed char *) "tcp_server",
+                    TCP_STACK_SIZE,
+                    NULL,
+                    mainuIP_TASK_PRIORITY,
+                    NULL );
         /* Create the task handling user interractions through the UART. */
         xTaskCreate(prvUART0Task,
                     (signed char *) "UART1",
@@ -138,14 +146,6 @@ int main()
                     mainTLM_TASK_PRIORITY,
                     NULL );
 
-        /* Create the tcp server task. */
-        tcpip_init(prvEthernetConfigureInterface, NULL);
-        xTaskCreate(prvTCPServerTask,
-                    (signed char *) "tcp_server",
-                    TCP_STACK_SIZE,
-                    NULL,
-                    mainuIP_TASK_PRIORITY,
-                    NULL );
 
         /* Start the tasks and timer running. */
         vTaskStartScheduler();

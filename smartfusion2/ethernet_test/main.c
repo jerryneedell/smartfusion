@@ -71,7 +71,7 @@ static volatile uint32_t g_mac_tx_buffer_used = 1u;
   UART0:
   mss_uart_instance_t * const gp_my_uart = &g_mss_uart1;
  */
-static mss_uart_instance_t * const gp_my_uart = &g_mss_uart0;
+static mss_uart_instance_t * const gp_my_uart = &g_mss_uart1;
 
 
 /*==============================================================================
@@ -194,7 +194,7 @@ int main()
     SYSREG->WDOG_CR = 0;
     
     NVIC_SetPriority(EthernetMAC_IRQn, 5u);
-    NVIC_SetPriority(UART0_IRQn, 4u);
+    NVIC_SetPriority(UART1_IRQn, 4u);
 /*---------------------------------------------------------------
     Initialization and Setup
 ----------------------------------------------------------------*/
@@ -231,7 +231,7 @@ int main()
     for(;;)
     {
         /* Check for inpout from the user. */
-        rx_size = MSS_UART_get_rx(&g_mss_uart0, rx_buff, sizeof(rx_buff));
+        rx_size = MSS_UART_get_rx(&g_mss_uart1, rx_buff, sizeof(rx_buff));
         if(rx_size > 0)
         {
             switch(rx_buff[0])
@@ -242,7 +242,7 @@ int main()
                 rx_size=0;
 
                 do{
-                        rx_size = MSS_UART_get_rx(&g_mss_uart0, rx_buff, sizeof(rx_buff));
+                        rx_size = MSS_UART_get_rx(&g_mss_uart1, rx_buff, sizeof(rx_buff));
                 }while(0 == rx_size);
                 switch(rx_buff[0])
                 {

@@ -123,6 +123,15 @@ void prvPPSTask( void * pvParameters)
 {
   uint32_t pps_counter = 0;
   uint8_t pps_packet[4];
+  if(hk_sockfd == -1)
+    hk_sockfd=tcpClientOpen(HK_PORT);
+  if(pps_sockfd == -1)
+    pps_sockfd=tcpClientOpen(STATUS_PORT);
+  /* Clear Pending PPS Interrupt*/
+  NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
+
+  /* Enable Fabric Interrupt*/
+  NVIC_EnableIRQ(FabricIrq0_IRQn);
   g_pps_received = 0;
   while(1)
   {
@@ -137,28 +146,32 @@ void prvPPSTask( void * pvParameters)
         if(pps_sockfd != -1)
             lwip_send(pps_sockfd, pps_packet, 4,0);
         g_pps_received = 0;
-
     }
-
   }
-
-
 }
-void prvTLMTask( void * pvParameters)
 
+
+
+void prvTLMTask( void * pvParameters)
 {
   uint32_t tlm_packet_size = 0;
   uint8_t tlm_packet_buffer[4*TLM_MAX_WORDS];
   uint32_t words_sent;
   uint32_t words_to_send;
   uint32_t words_this_time;
+  if(tlm_sockfd == -1)
+    tlm_sockfd=tcpClientOpen(TLM_PORT);
+  fpgabase[4] |= 2; // enable TLM loopback
+  /* Clear Pending TLM Interrupt*/
+  NVIC_ClearPendingIRQ(FabricIrq1_IRQn);
+  /* Enable Fabric Interrupt*/
+  NVIC_EnableIRQ(FabricIrq1_IRQn);
   g_tlm_packet_arrived = 0;
-
   while(1)
   {
     // manually trigger ISR
-    if(fpgabase[TLM_INTERRUPT])
-      FabricIrq1_IRQHandler();
+    //if(fpgabase[TLM_INTERRUPT])
+    //  FabricIrq1_IRQHandler();
 
     if(g_tlm_packet_arrived)
     {

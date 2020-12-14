@@ -223,10 +223,10 @@ void prvUART1Task( void * pvParameters)
                        tlm_sockfd=tcpClientOpen(TLM_PORT);
                     fpgabase[4] |= 2; // enable TLM loopback
                     /* Clear Pending TLM Interrupt*/
-                    //NVIC_ClearPendingIRQ(FabricIrq1_IRQn);
+                    NVIC_ClearPendingIRQ(FabricIrq1_IRQn);
 
                     /* Enable Fabric Interrupt*/
-                    //NVIC_EnableIRQ(FabricIrq1_IRQn);
+                    NVIC_EnableIRQ(FabricIrq1_IRQn);
                 break;
 
                 case 't':
