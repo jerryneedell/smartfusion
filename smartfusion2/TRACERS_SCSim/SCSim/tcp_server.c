@@ -30,7 +30,7 @@
 #define HTTPD_DEBUG         LWIP_DBG_OFF
 #endif
 
-volatile unsigned long *fpgabase;
+extern volatile unsigned long *fpgabase;
 
 
 
@@ -44,7 +44,7 @@ volatile uint32_t g_words_in_fifo;
 /*------------------------------------------------------------------------------
  * External functions.
  */
-
+void ethernetif_tick(void);
 uint16_t generate_crc(uint8_t *packet, uint16_t length);
 uint16_t crc_ccitt_update(uint16_t crc, uint8_t  x);
 void generate_itf(uint32_t frame_sync, uint16_t apid, uint16_t sequence_number, uint8_t *data, uint16_t length, uint8_t *itf);
@@ -144,9 +144,10 @@ void prvPPSTask( void * pvParameters)
         if(pps_sockfd == -1)
             pps_sockfd=tcpClientOpen(STATUS_PORT);
         if(pps_sockfd != -1)
-            lwip_send(pps_sockfd, pps_packet, 4,0);
+           lwip_send(pps_sockfd, pps_packet, 4,0);
         g_pps_received = 0;
     }
+    ethernetif_tick();
   }
 }
 
@@ -200,7 +201,6 @@ void prvTLMTask( void * pvParameters)
             tlm_sockfd=tcpClientOpen(TLM_PORT);
         if(tlm_sockfd != -1)
             lwip_send(tlm_sockfd, tlm_packet_buffer, 4*words_this_time,0);
-
       }
 
       g_tlm_packet_arrived = 0;

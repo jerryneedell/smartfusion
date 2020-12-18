@@ -25,7 +25,7 @@
 
 #define FRAMESYNC 0xc830fafe
 
-volatile unsigned long *fpgabase;
+extern volatile unsigned long *fpgabase;
 
 
 uint32_t get_ip_address(void);
@@ -45,15 +45,15 @@ void send_uart0(const uint8_t * p_msg, size_t msg_size);
 //static void uart0_tx_handler(mss_uart_instance_t * this_uart);
 static void uart0_rx_handler(mss_uart_instance_t * this_uart);
 //static void uart1_tx_handler(mss_uart_instance_t * this_uart);
-static void display_link_status(void);
 static void display_instructions(void);
 static void display_reset_msg(void);
+static void display_link_status(void);
 /*==============================================================================
  * Global variables.
  */
-int32_t tlm_sockfd;
-int32_t hk_sockfd;
-int32_t pps_sockfd;
+extern int32_t tlm_sockfd;
+extern int32_t hk_sockfd;
+extern int32_t pps_sockfd;
 static volatile const uint8_t * g_tx_buffer;
 static volatile size_t g_tx_size = 0;
 static volatile const uint8_t * g_tx_uart0_buffer;

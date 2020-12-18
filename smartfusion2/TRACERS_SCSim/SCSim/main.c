@@ -84,7 +84,6 @@ void prvUART1Task(void * pvParameters);
 void prvPPSTask(void * pvParameters);
 void prvTLMTask(void * pvParameters);
 void prvTCPServerTask(void *pvParameters);
-
 /*==============================================================================
  *
  */
