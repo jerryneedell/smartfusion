@@ -25,13 +25,12 @@ RM := rm -rf
 -include drivers/mss_nvm/subdir.mk
 -include drivers/mss_gpio/subdir.mk
 -include drivers/mss_ethernet_mac/subdir.mk
--include WebServer/subdir.mk
+-include drivers/CoreUARTapb/subdir.mk
 -include FreeRTOS/portable/MemMang/subdir.mk
 -include FreeRTOS/portable/GCC/ARM_CM3/subdir.mk
 -include FreeRTOS/subdir.mk
 -include CMSIS/startup_gcc/subdir.mk
 -include CMSIS/subdir.mk
--include .metadata/.plugins/org.eclipse.cdt.make.core/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -51,38 +50,38 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 SECONDARY_FLASH += \
-Webserver.hex \
+SCSim.hex \
 
 SECONDARY_SIZE += \
-Webserver.siz \
+SCSim.siz \
 
 
 # All Target
-all: Webserver.elf secondary-outputs
+all: SCSim.elf secondary-outputs
 
 # Tool invocations
-Webserver.elf: $(OBJS) $(USER_OBJS)
+SCSim.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross ARM C Linker'
-	arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -O1 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g -T "/home/jerryneedell/projects/TRACERS/SF2_webserver_softConsole/SoftConsole_tcp_test/Webserver/CMSIS/startup_gcc/production-smartfusion2-execute-in-place.ld" -Xlinker --gc-sections -Wl,-Map,"Webserver.map" --specs=nano.specs -o "Webserver.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -O1 -fsigned-char -fmessage-length=0 -ffunction-sections -fdata-sections  -g  -T "../CMSIS/startup_gcc/production-smartfusion2-execute-in-place.ld" -Xlinker --gc-sections -Wl,-Map,"SCSim.map" --specs=nano.specs -o "SCSim.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-Webserver.hex: Webserver.elf
+SCSim.hex: SCSim.elf
 	@echo 'Invoking: Cross ARM GNU Create Flash Image'
-	arm-none-eabi-objcopy -O ihex "Webserver.elf"  "Webserver.hex"
+	arm-none-eabi-objcopy -O ihex "SCSim.elf"  "SCSim.hex"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Webserver.siz: Webserver.elf
+SCSim.siz: SCSim.elf
 	@echo 'Invoking: Cross ARM GNU Print Size'
-	arm-none-eabi-size --format=berkeley "Webserver.elf"
+	arm-none-eabi-size --format=berkeley "SCSim.elf"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(SECONDARY_FLASH)$(SECONDARY_SIZE)$(ASM_DEPS)$(S_UPPER_DEPS)$(C_DEPS) Webserver.elf
+	-$(RM) $(OBJS)$(SECONDARY_FLASH)$(SECONDARY_SIZE)$(ASM_DEPS)$(S_UPPER_DEPS)$(C_DEPS) SCSim.elf SCSim.map
 	-@echo ' '
 
 secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_SIZE)

@@ -17,13 +17,11 @@ C_DEPS :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
-.metadata/.plugins/org.eclipse.cdt.make.core \
 CMSIS/startup_gcc \
 CMSIS \
 FreeRTOS \
 FreeRTOS/portable/GCC/ARM_CM3 \
 FreeRTOS/portable/MemMang \
-WebServer \
 drivers/mss_ethernet_mac \
 drivers/mss_gpio \
 drivers/mss_nvm \
@@ -32,6 +30,7 @@ drivers/mss_spi \
 drivers/mss_sys_services \
 drivers/mss_uart \
 drivers_config/sys_config \
+drivers_config/CoreUARTapb \
 hal/CortexM3/GNU \
 hal/CortexM3 \
 lwip-1.4.1/api \
