@@ -64,7 +64,7 @@ static volatile size_t g_tx_uart0_size = 0;
 static volatile size_t g_rx_uart0_size = 0;
 static char ip_addr_msg[128];
 static const uint8_t g_instructions_msg[] =
-"----------------------------------------------------------------------\r\n\
+"-------------SWFO S/C Simulator Version 1.0---------------------------\r\n\
 Press a key to select:\r\n\n\
   [P]: Enable PPS\r\n\
   [p]: Disable PPS\r\n\
@@ -91,7 +91,7 @@ void prvUART0Task( void * pvParameters)
      * Initialize and configure UART.
      */
     MSS_UART_init(gp_comm_uart,
-                  MSS_UART_38400_BAUD,
+                  MSS_UART_57600_BAUD,
                   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
 
 
@@ -162,13 +162,11 @@ void prvUART1Task( void * pvParameters)
                        hk_sockfd=tcpClientOpen(HK_PORT);
                     if(pps_sockfd == -1)
                        pps_sockfd=tcpClientOpen(STATUS_PORT);
-
-
                     /* Clear Pending PPS Interrupt*/
                     NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
-
                     /* Enable Fabric Interrupt*/
                     NVIC_EnableIRQ(FabricIrq0_IRQn);
+                    send_msg((const uint8_t *)"PPS Enabled\r\n");
                 break;
 
                 case 'p':
@@ -180,21 +178,24 @@ void prvUART1Task( void * pvParameters)
                     lwip_close(pps_sockfd);
                     pps_sockfd = -1;
                     hk_sockfd = -1;
+                    send_msg((const uint8_t *)"PPS Disabled\r\n");
                 break;
 
                 case 'Z':
-                    /* Clear Pending TLM Interrupt*/
+                    /* Clear Pending IRQ2 Interrupt*/
                     NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
-
                     /* Enable Fabric Interrupt*/
                     NVIC_EnableIRQ(FabricIrq2_IRQn);
+                    send_msg((const uint8_t *)"IRQ2 Enabled\r\n");
                 break;
 
                 case 'z':
-                    /* Disabling TLM Interrupt*/
+                    /* Disabling IRQ2 Interrupt*/
                     NVIC_DisableIRQ(FabricIrq2_IRQn);
                     /* Clear Pending Fabric Interrupts*/
                     NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
+                    send_msg((const uint8_t *)"IRQ2 Disabled\r\n");
+
                 break;
 
                 default:

@@ -89,7 +89,7 @@ void prvTCPServerTask( void * pvParameters)
 	        lwip_close(lSocket);
 	        return;
 	}
-        send_msg((const uint8_t *)"CMD Server Lintening...\r\n");
+        send_msg((const uint8_t *)"CMD Server Listening...\r\n");
         sprintf(&port_string,"PORT:%d\r\n",CMD_PORT);
         send_msg((const uint8_t *)port_string);
 

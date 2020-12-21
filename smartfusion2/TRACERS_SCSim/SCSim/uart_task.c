@@ -249,7 +249,7 @@ void prvUART1Task( void * pvParameters)
                     NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
                     /* Enable Fabric Interrupt*/
                     NVIC_EnableIRQ(FabricIrq2_IRQn);
-                    send_msg((const uint8_t *)"TLM Enabled\r\n");
+                    send_msg((const uint8_t *)"IRQ2 Enabled\r\n");
                 break;
 
                 case 'z':
@@ -257,7 +257,7 @@ void prvUART1Task( void * pvParameters)
                     NVIC_DisableIRQ(FabricIrq2_IRQn);
                     /* Clear Pending Fabric Interrupts*/
                     NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
-                    send_msg((const uint8_t *)"TLM Disbled\r\n");
+                    send_msg((const uint8_t *)"IRQ2 Disbled\r\n");
                break;
 
                 default:
