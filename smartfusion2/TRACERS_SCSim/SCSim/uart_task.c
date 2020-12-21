@@ -64,13 +64,15 @@ static volatile size_t g_tx_uart0_size = 0;
 static volatile size_t g_rx_uart0_size = 0;
 static char ip_addr_msg[128];
 static const uint8_t g_instructions_msg[] =
-"----------------------------------------------------------------------\r\n\
+"---------TRACERS S/C Simulator Version 1.0---------------------------\r\n\
 Press a key to select:\r\n\n\
   [P]: Enable PPS\r\n\
   [p]: Disable PPS\r\n\
   [T]: Enable Telemetry IRQ\r\n\
   [t]: Disable Telemetry IRQ\r\n\
-  [X]: Generate TLM packet\r\n\
+  [L]: Enable Telemetry Loopback\r\n\
+  [l]: Disable Telemetry Loopback\r\n\
+  [X]: Generate TLM packet via Loopback\r\n\
   [m]: Received MAC addresses \r\n\
   [anything]: Display link status (MAC address and IP)\r\n\
 ";
@@ -108,7 +110,7 @@ void prvUART0Task( void * pvParameters)
                 {
                     if(lwip_send(hk_sockfd,g_rx_uart0_buffer, g_rx_uart0_size ,0)==-1)
                     {
-                      send_msg("HK socket error - closing socket\n\r");
+                      send_msg((const uint8_t *)"HK socket error - closing socket\n\r");
                       lwip_close(hk_sockfd);
                       hk_sockfd = -1;
                     }
@@ -156,6 +158,14 @@ void prvUART1Task( void * pvParameters)
                 case 'M':
                     display_received_mac_addresses();
                 break;
+                case 'L':
+                    fpgabase[4] |= 2; // enable TLM loopback
+                    send_msg((const uint8_t *)"TLM Loopback Enabled\r\n");
+                    break;
+                case 'l':
+                    fpgabase[4] &= 1; //  disable TLM loopback
+                    send_msg((const uint8_t *)"TLM Loopback Disabled\r\n");
+                    break;
                 case 'x':
                 case 'X':
                     for(npackets=0;npackets<10;npackets++)
@@ -181,9 +191,7 @@ void prvUART1Task( void * pvParameters)
                                              (((uint32_t)itf[4*i+1])<<16) +
                                              (((uint32_t)itf[4*i+2])<<8) +
                                              (((uint32_t)itf[4*i+3]));
-                     }
-
-
+                    }
                     for(i=0;i<38;i++)
                     {
                         fpgabase[TLM_XMIT_WRITE] = tlm_fifo_packet[i];
@@ -198,13 +206,11 @@ void prvUART1Task( void * pvParameters)
                        hk_sockfd=tcpClientOpen(HK_PORT);
                     if(pps_sockfd == -1)
                        pps_sockfd=tcpClientOpen(STATUS_PORT);
-
-
                     /* Clear Pending PPS Interrupt*/
                     NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
-
                     /* Enable Fabric Interrupt*/
                     NVIC_EnableIRQ(FabricIrq0_IRQn);
+                    send_msg((const uint8_t *)"PPS Enabled\r\n");
                 break;
 
                 case 'p':
@@ -216,17 +222,17 @@ void prvUART1Task( void * pvParameters)
                     lwip_close(pps_sockfd);
                     pps_sockfd = -1;
                     hk_sockfd = -1;
+                    send_msg((const uint8_t *)"PPS Disabled\r\n");
                 break;
 
                 case 'T':
                     if(tlm_sockfd == -1)
                        tlm_sockfd=tcpClientOpen(TLM_PORT);
-                    fpgabase[4] |= 2; // enable TLM loopback
                     /* Clear Pending TLM Interrupt*/
                     NVIC_ClearPendingIRQ(FabricIrq1_IRQn);
-
                     /* Enable Fabric Interrupt*/
                     NVIC_EnableIRQ(FabricIrq1_IRQn);
+                    send_msg((const uint8_t *)"TLM Enabled\r\n");
                 break;
 
                 case 't':
@@ -236,22 +242,23 @@ void prvUART1Task( void * pvParameters)
                     NVIC_ClearPendingIRQ(FabricIrq1_IRQn);
                     lwip_close(tlm_sockfd);
                     tlm_sockfd = -1;
-                    fpgabase[4] &= 1; // disable TLM loopback
+                    send_msg((const uint8_t *)"TLM Disabled\r\n");
                 break;
                 case 'Z':
-                    /* Clear Pending TLM Interrupt*/
+                    /* Clear Pending IRQ2 Interrupt*/
                     NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
-
                     /* Enable Fabric Interrupt*/
                     NVIC_EnableIRQ(FabricIrq2_IRQn);
+                    send_msg((const uint8_t *)"TLM Enabled\r\n");
                 break;
 
                 case 'z':
-                    /* Disabling TLM Interrupt*/
+                    /* Disabling IRQ2 Interrupt*/
                     NVIC_DisableIRQ(FabricIrq2_IRQn);
                     /* Clear Pending Fabric Interrupts*/
                     NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
-                break;
+                    send_msg((const uint8_t *)"TLM Disbled\r\n");
+               break;
 
                 default:
                     display_link_status();

@@ -67,6 +67,7 @@ void prvTCPServerTask( void * pvParameters)
 
 {
 
+        uint8_t port_string[12];
 	int lSocket;
 	struct sockaddr_in sLocalAddr;
 
@@ -88,6 +89,9 @@ void prvTCPServerTask( void * pvParameters)
 	        lwip_close(lSocket);
 	        return;
 	}
+        send_msg((const uint8_t *)"CMD Server Lintening...\r\n");
+        sprintf(&port_string,"PORT:%d\r\n",CMD_PORT);
+        send_msg((const uint8_t *)port_string);
 
 	while (1) {
 	        int clientfd;
@@ -162,7 +166,6 @@ void prvTLMTask( void * pvParameters)
   uint32_t words_this_time;
   if(tlm_sockfd == -1)
     tlm_sockfd=tcpClientOpen(TLM_PORT);
-  fpgabase[4] |= 2; // enable TLM loopback
   /* Clear Pending TLM Interrupt*/
   NVIC_ClearPendingIRQ(FabricIrq1_IRQn);
   /* Enable Fabric Interrupt*/
@@ -242,6 +245,7 @@ int32_t tcpClientOpen(uint32_t port)
 {
 
         uint8_t ip_string[20];
+        uint8_t port_string[12];
 
 
 	int32_t sockfd, connfd;
@@ -250,10 +254,14 @@ int32_t tcpClientOpen(uint32_t port)
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1) {
 		send_msg((const uint8_t *)"socket creation failed...\r\n");
+                sprintf(&port_string,"PORT:%d\r\n",port);
+                send_msg((const uint8_t *)port_string);
 		return sockfd;
 	}
 	else
 		send_msg((const uint8_t *)"Socket successfully created..\r\n");
+                sprintf(&port_string,"PORT:%d\r\n",port);
+                send_msg((const uint8_t *)port_string);
 	memset((uint8_t *)&servaddr, 0,sizeof(servaddr));
 
 	// assign IP, PORT
@@ -271,10 +279,14 @@ int32_t tcpClientOpen(uint32_t port)
         	// close the socket
 	        lwip_close(sockfd);
                 sockfd = -1;
+                sprintf(&port_string,"PORT:%d\r\n",port);
+                send_msg((const uint8_t *)port_string);
 		return sockfd;
 	}
 	else
 		send_msg((const uint8_t *)"connected to the server..\r\n");
+                sprintf(&port_string,"PORT:%d\r\n",port);
+                send_msg((const uint8_t *)port_string);
 
 	return sockfd;
 }
