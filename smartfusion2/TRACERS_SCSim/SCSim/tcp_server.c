@@ -148,7 +148,12 @@ void prvPPSTask( void * pvParameters)
         if(pps_sockfd == -1)
             pps_sockfd=tcpClientOpen(STATUS_PORT);
         if(pps_sockfd != -1)
-           lwip_send(pps_sockfd, pps_packet, 4,0);
+           if(lwip_send(pps_sockfd, pps_packet, 4,0)==-1)
+             {
+               send_msg((const uint8_t *)"PPS socket error - closing socket\n\r");
+               lwip_close(pps_sockfd);
+               pps_sockfd = -1;
+             }
         g_pps_received = 0;
     }
     ethernetif_tick();
@@ -203,7 +208,12 @@ void prvTLMTask( void * pvParameters)
         if(tlm_sockfd == -1)
             tlm_sockfd=tcpClientOpen(TLM_PORT);
         if(tlm_sockfd != -1)
-            lwip_send(tlm_sockfd, tlm_packet_buffer, 4*words_this_time,0);
+            if(lwip_send(tlm_sockfd, tlm_packet_buffer, 4*words_this_time,0)==-1)
+             {
+               send_msg((const uint8_t *)"TLM socket error - closing socket\n\r");
+               lwip_close(tlm_sockfd);
+               tlm_sockfd = -1;
+             }
       }
 
       g_tlm_packet_arrived = 0;

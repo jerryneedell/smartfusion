@@ -64,7 +64,7 @@ static volatile size_t g_tx_uart0_size = 0;
 static volatile size_t g_rx_uart0_size = 0;
 static char ip_addr_msg[128];
 static const uint8_t g_instructions_msg[] =
-"---------TRACERS S/C Simulator Version 1.0---------------------------\r\n\
+"---------TRACERS S/C Simulator Version 1.01---------------------------\r\n\
 Press a key to select:\r\n\n\
   [P]: Enable PPS\r\n\
   [p]: Disable PPS\r\n\
