@@ -56,15 +56,15 @@ extern int32_t hk_sockfd;
 extern int32_t pps_sockfd;
 static volatile const uint8_t * g_tx_buffer;
 static volatile size_t g_tx_size = 0;
-static volatile const uint8_t * g_tx_uart0_buffer;
-static volatile const uint8_t g_rx_uart0_buffer[UART0_RX_BYTES];
-//uint8_t uart0_rx_buffer[100];
-//size_t uart0_rx_size = 0;
+static volatile const uint8_t g_rx_uart0_buffer[32];
+uint8_t uart0_rx_buffer[UART0_RX_BYTES];
+static volatile size_t uart0_rx_in = 0;
+size_t uart0_rx_out = 0;
 static volatile size_t g_tx_uart0_size = 0;
 static volatile size_t g_rx_uart0_size = 0;
 static char ip_addr_msg[128];
 static const uint8_t g_instructions_msg[] =
-"---------TRACERS S/C Simulator Version 1.01---------------------------\r\n\
+"---------TRACERS S/C Simulator Version 1.04---------------------------\r\n\
 Press a key to select:\r\n\n\
   [P]: Enable PPS\r\n\
   [p]: Disable PPS\r\n\
@@ -89,36 +89,47 @@ static mss_uart_instance_t * const gp_my_uart = &g_mss_uart1;
 void prvUART0Task( void * pvParameters)
 {
 
+    uint32_t bytes_to_send;
     /*--------------------------------------------------------------------------
      * Initialize and configure UART.
      */
     MSS_UART_init(gp_comm_uart,
-                  MSS_UART_38400_BAUD,
+                  MSS_UART_115200_BAUD,
                   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
 
-
+    //MSS_UART_set_rx_handler(gp_comm_uart, uart0_rx_handler, MSS_UART_FIFO_SINGLE_BYTE);
+    MSS_UART_set_rx_handler(gp_comm_uart, uart0_rx_handler, MSS_UART_FIFO_EIGHT_BYTES);
+    MSS_UART_enable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
     for( ;; )
     {
 
-        g_rx_uart0_size = MSS_UART_get_rx( gp_comm_uart, g_rx_uart0_buffer, sizeof(g_rx_uart0_buffer) );
-        if(g_rx_uart0_size > 0)
+        MSS_UART_disable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
+        if(uart0_rx_in == uart0_rx_out)
         {
+           uart0_rx_in  = 0;
+           uart0_rx_out  = 0;
+        }
+        MSS_UART_enable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
 
-                if(hk_sockfd == -1)
-                    hk_sockfd=tcpClientOpen(HK_PORT);
-                if(hk_sockfd != -1)
+        bytes_to_send=uart0_rx_in - uart0_rx_out;
+        if( bytes_to_send)
+        {
+            if(hk_sockfd == -1)
+                hk_sockfd=tcpClientOpen(HK_PORT);
+            if(hk_sockfd != -1)
+            {
+                if(lwip_send(hk_sockfd,&uart0_rx_buffer[uart0_rx_out], bytes_to_send ,0)==-1)
                 {
-                    if(lwip_send(hk_sockfd,g_rx_uart0_buffer, g_rx_uart0_size ,0)==-1)
-                    {
-                      send_msg((const uint8_t *)"HK socket error - closing socket\n\r");
-                      lwip_close(hk_sockfd);
-                      hk_sockfd = -1;
-                    }
+                  send_msg((const uint8_t *)"HK socket error - closing socket\n\r");
+                  lwip_close(hk_sockfd);
+                  hk_sockfd = -1;
                 }
-            g_rx_uart0_size=0;
+            }
+            uart0_rx_out += bytes_to_send;
             // toggle LED
             fpgabase[LED]^=0x2;
         }
+        sys_msleep(5);
     }
 }
 /*==============================================================================
@@ -414,6 +425,17 @@ void send_uart0
 static void uart0_rx_handler(mss_uart_instance_t * this_uart)
 {
     g_rx_uart0_size = MSS_UART_get_rx( this_uart, g_rx_uart0_buffer, sizeof(g_rx_uart0_buffer) );
+    if(g_rx_uart0_size > 0)
+    {
+        uint32_t i;
+        for(i=0; i<g_rx_uart0_size; i++)
+        {
+            uart0_rx_buffer[uart0_rx_in + i] = g_rx_uart0_buffer[i];
+        }  
+        uart0_rx_in += g_rx_uart0_size;
+        g_rx_uart0_size = 0;
+    }
+
 
 }
 static void display_reset_msg(void)
