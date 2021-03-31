@@ -30,9 +30,6 @@ extern volatile unsigned long *fpgabase;
 
 uint32_t get_ip_address(void);
 void get_mac_address(uint8_t * mac_addr);
-static void  display_received_mac_addresses(void);
-void read_mac_address(uint8_t * mac_addr, uint8_t *length);
-void clear_mac_buf(void);
 int32_t tcpClientOpen(uint32_t port);
 void generate_itf(uint32_t frame_sync, uint16_t apid, uint16_t sequence_number, uint8_t *data, uint16_t length, uint8_t *itf);
 
@@ -42,11 +39,9 @@ void generate_itf(uint32_t frame_sync, uint16_t apid, uint16_t sequence_number, 
  */
 void send_msg(const uint8_t * p_msg);
 void send_uart0(const uint8_t * p_msg, size_t msg_size);
-//static void uart0_tx_handler(mss_uart_instance_t * this_uart);
 static void uart0_rx_handler(mss_uart_instance_t * this_uart);
-//static void uart1_tx_handler(mss_uart_instance_t * this_uart);
 static void display_instructions(void);
-static void display_reset_msg(void);
+static void display_version(void);
 static void display_link_status(void);
 /*==============================================================================
  * Global variables.
@@ -54,34 +49,28 @@ static void display_link_status(void);
 extern int32_t tlm_sockfd;
 extern int32_t hk_sockfd;
 extern int32_t pps_sockfd;
-static volatile const uint8_t * g_tx_buffer;
-static volatile size_t g_tx_size = 0;
 static volatile const uint8_t g_rx_uart0_buffer[32];
 uint8_t uart0_rx_buffer[UART0_RX_BYTES];
 static volatile size_t uart0_rx_in = 0;
 size_t uart0_rx_out = 0;
-static volatile size_t g_tx_uart0_size = 0;
 static volatile size_t g_rx_uart0_size = 0;
+static mss_uart_instance_t * const gp_comm_uart = &g_mss_uart0;
+static mss_uart_instance_t * const gp_my_uart = &g_mss_uart1;
 static char ip_addr_msg[128];
 static const uint8_t g_instructions_msg[] =
-"---------TRACERS S/C Simulator Version 1.04---------------------------\r\n\
+"---------TRACERS S/C Simulator---------------------------\r\n\
 Press a key to select:\r\n\n\
+  [L]: Enable Telemetry Loopback\r\n\
+  [l]: Disable Telemetry Loopback\r\n\
   [P]: Enable PPS\r\n\
   [p]: Disable PPS\r\n\
   [T]: Enable Telemetry IRQ\r\n\
   [t]: Disable Telemetry IRQ\r\n\
-  [L]: Enable Telemetry Loopback\r\n\
-  [l]: Disable Telemetry Loopback\r\n\
+  [v]: Display Version\r\n\
   [X]: Generate TLM packet via Loopback\r\n\
-  [m]: Received MAC addresses \r\n\
   [anything]: Display link status (MAC address and IP)\r\n\
 ";
 
-static const uint8_t g_reset_msg[] =
-"\r\nApplying changes and resetting system.\r\n";
-
-static mss_uart_instance_t * const gp_comm_uart = &g_mss_uart0;
-static mss_uart_instance_t * const gp_my_uart = &g_mss_uart1;
 
 /*==============================================================================
  * UART task.
@@ -97,7 +86,6 @@ void prvUART0Task( void * pvParameters)
                   MSS_UART_115200_BAUD,
                   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
 
-    //MSS_UART_set_rx_handler(gp_comm_uart, uart0_rx_handler, MSS_UART_FIFO_SINGLE_BYTE);
     MSS_UART_set_rx_handler(gp_comm_uart, uart0_rx_handler, MSS_UART_FIFO_EIGHT_BYTES);
     MSS_UART_enable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
     for( ;; )
@@ -147,9 +135,9 @@ void prvUART1Task( void * pvParameters)
                   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
 
 
+    display_version();
     display_link_status();
     display_instructions();
-
     for( ;; )
     {
         size_t rx_size;
@@ -165,10 +153,6 @@ void prvUART1Task( void * pvParameters)
         {
             switch(rx_buff[0])
             {
-                case 'm':
-                case 'M':
-                    display_received_mac_addresses();
-                break;
                 case 'L':
                     fpgabase[4] |= 2; // enable TLM loopback
                     send_msg((const uint8_t *)"TLM Loopback Enabled\r\n");
@@ -210,7 +194,7 @@ void prvUART1Task( void * pvParameters)
                     fpgabase[TLM_XMIT_START] = 1;
                     sys_msleep(1);
                     }
-                break;
+                    break;
 
                 case 'P':
                     if(hk_sockfd == -1)
@@ -222,7 +206,7 @@ void prvUART1Task( void * pvParameters)
                     /* Enable Fabric Interrupt*/
                     NVIC_EnableIRQ(FabricIrq0_IRQn);
                     send_msg((const uint8_t *)"PPS Enabled\r\n");
-                break;
+                    break;
 
                 case 'p':
                     /* Disabling PPS Interrupt*/
@@ -234,7 +218,7 @@ void prvUART1Task( void * pvParameters)
                     pps_sockfd = -1;
                     hk_sockfd = -1;
                     send_msg((const uint8_t *)"PPS Disabled\r\n");
-                break;
+                    break;
 
                 case 'T':
                     if(tlm_sockfd == -1)
@@ -244,7 +228,7 @@ void prvUART1Task( void * pvParameters)
                     /* Enable Fabric Interrupt*/
                     NVIC_EnableIRQ(FabricIrq1_IRQn);
                     send_msg((const uint8_t *)"TLM Enabled\r\n");
-                break;
+                    break;
 
                 case 't':
                     /* Disabling TLM Interrupt*/
@@ -254,14 +238,15 @@ void prvUART1Task( void * pvParameters)
                     lwip_close(tlm_sockfd);
                     tlm_sockfd = -1;
                     send_msg((const uint8_t *)"TLM Disabled\r\n");
-                break;
+                    break;
+
                 case 'Z':
                     /* Clear Pending IRQ2 Interrupt*/
                     NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
                     /* Enable Fabric Interrupt*/
                     NVIC_EnableIRQ(FabricIrq2_IRQn);
                     send_msg((const uint8_t *)"IRQ2 Enabled\r\n");
-                break;
+                    break;
 
                 case 'z':
                     /* Disabling IRQ2 Interrupt*/
@@ -269,7 +254,12 @@ void prvUART1Task( void * pvParameters)
                     /* Clear Pending Fabric Interrupts*/
                     NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
                     send_msg((const uint8_t *)"IRQ2 Disbled\r\n");
-               break;
+                    break;
+
+                case 'v':
+                case 'V':
+                    display_version();
+                    break;
 
                 default:
                     display_link_status();
@@ -285,31 +275,15 @@ void prvUART1Task( void * pvParameters)
 /*==============================================================================
  *
  */
-static void  display_received_mac_addresses(void)
-{
-    static uint8_t mac_addr[60];
-    static uint8_t length;
-    static uint8_t mac_addr_msg[128];
-    uint8_t a;
-
-    read_mac_address(mac_addr, &length);
-
-    if(length)
-    {
-        for(a = 0; a < length; a += 6)
-        {
-            snprintf((char *)mac_addr_msg, sizeof(mac_addr_msg),"\r\n  MAC address: %02x:%02x:%02x:%02x:%02x:%02x \r\n",
-                              mac_addr[0+a], mac_addr[1+a], mac_addr[2+a], mac_addr[3+a], mac_addr[4+a], mac_addr[5+a]);
-             send_msg((const uint8_t*)mac_addr_msg);
-        }
-    }
-}
-/*==============================================================================
- *
- */
 static void display_instructions(void)
 {
     send_msg(g_instructions_msg);
+}
+static void display_version(void)
+{
+    static uint8_t version_str[40];
+    snprintf((char *)version_str, sizeof(version_str),"\r\nDate: %08x Version: %02x\r\n", DATECODE,VERSION);
+    send_msg((const uint8_t*)version_str);
 }
 
 /*==============================================================================
@@ -437,13 +411,5 @@ static void uart0_rx_handler(mss_uart_instance_t * this_uart)
     }
 
 
-}
-static void display_reset_msg(void)
-{
-    MSS_UART_polled_tx(gp_my_uart, g_reset_msg, sizeof(g_reset_msg));
-    while(0 == MSS_UART_tx_complete(gp_my_uart))
-    {
-        ;
-    }
 }
 
