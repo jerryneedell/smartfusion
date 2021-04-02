@@ -360,24 +360,8 @@ void send_msg
     const uint8_t * p_msg
 )
 {
-    size_t msg_size;
-    size_t size_sent;
 
-
-    while(!MSS_UART_tx_complete(gp_my_uart))
-    {
-        /* Wait for previous message to complete tx. */
-        ;
-    }
-
-
-    msg_size = 0u;
-    while(p_msg[msg_size] != 0u)
-    {
-        ++msg_size;
-    }
-
-    MSS_UART_irq_tx(gp_my_uart, p_msg, msg_size);
+    MSS_UART_polled_tx_string(gp_my_uart, p_msg);
 
 }
 void send_uart0
@@ -385,15 +369,7 @@ void send_uart0
     const uint8_t * p_msg,  size_t msg_size
 )
 {
-    size_t size_sent;
-
-    while(!MSS_UART_tx_complete(gp_comm_uart))
-    {
-        /* Wait for previous message to complete tx. */
-        ;
-    }
-
-    MSS_UART_irq_tx(gp_comm_uart, p_msg, msg_size);
+    MSS_UART_polled_tx(gp_comm_uart, p_msg, msg_size);
 }
 
 static void uart0_rx_handler(mss_uart_instance_t * this_uart)

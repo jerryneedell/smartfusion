@@ -35,10 +35,13 @@ extern "C" {
 
 #define SYNC_ASYNC_MODE_MASK   (0x7u)
 
+#define LED 0 // gjn 4/2/2021 access LED
 /*******************************************************************************
  * Possible values for Interrupt Identification Register Field.
  */
+/* gjn 4/2/2021 add define for IIRF_RESET */
 #define IIRF_MODEM_STATUS   0x00u
+#define IIRF_RESET          0x01u
 #define IIRF_THRE           0x02u
 #define IIRF_MMI            0x03u
 #define IIRF_RX_DATA        0x04u
@@ -88,7 +91,7 @@ static void config_baud_divisors
 mss_uart_instance_t g_mss_uart0;
 mss_uart_instance_t g_mss_uart1;
 
-
+extern volatile unsigned long *fpgabase; // gjn 4/2/2021 allow access to LED
 /*******************************************************************************
  * Public Functions
  *******************************************************************************/
@@ -1614,7 +1617,6 @@ MSS_UART_isr
             }
             break;
 
-            case 1:   /* gjn  4/1/2021 try reading UART on invalid interrupt */
             case IIRF_RX_DATA:      /* Received Data Available */
             case IIRF_DATA_TIMEOUT: /* Received Data Timed-out */
             {
@@ -1625,6 +1627,11 @@ MSS_UART_isr
                 }
             }
             break;
+
+            case IIRF_RESET:   /* gjn  4/2/2021 ignore invalid interrupt */
+                fpgabase[LED] ^= 0x80; // toggle LED
+            break;
+
 
             case IIRF_RX_LINE_STATUS:  /* Line Status Interrupt */
             {
