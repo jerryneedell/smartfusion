@@ -1614,6 +1614,7 @@ MSS_UART_isr
             }
             break;
 
+            case 1:   /* gjn  4/1/2021 try reading UART on invalid interrupt */
             case IIRF_RX_DATA:      /* Received Data Available */
             case IIRF_DATA_TIMEOUT: /* Received Data Timed-out */
             {
