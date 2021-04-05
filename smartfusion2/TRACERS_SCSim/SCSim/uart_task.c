@@ -42,6 +42,7 @@ void send_uart0(const uint8_t * p_msg, size_t msg_size);
 static void uart0_rx_handler(mss_uart_instance_t * this_uart);
 static void display_instructions(void);
 static void display_version(void);
+static void display_counters(void);
 static void display_link_status(void);
 /*==============================================================================
  * Global variables.
@@ -49,6 +50,12 @@ static void display_link_status(void);
 extern int32_t tlm_sockfd;
 extern int32_t hk_sockfd;
 extern int32_t pps_sockfd;
+extern uint32_t pps_counter;
+extern uint32_t tlm_counter;
+uint32_t hk_counter = 0;
+extern uint32_t cmd_counter;
+uint32_t uart0_buffer_full_counter=0;
+extern uint32_t uart_interrupt_error_counter;
 static volatile const uint8_t g_rx_uart0_buffer[32];
 uint8_t uart0_rx_buffer[UART0_RX_BYTES];
 static volatile size_t uart0_rx_in = 0;
@@ -60,10 +67,12 @@ static char ip_addr_msg[128];
 static const uint8_t g_instructions_msg[] =
 "---------TRACERS S/C Simulator---------------------------\r\n\
 Press a key to select:\r\n\n\
+  [c]: Display counters\r\n\
   [L]: Enable Telemetry Loopback\r\n\
   [l]: Disable Telemetry Loopback\r\n\
   [P]: Enable PPS\r\n\
   [p]: Disable PPS\r\n\
+  [r]: reset error counters\r\n\
   [T]: Enable Telemetry IRQ\r\n\
   [t]: Disable Telemetry IRQ\r\n\
   [v]: Display Version\r\n\
@@ -116,6 +125,7 @@ void prvUART0Task( void * pvParameters)
             uart0_rx_out += bytes_to_send;
             // toggle LED
             fpgabase[LED]^=0x2;
+            hk_counter++;
         }
         sys_msleep(5);
     }
@@ -261,6 +271,20 @@ void prvUART1Task( void * pvParameters)
                     display_version();
                     break;
 
+                case 'c':
+                case 'C':
+                    display_counters();
+                    break;
+
+                case 'r':
+                case 'R':
+                    uart0_buffer_full_counter = 0;
+                    fpgabase[LED]&=0xBF;
+                    uart_interrupt_error_counter = 0;
+                    fpgabase[LED]&=0x7F;
+                    display_counters();
+                    break;
+
                 default:
                     display_link_status();
                 break;
@@ -284,6 +308,13 @@ static void display_version(void)
     static uint8_t version_str[40];
     snprintf((char *)version_str, sizeof(version_str),"\r\nDate: %08x Version: %02x\r\n", DATECODE,VERSION);
     send_msg((const uint8_t*)version_str);
+}
+static void display_counters(void)
+{
+    static uint8_t counter_str[100];
+    snprintf((char *)counter_str, sizeof(counter_str),"\r\nPPS: %08x CMD: %08x HK %08x TLM %08x\r\nUARTFULL: %08x UARTINTTERR: %08x\r\n",
+                           pps_counter,cmd_counter,hk_counter,tlm_counter,uart0_buffer_full_counter,uart_interrupt_error_counter);
+    send_msg((const uint8_t*)counter_str);
 }
 
 /*==============================================================================
@@ -360,8 +391,23 @@ void send_msg
     const uint8_t * p_msg
 )
 {
+    size_t msg_size;
 
-    MSS_UART_polled_tx_string(gp_my_uart, p_msg);
+
+    while(!MSS_UART_tx_complete(gp_my_uart))
+    {
+        /* Wait for previous message to complete tx. */
+        ;
+    }
+
+
+    msg_size = 0u;
+    while(p_msg[msg_size] != 0u)
+    {
+        ++msg_size;
+    }
+
+    MSS_UART_irq_tx(gp_my_uart, p_msg, msg_size);
 
 }
 void send_uart0
@@ -369,7 +415,14 @@ void send_uart0
     const uint8_t * p_msg,  size_t msg_size
 )
 {
-    MSS_UART_polled_tx(gp_comm_uart, p_msg, msg_size);
+
+    while(!MSS_UART_tx_complete(gp_comm_uart))
+    {
+        /* Wait for previous message to complete tx. */
+        ;
+    }
+
+    MSS_UART_irq_tx(gp_comm_uart, p_msg, msg_size);
 }
 
 static void uart0_rx_handler(mss_uart_instance_t * this_uart)
@@ -390,6 +443,7 @@ static void uart0_rx_handler(mss_uart_instance_t * this_uart)
         else // ignore it if it will overrun the buffer - toggle an LED
         {
             fpgabase[LED]^=0x40;
+            uart0_buffer_full_counter++;
         }
         g_rx_uart0_size = 0;
     }

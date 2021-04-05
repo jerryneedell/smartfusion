@@ -91,7 +91,9 @@ static void config_baud_divisors
 mss_uart_instance_t g_mss_uart0;
 mss_uart_instance_t g_mss_uart1;
 
+/* global varialbles */
 extern volatile unsigned long *fpgabase; // gjn 4/2/2021 allow access to LED
+uint32_t uart_interrupt_error_counter = 0;
 /*******************************************************************************
  * Public Functions
  *******************************************************************************/
@@ -1630,6 +1632,7 @@ MSS_UART_isr
 
             case IIRF_RESET:   /* gjn  4/2/2021 ignore invalid interrupt */
                 fpgabase[LED] ^= 0x80; // toggle LED
+                uart_interrupt_error_counter++;
             break;
 
 

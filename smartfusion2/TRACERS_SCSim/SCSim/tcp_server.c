@@ -41,6 +41,10 @@ int32_t hk_sockfd = -1;
 int32_t pps_sockfd = -1;
 volatile uint32_t g_tlm_packet_arrived = 0;
 volatile uint32_t g_words_in_fifo;
+uint32_t pps_counter = 0;
+uint32_t tlm_counter = 0;
+uint32_t cmd_counter = 0;
+
 /*------------------------------------------------------------------------------
  * External functions.
  */
@@ -110,6 +114,7 @@ void prvTCPServerTask( void * pvParameters)
                           send_uart0(buffer, nbytes);
                           // toggle LED
                           fpgabase[LED] ^= 0x10;
+                          cmd_counter++;
                         }
 	            }  while (nbytes>0);
 
@@ -125,7 +130,6 @@ void prvTCPServerTask( void * pvParameters)
 void prvPPSTask( void * pvParameters)
 
 {
-  uint32_t pps_counter = 0;
   uint8_t pps_packet[4];
   if(hk_sockfd == -1)
     hk_sockfd=tcpClientOpen(HK_PORT);
@@ -204,7 +208,7 @@ void prvTLMTask( void * pvParameters)
            }
 
         }
-
+        tlm_counter++;
         if(tlm_sockfd == -1)
             tlm_sockfd=tcpClientOpen(TLM_PORT);
         if(tlm_sockfd != -1)
