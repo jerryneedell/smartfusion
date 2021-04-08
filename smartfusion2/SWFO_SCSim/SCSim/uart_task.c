@@ -42,41 +42,42 @@ void generate_itf(uint32_t frame_sync, uint16_t apid, uint16_t sequence_number, 
  */
 void send_msg(const uint8_t * p_msg);
 void send_uart0(const uint8_t * p_msg, size_t msg_size);
-//static void uart0_tx_handler(mss_uart_instance_t * this_uart);
 static void uart0_rx_handler(mss_uart_instance_t * this_uart);
-//static void uart1_tx_handler(mss_uart_instance_t * this_uart);
 static void display_link_status(void);
 static void display_instructions(void);
-static void display_reset_msg(void);
+static void display_version(void);
+static void display_counters(void);
+
 /*==============================================================================
  * Global variables.
  */
-extern int32_t tlm_sockfd;
 extern int32_t hk_sockfd;
 extern int32_t pps_sockfd;
-static volatile const uint8_t * g_tx_buffer;
-static volatile size_t g_tx_size = 0;
-static volatile const uint8_t * g_tx_uart0_buffer;
-static volatile const uint8_t g_rx_uart0_buffer[UART0_RX_BYTES];
-//uint8_t uart0_rx_buffer[100];
-//size_t uart0_rx_size = 0;
+extern uint32_t pps_counter;
+uint32_t hk_counter = 0;
+extern uint32_t cmd_counter;
+uint32_t uart0_buffer_full_counter=0;
+extern uint32_t uart_interrupt_error_counter;
+static volatile const uint8_t g_rx_uart0_buffer[32];
+uint8_t uart0_rx_buffer[UART0_RX_BYTES];
+static volatile size_t uart0_rx_in = 0;
+size_t uart0_rx_out = 0;
+
 static volatile size_t g_tx_uart0_size = 0;
 static volatile size_t g_rx_uart0_size = 0;
 static char ip_addr_msg[128];
 static const uint8_t g_instructions_msg[] =
-"-------------SWFO S/C Simulator Version 1.0---------------------------\r\n\
+"-------------SWFO S/C Simulator ---------------------------\r\n\
 Press a key to select:\r\n\n\
+  [c]: Display counters\r\n\
   [P]: Enable PPS\r\n\
   [p]: Disable PPS\r\n\
+  [r]: reset error counters\r\n\
   [T]: Enable Telemetry IRQ\r\n\
   [t]: Disable Telemetry IRQ\r\n\
-  [X]: Generate TLM packet\r\n\
-  [m]: Received MAC addresses \r\n\
+  [v]: Display Version\r\n\
   [anything]: Display link status (MAC address and IP)\r\n\
 ";
-
-static const uint8_t g_reset_msg[] =
-"\r\nApplying changes and resetting system.\r\n";
 
 static mss_uart_instance_t * const gp_comm_uart = &g_mss_uart0;
 static mss_uart_instance_t * const gp_my_uart = &g_mss_uart1;
@@ -86,39 +87,50 @@ static mss_uart_instance_t * const gp_my_uart = &g_mss_uart1;
  */
 void prvUART0Task( void * pvParameters)
 {
-
+    uint32_t bytes_to_send;
     /*--------------------------------------------------------------------------
      * Initialize and configure UART.
      */
     MSS_UART_init(gp_comm_uart,
-                  MSS_UART_57600_BAUD,
+                  MSS_UART_38400_BAUD,
                   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
 
-
+    MSS_UART_set_rx_handler(gp_comm_uart, uart0_rx_handler, MSS_UART_FIFO_EIGHT_BYTES);
+    MSS_UART_enable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
     for( ;; )
     {
 
-        g_rx_uart0_size = MSS_UART_get_rx( gp_comm_uart, g_rx_uart0_buffer, sizeof(g_rx_uart0_buffer) );
-        if(g_rx_uart0_size > 0)
+        MSS_UART_disable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
+        if(uart0_rx_in == uart0_rx_out)
         {
+           uart0_rx_in  = 0;
+           uart0_rx_out  = 0;
+        }
+        MSS_UART_enable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
 
-                if(hk_sockfd == -1)
-                    hk_sockfd=tcpClientOpen(HK_PORT);
-                if(hk_sockfd != -1)
+        bytes_to_send=uart0_rx_in - uart0_rx_out;
+        if( bytes_to_send)
+        {
+            if(hk_sockfd == -1)
+                hk_sockfd=tcpClientOpen(HK_PORT);
+            if(hk_sockfd != -1)
+            {
+                if(lwip_send(hk_sockfd,&uart0_rx_buffer[uart0_rx_out], bytes_to_send ,0)==-1)
                 {
-                    if(lwip_send(hk_sockfd,g_rx_uart0_buffer, g_rx_uart0_size ,0)==-1)
-                    {
-                      send_msg("HK socket error - closing socket\n\r");
-                      lwip_close(hk_sockfd);
-                      hk_sockfd = -1;
-                    }
+                  send_msg((const uint8_t *)"HK socket error - closing socket\n\r");
+                  lwip_close(hk_sockfd);
+                  hk_sockfd = -1;
                 }
-            g_rx_uart0_size=0;
+            }
+            uart0_rx_out += bytes_to_send;
             // toggle LED
             fpgabase[LED]^=0x2;
+            hk_counter++;
         }
+        sys_msleep(5);
     }
 }
+
 /*==============================================================================
  * UART task.
  */
@@ -134,6 +146,7 @@ void prvUART1Task( void * pvParameters)
                   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
 
 
+    display_version();
     display_link_status();
     display_instructions();
 
@@ -152,11 +165,6 @@ void prvUART1Task( void * pvParameters)
         {
             switch(rx_buff[0])
             {
-                case 'm':
-                case 'M':
-                    display_received_mac_addresses();
-                break;
-
                 case 'P':
                     if(hk_sockfd == -1)
                        hk_sockfd=tcpClientOpen(HK_PORT);
@@ -198,6 +206,26 @@ void prvUART1Task( void * pvParameters)
 
                 break;
 
+                case 'v':
+                case 'V':
+                    display_version();
+                    break;
+
+                case 'c':
+                case 'C':
+                    display_counters();
+                    break;
+
+                case 'r':
+                case 'R':
+                    uart0_buffer_full_counter = 0;
+                    fpgabase[LED]&=0xBF;
+                    uart_interrupt_error_counter = 0;
+                    fpgabase[LED]&=0x7F;
+                    display_counters();
+                    break;
+
+
                 default:
                     display_link_status();
                 break;
@@ -212,31 +240,22 @@ void prvUART1Task( void * pvParameters)
 /*==============================================================================
  *
  */
-static void  display_received_mac_addresses(void)
-{
-    static uint8_t mac_addr[60];
-    static uint8_t length;
-    static uint8_t mac_addr_msg[128];
-    uint8_t a;
-
-    read_mac_address(mac_addr, &length);
-
-    if(length)
-    {
-        for(a = 0; a < length; a += 6)
-        {
-            snprintf((char *)mac_addr_msg, sizeof(mac_addr_msg),"\r\n  MAC address: %02x:%02x:%02x:%02x:%02x:%02x \r\n",
-                              mac_addr[0+a], mac_addr[1+a], mac_addr[2+a], mac_addr[3+a], mac_addr[4+a], mac_addr[5+a]);
-             send_msg((const uint8_t*)mac_addr_msg);
-        }
-    }
-}
-/*==============================================================================
- *
- */
 static void display_instructions(void)
 {
     send_msg(g_instructions_msg);
+}
+static void display_version(void)
+{
+    static uint8_t version_str[40];
+    snprintf((char *)version_str, sizeof(version_str),"\r\nDate: %08x Version: %02x\r\n", DATECODE,VERSION);
+    send_msg((const uint8_t*)version_str);
+}
+static void display_counters(void)
+{
+    static uint8_t counter_str[100];
+    snprintf((char *)counter_str, sizeof(counter_str),"\r\nPPS: %08x CMD: %08x HK %08x\r\nUARTFULL: %08x UARTINTTERR: %08x\r\n",
+                           pps_counter,cmd_counter,hk_counter,uart0_buffer_full_counter,uart_interrupt_error_counter);
+    send_msg((const uint8_t*)counter_str);
 }
 
 /*==============================================================================
@@ -349,17 +368,30 @@ void send_uart0
     MSS_UART_irq_tx(gp_comm_uart, p_msg, msg_size);
 }
 
+
 static void uart0_rx_handler(mss_uart_instance_t * this_uart)
 {
     g_rx_uart0_size = MSS_UART_get_rx( this_uart, g_rx_uart0_buffer, sizeof(g_rx_uart0_buffer) );
-
-}
-static void display_reset_msg(void)
-{
-    MSS_UART_polled_tx(gp_my_uart, g_reset_msg, sizeof(g_reset_msg));
-    while(0 == MSS_UART_tx_complete(gp_my_uart))
+    if(g_rx_uart0_size > 0)
     {
-        ;
+        uint32_t i;
+        for(i=0; i<g_rx_uart0_size; i++)
+        {
+            uart0_rx_buffer[uart0_rx_in + i] = g_rx_uart0_buffer[i];
+        }  
+
+        if (uart0_rx_in + g_rx_uart0_size < UART0_RX_BYTES)
+        {
+            uart0_rx_in += g_rx_uart0_size;
+        }
+        else // ignore it if it will overrun the buffer - toggle an LED
+        {
+            fpgabase[LED]^=0x40;
+            uart0_buffer_full_counter++;
+        }
+        g_rx_uart0_size = 0;
     }
+
+
 }
 

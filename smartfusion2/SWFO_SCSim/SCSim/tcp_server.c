@@ -37,12 +37,13 @@ extern volatile unsigned long *fpgabase;
 ethernet_status_t g_ethernet_status;
 
 int32_t cmd_sockfd = -1;
-int32_t tlm_sockfd = -1;
 int32_t hk_sockfd = -1;
 int32_t pps_sockfd = -1;
-volatile uint32_t g_tlm_packet_arrived = 0;
 volatile uint32_t g_words_in_fifo;
 volatile uint32_t g_pps_received = 0;
+uint32_t pps_counter = 0;
+uint32_t cmd_counter = 0;
+
 /*------------------------------------------------------------------------------
  * External functions.
  */
@@ -108,6 +109,7 @@ void prvCMDServerTask( void * pvParameters)
                           send_uart0(buffer, nbytes);
                           // toggle LED
                           fpgabase[LED] ^= 0x10;
+                          cmd_counter++;
                         }
 	            }  while (nbytes>0);
 
@@ -121,7 +123,6 @@ void prvCMDServerTask( void * pvParameters)
 void prvPPSTask( void * pvParameters)
 
 {
-  uint32_t pps_counter = 0;
   uint8_t pps_packet[4];
   if(hk_sockfd == -1)
     hk_sockfd=tcpClientOpen(HK_PORT);

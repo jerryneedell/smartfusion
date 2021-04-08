@@ -32,14 +32,12 @@
 #define mainuIP_TASK_PRIORITY                   (tskIDLE_PRIORITY + 1)
 #define mainUART0_TASK_PRIORITY                 (tskIDLE_PRIORITY + 1)
 #define mainPPS_TASK_PRIORITY                   (tskIDLE_PRIORITY + 1)
-#define mainTLM_TASK_PRIORITY                   (tskIDLE_PRIORITY + 1)
 #define mainUART1_TASK_PRIORITY                 (tskIDLE_PRIORITY + 2) // make uart1 task higher prority
 
 
 /* Web server task stack size. */
 #define TCP_STACK_SIZE                          400
 #define PPS_STACK_SIZE                          200
-#define TLM_STACK_SIZE                          400
 #define UART0_TASK_STACK_SIZE                    200
 #define UART1_TASK_STACK_SIZE                    400
 
@@ -82,7 +80,6 @@ static struct netif s_EMAC_if;
 void prvUART0Task(void * pvParameters);
 void prvUART1Task(void * pvParameters);
 void prvPPSTask(void * pvParameters);
-void prvTLMTask(void * pvParameters);
 void prvCMDServerTask(void *pvParameters);
 
 /*==============================================================================
