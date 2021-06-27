@@ -95,7 +95,7 @@ void prvUART0Task( void * pvParameters)
                   MSS_UART_38400_BAUD,
                   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
 
-    MSS_UART_set_rx_handler(gp_comm_uart, uart0_rx_handler, MSS_UART_FIFO_EIGHT_BYTES);
+    MSS_UART_set_rx_handler(gp_comm_uart, uart0_rx_handler, MSS_UART_FIFO_SINGLE_BYTE);
     MSS_UART_enable_irq(gp_comm_uart, MSS_UART_RBF_IRQ);
     for( ;; )
     {
