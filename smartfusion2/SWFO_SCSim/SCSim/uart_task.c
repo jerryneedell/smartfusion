@@ -251,7 +251,7 @@ static void display_version(void)
 static void display_counters(void)
 {
     static uint8_t counter_str[100];
-    snprintf((char *)counter_str, sizeof(counter_str),"\r\nPPS: %08x CMD: %08x HK %08x\r\nUARTFULL: %08x UARTINTTERR: %08x\r\n",
+    snprintf((char *)counter_str, sizeof(counter_str),"\r\nPPS: %08x CMD: %08x HK %08x\r\nUARTFULL: %08x UARTINTERR: %08x\r\n",
                            pps_counter,cmd_counter,hk_counter,uart0_buffer_full_counter,uart_interrupt_error_counter);
     send_msg((const uint8_t*)counter_str);
 }
@@ -362,6 +362,8 @@ void send_uart0
         /* Wait for previous message to complete tx. */
         ;
     }
+    // dealy 1 ms to make sure there is a gap between commands
+    sys_msleep(1);
 
     MSS_UART_irq_tx(gp_comm_uart, p_msg, msg_size);
 }
