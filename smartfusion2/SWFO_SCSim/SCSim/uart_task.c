@@ -73,8 +73,6 @@ Press a key to select:\r\n\n\
   [P]: Enable PPS\r\n\
   [p]: Disable PPS\r\n\
   [r]: reset error counters\r\n\
-  [T]: Enable Telemetry IRQ\r\n\
-  [t]: Disable Telemetry IRQ\r\n\
   [v]: Display Version\r\n\
   [anything]: Display link status (MAC address and IP)\r\n\
 ";
