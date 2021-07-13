@@ -77,7 +77,8 @@ Press a key to select:\r\n\n\
   [anything]: Display link status (MAC address and IP)\r\n\
 ";
 
-static mss_uart_instance_t * const gp_comm_uart = &g_mss_uart0;
+// make global so tcp server can check UART
+mss_uart_instance_t * const gp_comm_uart = &g_mss_uart0;
 static mss_uart_instance_t * const gp_my_uart = &g_mss_uart1;
 
 /*==============================================================================
@@ -347,7 +348,7 @@ void send_msg
         ++msg_size;
     }
 
-    MSS_UART_irq_tx(gp_my_uart, p_msg, msg_size);
+    MSS_UART_polled_tx(gp_my_uart, p_msg, msg_size);
 
 }
 void send_uart0
@@ -356,15 +357,16 @@ void send_uart0
 )
 {
     size_t size_sent;
-
+ 
     while(!MSS_UART_tx_complete(gp_comm_uart))
     {
         /* Wait for previous message to complete tx. */
         ;
     }
-    // dealy 1 ms to make sure there is a gap between commands
+    // delay 1 ms to make sure there is a gap between commands
     sys_msleep(1);
 
+    //MSS_UART_polled_tx(gp_comm_uart, p_msg, msg_size);
     MSS_UART_irq_tx(gp_comm_uart, p_msg, msg_size);
 }
 

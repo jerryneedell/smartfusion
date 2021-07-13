@@ -31,7 +31,7 @@
 #endif
 
 extern volatile unsigned long *fpgabase;
-
+extern mss_uart_instance_t * const gp_comm_uart;
 
 
 ethernet_status_t g_ethernet_status;
@@ -65,6 +65,7 @@ void prvCMDServerTask( void * pvParameters)
 
 {
         uint8_t port_string[12];
+        uint8_t nbytes_string[16];
 
 	int lSocket;
 	struct sockaddr_in sLocalAddr;
@@ -93,31 +94,38 @@ void prvCMDServerTask( void * pvParameters)
 
 
 	while (1) {
-	        int clientfd;
-	        struct sockaddr_in client_addr;
-	        int addrlen=sizeof(client_addr);
-	        char buffer[CMD_MAX_BYTES];
-	        int nbytes;
+	    int clientfd;
+	    struct sockaddr_in client_addr;
+            int addrlen=sizeof(client_addr);
+            char buffer[CMD_MAX_BYTES];
+            char tx_buffer[CMD_MAX_BYTES];
+            int nbytes;
 
-	        clientfd = lwip_accept(lSocket, (struct sockaddr*)&client_addr, (socklen_t)&addrlen);
-	        if (clientfd>0){
-	            do{
-	                nbytes=lwip_recv(clientfd, buffer, sizeof(buffer),0);
-	                if (nbytes>0)
+            clientfd = lwip_accept(lSocket, (struct sockaddr*)&client_addr, (socklen_t)&addrlen);
+            if (clientfd>0){
+
+                do{
+
+                    nbytes=lwip_recv(clientfd, buffer, sizeof(buffer),0);
+                    if (nbytes>0){
+                        while(!MSS_UART_tx_complete(gp_comm_uart))
                         {
-                          buffer[nbytes]=0;
-                          send_uart0(buffer, nbytes);
-                          // toggle LED
-                          fpgabase[LED] ^= 0x10;
-                          cmd_counter++;
+                        /* Wait for previous message to complete tx. */
+                          ;
+                        }                        
+                        for (int i = 0; i<nbytes; i++){
+                            tx_buffer[i]=buffer[i];
                         }
-	            }  while (nbytes>0);
-
-	             lwip_close(clientfd);
-	          }
+                        send_uart0(tx_buffer, nbytes);
+                        // toggle LED
+                        fpgabase[LED] ^= 0x10;
+                        cmd_counter++;
+                    }
+                }  while (nbytes>0);
+                lwip_close(clientfd);
 	    }
-	    lwip_close(lSocket);
 	}
+}
 
 
 void prvPPSTask( void * pvParameters)
