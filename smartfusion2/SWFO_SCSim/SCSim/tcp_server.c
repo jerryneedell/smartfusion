@@ -31,8 +31,6 @@
 #endif
 
 extern volatile unsigned long *fpgabase;
-extern mss_uart_instance_t * const gp_comm_uart;
-
 
 ethernet_status_t g_ethernet_status;
 
@@ -97,30 +95,33 @@ void prvCMDServerTask( void * pvParameters)
 	    int clientfd;
 	    struct sockaddr_in client_addr;
             int addrlen=sizeof(client_addr);
-            char buffer[CMD_MAX_BYTES];
-            char tx_buffer[CMD_MAX_BYTES];
+            char tx_buffer0[CMD_MAX_BYTES];
+            char tx_buffer1[CMD_MAX_BYTES];
             int nbytes;
+            int which_buffer = 0;
+            int i;
 
             clientfd = lwip_accept(lSocket, (struct sockaddr*)&client_addr, (socklen_t)&addrlen);
             if (clientfd>0){
-
                 do{
 
-                    nbytes=lwip_recv(clientfd, buffer, sizeof(buffer),0);
-                    if (nbytes>0){
-                        while(!MSS_UART_tx_complete(gp_comm_uart))
-                        {
-                        /* Wait for previous message to complete tx. */
-                          ;
-                        }                        
-                        for (int i = 0; i<nbytes; i++){
-                            tx_buffer[i]=buffer[i];
+                    if(which_buffer == 0){
+                        nbytes=lwip_recv(clientfd, tx_buffer0, sizeof(tx_buffer0),0);
+                        if (nbytes>0){
+                            send_uart0(tx_buffer0, nbytes);
+                            which_buffer=1;
                         }
-                        send_uart0(tx_buffer, nbytes);
-                        // toggle LED
-                        fpgabase[LED] ^= 0x10;
-                        cmd_counter++;
                     }
+                    else{
+                        nbytes=lwip_recv(clientfd, tx_buffer1, sizeof(tx_buffer1),0);
+                        if (nbytes>0){
+                            send_uart0(tx_buffer1, nbytes);
+                            which_buffer=0;
+                        }
+                    }
+                    // toggle LED
+                    fpgabase[LED] ^= 0x10;
+                    cmd_counter++;
                 }  while (nbytes>0);
                 lwip_close(clientfd);
 	    }
