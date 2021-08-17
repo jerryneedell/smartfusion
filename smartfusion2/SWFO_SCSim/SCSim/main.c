@@ -87,7 +87,6 @@ void prvCMDServerTask(void *pvParameters);
  */
 int main()
 {
-
     /* Configure hardware platform. */
     prvSetupHardware();
 
@@ -113,7 +112,7 @@ int main()
                     NULL );
         /* Create the task handling user interractions through the UART. */
         xTaskCreate(prvUART0Task,
-                    (signed char *) "UART1",
+                    (signed char *) "UART0",
                     UART0_TASK_STACK_SIZE,
                     NULL,
                     mainUART0_TASK_PRIORITY,
