@@ -1,7 +1,7 @@
 #ifndef __TRACERS_FPGA_H__
 #define __TRACERS_FPGA_H__
 
-#define DATECODE			0x20210405
+#define DATECODE			0x20210817
 #define VERSION				0x00
 
 #define LED 				0
@@ -44,6 +44,7 @@
 #define CMD_PORT			8003
 
 #define TLM_MAX_WORDS			0x40
+#define CMD_MAX_BYTES			0x200
 #define UART0_RX_BYTES			0x400
 
 

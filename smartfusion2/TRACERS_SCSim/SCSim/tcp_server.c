@@ -67,11 +67,13 @@ void send_uart0(const uint8_t * p_msg, size_t msg_size);
 volatile uint32_t g_pps_received = 0;
 /** The main function, never returns! */
 
-void prvTCPServerTask( void * pvParameters)
+
+void prvCMDServerTask( void * pvParameters)
 
 {
-
         uint8_t port_string[12];
+        uint8_t nbytes_string[16];
+
 	int lSocket;
 	struct sockaddr_in sLocalAddr;
 
@@ -97,34 +99,43 @@ void prvTCPServerTask( void * pvParameters)
         sprintf(&port_string,"PORT:%d\r\n",CMD_PORT);
         send_msg((const uint8_t *)port_string);
 
+
 	while (1) {
-	        int clientfd;
-	        struct sockaddr_in client_addr;
-	        int addrlen=sizeof(client_addr);
-	        char buffer[1024];
-	        int nbytes;
+	    int clientfd;
+	    struct sockaddr_in client_addr;
+            int addrlen=sizeof(client_addr);
+            char tx_buffer0[CMD_MAX_BYTES];
+            char tx_buffer1[CMD_MAX_BYTES];
+            int nbytes;
+            int which_buffer = 0;
+            int i;
 
-	        clientfd = lwip_accept(lSocket, (struct sockaddr*)&client_addr, (socklen_t)&addrlen);
-	        if (clientfd>0){
-	            do{
-	                nbytes=lwip_recv(clientfd, buffer, sizeof(buffer),0);
-	                if (nbytes>0)
-                        {
-                          buffer[nbytes]=0;
-                          send_uart0(buffer, nbytes);
-                          // toggle LED
-                          fpgabase[LED] ^= 0x10;
-                          cmd_counter++;
+            clientfd = lwip_accept(lSocket, (struct sockaddr*)&client_addr, (socklen_t)&addrlen);
+            if (clientfd>0){
+                do{
+
+                    if(which_buffer == 0){
+                        nbytes=lwip_recv(clientfd, tx_buffer0, sizeof(tx_buffer0),0);
+                        if (nbytes>0){
+                            send_uart0(tx_buffer0, nbytes);
+                            which_buffer=1;
                         }
-	            }  while (nbytes>0);
-
-	             lwip_close(clientfd);
-	          }
+                    }
+                    else{
+                        nbytes=lwip_recv(clientfd, tx_buffer1, sizeof(tx_buffer1),0);
+                        if (nbytes>0){
+                            send_uart0(tx_buffer1, nbytes);
+                            which_buffer=0;
+                        }
+                    }
+                    // toggle LED
+                    fpgabase[LED] ^= 0x10;
+                    cmd_counter++;
+                }  while (nbytes>0);
+                lwip_close(clientfd);
 	    }
-	    lwip_close(lSocket);
 	}
-
-
+}
 
 
 void prvPPSTask( void * pvParameters)

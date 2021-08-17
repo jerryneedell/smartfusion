@@ -83,7 +83,7 @@ void prvUART0Task(void * pvParameters);
 void prvUART1Task(void * pvParameters);
 void prvPPSTask(void * pvParameters);
 void prvTLMTask(void * pvParameters);
-void prvTCPServerTask(void *pvParameters);
+void prvCMDServerTask(void *pvParameters);
 /*==============================================================================
  *
  */
@@ -107,15 +107,15 @@ int main()
     NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
         /* Create the tcp server task. */
         tcpip_init(prvEthernetConfigureInterface, NULL);
-        xTaskCreate(prvTCPServerTask,
-                    (signed char *) "tcp_server",
+        xTaskCreate(prvCMDServerTask,
+                    (signed char *) "cmd_server",
                     TCP_STACK_SIZE,
                     NULL,
                     mainuIP_TASK_PRIORITY,
                     NULL );
         /* Create the task handling user interractions through the UART. */
         xTaskCreate(prvUART0Task,
-                    (signed char *) "UART1",
+                    (signed char *) "UART0",
                     UART0_TASK_STACK_SIZE,
                     NULL,
                     mainUART0_TASK_PRIORITY,
