@@ -57,6 +57,7 @@ extern uint32_t pps_counter;
 uint32_t hk_counter = 0;
 extern uint32_t cmd_counter;
 uint32_t uart0_buffer_full_counter=0;
+uint32_t uart0_rx_error_counter=0;
 extern uint32_t uart_interrupt_error_counter;
 static volatile const uint8_t g_rx_uart0_buffer[32];
 uint8_t uart0_rx_buffer[UART0_RX_BYTES];
@@ -220,6 +221,8 @@ void prvUART1Task( void * pvParameters)
                     fpgabase[LED]&=0xBF;
                     uart_interrupt_error_counter = 0;
                     fpgabase[LED]&=0x7F;
+                    uart0_rx_error_counter = 0;
+                    fpgabase[LED]&=0xDF;
                     display_counters();
                     break;
 
@@ -250,9 +253,9 @@ static void display_version(void)
 }
 static void display_counters(void)
 {
-    static uint8_t counter_str[100];
-    snprintf((char *)counter_str, sizeof(counter_str),"\r\nPPS: %08x CMD: %08x HK %08x\r\nUARTFULL: %08x UARTINTERR: %08x\r\n",
-                           pps_counter,cmd_counter,hk_counter,uart0_buffer_full_counter,uart_interrupt_error_counter);
+    static uint8_t counter_str[140];
+    snprintf((char *)counter_str, sizeof(counter_str),"\r\nPPS: %08x CMD: %08x HK %08x\r\nUARTFULL: %08x UARTINTERR: %08x RX_ERROR: %08x\r\n",
+                           pps_counter,cmd_counter,hk_counter,uart0_buffer_full_counter,uart_interrupt_error_counter,uart0_rx_error_counter);
     send_msg((const uint8_t*)counter_str);
 }
 
@@ -372,7 +375,15 @@ void send_uart0
 
 static void uart0_rx_handler(mss_uart_instance_t * this_uart)
 {
+    uint8_t rx_status;
     g_rx_uart0_size = MSS_UART_get_rx( this_uart, g_rx_uart0_buffer, sizeof(g_rx_uart0_buffer) );
+    rx_status = MSS_UART_get_rx_status(this_uart);
+    if(rx_status) // ignore data if an error occured
+    {
+        g_rx_uart0_size = 0;
+        fpgabase[LED]^=0x20;
+        uart0_rx_error_counter++;
+    }
     if(g_rx_uart0_size > 0)
     {
         uint32_t i;
