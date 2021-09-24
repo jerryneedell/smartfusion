@@ -258,13 +258,6 @@ void FabricIrq1_IRQHandler(void)
     g_tlm_packet_arrived = 1;
 }
 
-void FabricIrq2_IRQHandler(void)
-{
-    fpgabase[LED] ^= 0x20;
-    NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
-}
-
-
 
 int32_t tcpClientOpen(uint32_t port)
 {

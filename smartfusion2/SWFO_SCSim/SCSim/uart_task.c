@@ -383,6 +383,7 @@ static void uart0_rx_handler(mss_uart_instance_t * this_uart)
         g_rx_uart0_size = 0;
         fpgabase[LED]^=0x20;
         uart0_rx_error_counter++;
+        display_counters();
     }
     if(g_rx_uart0_size > 0)
     {

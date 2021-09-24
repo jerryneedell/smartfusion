@@ -101,10 +101,6 @@ int main()
     NVIC_DisableIRQ(FabricIrq1_IRQn);
     /* Clear Pending Fabric Interrupts*/
     NVIC_ClearPendingIRQ(FabricIrq1_IRQn);
-    /* Disabling APBUART Interrupt*/
-    NVIC_DisableIRQ(FabricIrq2_IRQn);
-    /* Clear Pending Fabric Interrupts*/
-    NVIC_ClearPendingIRQ(FabricIrq2_IRQn);
         /* Create the tcp server task. */
         tcpip_init(prvEthernetConfigureInterface, NULL);
         xTaskCreate(prvCMDServerTask,
