@@ -1,7 +1,7 @@
 #ifndef __TRACERS_FPGA_H__
 #define __TRACERS_FPGA_H__
 
-#define DATECODE			0x20211013
+#define DATECODE			0x20211014
 #define VERSION				0x00
 
 #define LED 				0
@@ -48,6 +48,6 @@
 #define UART0_RX_BYTES			0x400
 
 #define PPS_PULSE_WIDTH_INIT 		24999999
-#define PPS_INTERRUPT_DELAY_INIT	9999999
+//#define PPS_INTERRUPT_DELAY_INIT	9999999
 
 #endif /* __TRACERS_FPGA_H__ */

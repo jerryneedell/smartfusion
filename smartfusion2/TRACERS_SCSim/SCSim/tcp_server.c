@@ -144,7 +144,7 @@ void prvPPSTask( void * pvParameters)
   uint8_t pps_packet[4];
 // initialize pps pulse width and delay
   fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_INIT;
-  fpgabase[PPS_INTERRUPT_DELAY] = PPS_INTERRUPT_DELAY_INIT;
+  //fpgabase[PPS_INTERRUPT_DELAY] = PPS_INTERRUPT_DELAY_INIT;
 
   if(hk_sockfd == -1)
     hk_sockfd=tcpClientOpen(HK_PORT);
