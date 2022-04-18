@@ -1,12 +1,14 @@
 #ifndef __TRACERS_FPGA_H__
 #define __TRACERS_FPGA_H__
 
-#define DATECODE			0x20211014
+#define DATECODE			0x20220418
 #define VERSION				0x00
 
 #define LED 				0
 #define BUTTON 				0x20/4
 #define SW5 				0x24/4
+#define FPGA_DATECODE                   0x80/4
+#define FPGA_BUILD                      0x84/4
 #define PPS_CLEAR			0x10000C/4
 #define TLM_FIFO_READ 			0x100000/4
 #define TLM_FIFO_STATUS 		0x100010/4
