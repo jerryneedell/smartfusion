@@ -1,0 +1,139 @@
+----------------------------------------------------------------
+-- TRACERS/SWFO M2S Spacecraft Simulator Board Memory Map
+-- 
+-- 2020/11/10 - dlb - create
+-- 2020/11/28 - dlb - add loopback interface
+-- 2020/11/28 - dlb - add SCS scratch register
+-- 2020/12/10 - dlb - add pps_int read port
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+-- Memory Device Addressing
+----------------------------------------------------------------
+
+-- APB3 Area detail
+0x30000000 - 0x300FFFFF Version Module
+0x30100000 - 0x301FFFFF Spacecraft Interface Module
+
+----------------------------------------------------------------
+-- IRQ list
+----------------------------------------------------------------
+1 = PPS
+2 = FIFO Empty
+
+----------------------------------------------------------------
+-- Version Registers
+-- Fabric Base Address 0x30000000
+----------------------------------------------------------------
+read registers
+000 R/W scratch register0
+   [31:0] scratch register
+   [7:0]  LED1-8
+004 R/W scratch register1
+   [31:0] scratch register
+008 R/W scratch register2
+   [31:0] scratch register
+00C R/W scratch register3
+   [31:0] scratch register
+010 R/W loopback enables
+   [31:2] unused
+   [1]    TLM loopback
+   [0]    UART loopback
+020 R/O Pushbutton Switches
+   [31:5] = 0
+   [4] switch4
+   [3] switch3
+   [2] switch2
+   [1] switch1
+   [0] 0
+024 R/O SW5 switches
+   [31:4] = 0
+   [3:0]  = switch position
+080 R/O Release Date
+   [31:16] = year
+   [15:8]  = month
+   [7:0]   = day
+084 R/O Release Build Number
+   [31:0]  = Version BBTTVVVV B=04 (TIS) TT=0D (Development) VVVV=Version
+
+----------------------------------------------------------------
+-- Spacecraft Interface Registers
+-- Fabric Base Address 0x30100000
+----------------------------------------------------------------
+000 R/O FIFO read data
+   [31:0]  = FIFO data
+00C R/O PPS Interrupt
+   [31:1]  = 0
+   [0]     = PPS Interrupt
+00C W/O PPS Interrupt Clear
+   [31:0]  = any value
+010 R/O Receive FIFO Status
+   [31:9]  = 0
+   [8]     = FIFO Read Fail
+   [7]     = FIFO Write Ack (just a pulse during write)
+   [6]     = FIFO Data Valid (just a pulse during read)
+   [5]     = FIFO overflow
+   [4]     = FIFO underflow
+   [3]     = 0
+   [2]     = 0
+   [1]     = FIFO full
+   [0]     = FIFO empty
+010 W/O Clear Receive FIFO & Read Fail
+   [31:0]  = any value
+014 R/O Receive FIFO counters
+   [31:29] = 0
+   [28:16] = FIFO Write Counter
+   [15:13] = 0
+   [12:0]  = FIFO Read Counter
+020 R/W PPS Count Limit
+   [31:26] = not used
+   [25:0]  = PPS Period (20ns increments - 49999999 default = 1.00sec)
+024 R/W PPS Pulse Width
+   [31:26] = not used
+   [25:0]  = PPS Pulse Width (20ns incrememnts - 5 default = 120ns)
+028 R/W PPS Interrupt Delay
+   [31:26] = not used
+   [25:0]  = PPS Interrupt Delay (20ns incrememnts - 24999999 default = 0.5sec)
+02C R/O TLM Logic Reset (reset during loopback transition)
+   [31:1}  = 0
+   [0]     = reset state (0=reset)
+030 R/W Transmit FIFO Data
+   [31:0]  = value
+040 R/O Transmit FIFO Status
+   [31:9]  = 0
+   [8]     = FIFO Read Fail
+   [7]     = FIFO Write Ack (just a pulse during write)
+   [6]     = FIFO Data Valid (just a pulse during read)
+   [5]     = FIFO overflow
+   [4]     = FIFO underflow
+   [3]     = 0
+   [2]     = 0
+   [1]     = FIFO full
+   [0]     = FIFO empty
+040 W/O Clear Transmit FIFO & Read Fail
+   [31:0]  = any value
+044 R/O Transmit FIFO counters
+   [31:29] = 0
+   [28:16] = FIFO Write Counter
+   [15:13] = 0
+   [12:0]  = FIFO Read Counter
+048 R/W Transmit Packet Start
+   [31:1]  = 0
+   [0]     = 1 - start transmiting Transmit FIFO data
+04C R/O TLM Interrupt Clear
+   [31:1]  = TLM Interrupt (1=Interrupt Pending)
+04C W/O TLM Interrupt Clear
+   [31:0]  = clear on any value
+050 R/W scratch register1
+   [31:0] scratch register
+
+----------------------------------------------------------------
+-- Loopback UART Interface Registers (CoreUART-APB)
+-- Fabric Base Address 0x30200000
+----------------------------------------------------------------
+00 W/O Transmit Data Register
+04 R/O Receive Data Register
+08 R/W Control Register 1
+0C R/W Control Register 2
+10 R/O Status Register
+14 R/W Control Register 3
