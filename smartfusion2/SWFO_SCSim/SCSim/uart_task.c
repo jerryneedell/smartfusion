@@ -247,15 +247,17 @@ static void display_instructions(void)
 }
 static void display_version(void)
 {
-    static uint8_t version_str[40];
+    static uint8_t swversion_str[40];
+    static uint8_t fpgadate_str[40];
+    static uint8_t fpgabuild_str[40];
     uint32_t fpga_date;
-    snprintf((char *)version_str, sizeof(version_str),"\r\nSW Date: %08x Version: %02x\r\n", DATECODE,VERSION);
-    send_msg((const uint8_t*)version_str);
+    snprintf((char *)swversion_str, sizeof(swversion_str),"\r\nSW Date: %08x Version: %02x\r\n", DATECODE,VERSION);
+    send_msg((const uint8_t*)swversion_str);
     fpga_date = fpgabase[FPGA_DATECODE];
-    snprintf((char *)version_str, sizeof(version_str),"\r\nFPGA Date: %04d/%02d/%02d\r\n", (fpga_date>>16)&0xffff,(fpga_date>>8)&0xff,fpga_date&0xff);
-    send_msg((const uint8_t*)version_str);
-    snprintf((char *)version_str, sizeof(version_str),"\r\nFPGA_BUILD: %08x\r\n", fpgabase[FPGA_BUILD]);
-    send_msg((const uint8_t*)version_str);
+    snprintf((char *)fpgadate_str, sizeof(fpgadate_str),"\r\nFPGA Date: %04d/%02d/%02d\r\n", (fpga_date>>16)&0xffff,(fpga_date>>8)&0xff,fpga_date&0xff);
+    send_msg((const uint8_t*)fpgadate_str);
+    snprintf((char *)fpgabuild_str, sizeof(fpgabuild_str),"\r\nFPGA_BUILD: %08x\r\n", fpgabase[FPGA_BUILD]);
+    send_msg((const uint8_t*)fpgabuild_str);
 }
 static void display_counters(void)
 {

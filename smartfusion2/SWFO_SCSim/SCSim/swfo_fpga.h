@@ -2,7 +2,7 @@
 #define __TRACERS_FPGA_H__
 
 #define DATECODE                        0x20220418
-#define VERSION                         0x00
+#define VERSION                         0x01
 
 #define LED 				0
 #define BUTTON 				0x20/4
