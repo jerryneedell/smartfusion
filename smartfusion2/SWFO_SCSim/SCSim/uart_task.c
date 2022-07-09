@@ -71,9 +71,13 @@ static const uint8_t g_instructions_msg[] =
 "-------------SWFO S/C Simulator ---------------------------\r\n\
 Press a key to select:\r\n\n\
   [c]: Display counters\r\n\
+  [L]: Enable TCP/IP link\r\n\
+  [l]: Disable TCP/IP\r\n\
   [P]: Enable PPS\r\n\
   [p]: Disable PPS\r\n\
   [r]: reset error counters\r\n\
+  [T]: Enable Time Code Message\r\n\
+  [t]: Disable Time Code Message\r\n\
   [v]: Display Version\r\n\
   [anything]: Display link status (MAC address and IP)\r\n\
 ";
@@ -164,28 +168,51 @@ void prvUART1Task( void * pvParameters)
         {
             switch(rx_buff[0])
             {
+
                 case 'P':
-                    if(hk_sockfd == -1)
-                       hk_sockfd=tcpClientOpen(HK_PORT);
+                    /* Enable PPS -- set pulse width to default value */
+                    fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_INIT;
+                    send_msg((const uint8_t *)"PPS Enabled\r\n");
+                break;
+                case 'p':
+                    /* Disable PPS -- set pulse width to miximum value */
+                    fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_MAX;
+                    send_msg((const uint8_t *)"PPS Disabled\r\n");
+                break;
+                case 'T':
                     if(pps_sockfd == -1)
                        pps_sockfd=tcpClientOpen(STATUS_PORT);
                     /* Clear Pending PPS Interrupt*/
                     NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
                     /* Enable Fabric Interrupt*/
                     NVIC_EnableIRQ(FabricIrq0_IRQn);
-                    send_msg((const uint8_t *)"PPS Enabled\r\n");
+                    send_msg((const uint8_t *)"Time Code Message Enabled\r\n");
                 break;
 
-                case 'p':
+                case 't':
                     /* Disabling PPS Interrupt*/
                     NVIC_DisableIRQ(FabricIrq0_IRQn);
                     /* Clear Pending Fabric Interrupts*/
                     NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
+                    lwip_close(pps_sockfd);
+                    pps_sockfd = -1;
+                    send_msg((const uint8_t *)"Time Code Disabled\r\n");
+                break;
+
+                case 'L':
+                    if(hk_sockfd == -1)
+                       hk_sockfd=tcpClientOpen(HK_PORT);
+                    if(pps_sockfd == -1)
+                       pps_sockfd=tcpClientOpen(STATUS_PORT);
+                    send_msg((const uint8_t *)"TCP/IP Link Enabled\r\n");
+                break;
+
+                case 'l':
                     lwip_close(hk_sockfd);
                     lwip_close(pps_sockfd);
                     pps_sockfd = -1;
                     hk_sockfd = -1;
-                    send_msg((const uint8_t *)"PPS Disabled\r\n");
+                    send_msg((const uint8_t *)"TCP/IP Link Disabled\r\n");
                 break;
 
                 case 'Z':
