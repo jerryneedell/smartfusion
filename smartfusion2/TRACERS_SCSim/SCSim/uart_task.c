@@ -69,15 +69,19 @@ static const uint8_t g_instructions_msg[] =
 "---------TRACERS S/C Simulator---------------------------\r\n\
 Press a key to select:\r\n\n\
   [c]: Display counters\r\n\
-  [L]: Enable Telemetry Loopback\r\n\
-  [l]: Disable Telemetry Loopback\r\n\
+  [L]: Enable TCP/IP link\r\n\
+  [l]: Disable TCP/IP\r\n\
   [P]: Enable PPS\r\n\
   [p]: Disable PPS\r\n\
   [r]: reset error counters\r\n\
-  [T]: Enable Telemetry IRQ\r\n\
-  [t]: Disable Telemetry IRQ\r\n\
+  [T]: Enable Time Code Message\r\n\
+  [t]: Disable Time Code Message\r\n\
   [v]: Display Version\r\n\
   [X]: Generate TLM packet via Loopback\r\n\
+  [Y]: Enable Telemetry Loopback\r\n\
+  [y]: Disable Telemetry Loopback\r\n\
+  [Z]: Enable Telemetry IRQ\r\n\
+  [z]: Disable Telemetry IRQ\r\n\
   [anything]: Display link status (MAC address and IP)\r\n\
 ";
 
@@ -164,11 +168,11 @@ void prvUART1Task( void * pvParameters)
         {
             switch(rx_buff[0])
             {
-                case 'L':
+                case 'Y':
                     fpgabase[4] |= 2; // enable TLM loopback
                     send_msg((const uint8_t *)"TLM Loopback Enabled\r\n");
                     break;
-                case 'l':
+                case 'y':
                     fpgabase[4] &= 1; //  disable TLM loopback
                     send_msg((const uint8_t *)"TLM Loopback Disabled\r\n");
                     break;
@@ -208,30 +212,53 @@ void prvUART1Task( void * pvParameters)
                     break;
 
                 case 'P':
-                    if(hk_sockfd == -1)
-                       hk_sockfd=tcpClientOpen(HK_PORT);
+                    /* Enable PPS -- set pulse width to default value */
+                    fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_INIT;
+                    send_msg((const uint8_t *)"PPS Enabled\r\n");
+                break;
+                case 'p':
+                    /* Disable PPS -- set pulse width to miximum value */
+                    fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_MAX;
+                    send_msg((const uint8_t *)"PPS Disabled\r\n");
+                break;
+                case 'T':
                     if(pps_sockfd == -1)
                        pps_sockfd=tcpClientOpen(STATUS_PORT);
                     /* Clear Pending PPS Interrupt*/
                     NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
                     /* Enable Fabric Interrupt*/
                     NVIC_EnableIRQ(FabricIrq0_IRQn);
-                    send_msg((const uint8_t *)"PPS Enabled\r\n");
-                    break;
+                    send_msg((const uint8_t *)"Time Code Message Enabled\r\n");
+                break;
 
-                case 'p':
+                case 't':
                     /* Disabling PPS Interrupt*/
                     NVIC_DisableIRQ(FabricIrq0_IRQn);
                     /* Clear Pending Fabric Interrupts*/
                     NVIC_ClearPendingIRQ(FabricIrq0_IRQn);
+                    lwip_close(pps_sockfd);
+                    pps_sockfd = -1;
+                    send_msg((const uint8_t *)"Time Code Disabled\r\n");
+                break;
+
+                case 'L':
+                    if(hk_sockfd == -1)
+                       hk_sockfd=tcpClientOpen(HK_PORT);
+                    if(pps_sockfd == -1)
+                       pps_sockfd=tcpClientOpen(STATUS_PORT);
+                    send_msg((const uint8_t *)"TCP/IP Link Enabled\r\n");
+                break;
+
+                case 'l':
                     lwip_close(hk_sockfd);
                     lwip_close(pps_sockfd);
                     pps_sockfd = -1;
                     hk_sockfd = -1;
-                    send_msg((const uint8_t *)"PPS Disabled\r\n");
-                    break;
+                    send_msg((const uint8_t *)"TCP/IP Link Disabled\r\n");
+                break;
 
-                case 'T':
+
+                case 'Z':
                     if(tlm_sockfd == -1)
                        tlm_sockfd=tcpClientOpen(TLM_PORT);
                     /* Clear Pending TLM Interrupt*/
@@ -241,7 +268,7 @@ void prvUART1Task( void * pvParameters)
                     send_msg((const uint8_t *)"TLM Enabled\r\n");
                     break;
 
-                case 't':
+                case 'z':
                     /* Disabling TLM Interrupt*/
                     NVIC_DisableIRQ(FabricIrq1_IRQn);
                     /* Clear Pending Fabric Interrupts*/
