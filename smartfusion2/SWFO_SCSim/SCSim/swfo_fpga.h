@@ -1,7 +1,7 @@
 #ifndef __SWFO_FPGA_H__
 #define __SWFO_FPGA_H__
 
-#define DATECODE                        0x20220709
+#define DATECODE                        0x20220710
 #define VERSION                         0x00
 
 #define LED 				0
@@ -34,8 +34,8 @@
 
 #define CMD_MAX_BYTES			0x200
 #define UART0_RX_BYTES			0x400
-#define PPS_PULSE_WIDTH_INIT            1249999
-#define PPS_PULSE_WIDTH_MAX             0x3FFFFFF
+#define PPS_PULSE_WIDTH_NOMINAL         1249999
+#define PPS_PULSE_WIDTH_DISABLE         0x3FFFFFF
 #define PPS_INTERRUPT_DELAY_INIT        9999999
 
 #endif /* __SWFO_FPGA_H__ */

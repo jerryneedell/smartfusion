@@ -171,12 +171,12 @@ void prvUART1Task( void * pvParameters)
 
                 case 'P':
                     /* Enable PPS -- set pulse width to default value */
-                    fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_INIT;
+                    fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_NOMINAL;
                     send_msg((const uint8_t *)"PPS Enabled\r\n");
                 break;
                 case 'p':
                     /* Disable PPS -- set pulse width to miximum value */
-                    fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_MAX;
+                    fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_DISABLE;
                     send_msg((const uint8_t *)"PPS Disabled\r\n");
                 break;
                 case 'T':

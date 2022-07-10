@@ -2,7 +2,7 @@
 #define __TRACERS_FPGA_H__
 
 #define DATECODE			0x20220710
-#define VERSION				0x00
+#define VERSION				0x01
 
 #define LED 				0
 #define BUTTON 				0x20/4
@@ -49,8 +49,10 @@
 #define CMD_MAX_BYTES			0x200
 #define UART0_RX_BYTES			0x400
 
-#define PPS_PULSE_WIDTH_INIT 		24999999
-#define PPS_PULSE_WIDTH_MAX             0x3FFFFFF
+#define PPS_PULSE_WIDTH_NOMINAL 	12499999
+#define PPS_PULSE_WIDTH_MINIMUM         2499999
+#define PPS_PULSE_WIDTH_MAXIMUM         24999999
+#define PPS_PULSE_WIDTH_DISABLE         0x3FFFFFF
 
 //#define PPS_INTERRUPT_DELAY_INIT	9999999
 

@@ -82,6 +82,9 @@ Press a key to select:\r\n\n\
   [y]: Disable Telemetry Loopback\r\n\
   [Z]: Enable Telemetry IRQ\r\n\
   [z]: Disable Telemetry IRQ\r\n\
+  [1]: Set PPS Duty Cycle to 5 percent\r\n\
+  [2]: Set PPS Duty Cycle to 25 percent\r\n\
+  [3]: Set PPS Duty Cycle to 50 percent\r\n\
   [anything]: Display link status (MAC address and IP)\r\n\
 ";
 
@@ -213,12 +216,12 @@ void prvUART1Task( void * pvParameters)
 
                 case 'P':
                     /* Enable PPS -- set pulse width to default value */
-                    fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_INIT;
+                    fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_NOMINAL;
                     send_msg((const uint8_t *)"PPS Enabled\r\n");
                 break;
                 case 'p':
                     /* Disable PPS -- set pulse width to miximum value */
-                    fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_MAX;
+                    fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_DISABLE;
                     send_msg((const uint8_t *)"PPS Disabled\r\n");
                 break;
                 case 'T':
@@ -298,6 +301,22 @@ void prvUART1Task( void * pvParameters)
                     fpgabase[LED]&=0xDF;
                     display_counters();
                     break;
+
+                case '1':
+                    /* Enable PPS -- set pulse width to minimum value */
+                    fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_MINIMUM;
+                    send_msg((const uint8_t *)"PPS Duty cycle 5 percent\r\n");
+                break;
+                case '2':
+                    /* Enable PPS -- set pulse width to default value */
+                    fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_NOMINAL;
+                    send_msg((const uint8_t *)"PPS Duty Cycle 25 percent\r\n");
+                break;
+                case '3':
+                    /* Enable PPS -- set pulse width to maximum value */
+                    fpgabase[PPS_PULSE_WIDTH] = PPS_PULSE_WIDTH_MAXIMUM;
+                    send_msg((const uint8_t *)"PPS Duty Cycle 50 percent\r\n");
+                break;
 
                 default:
                     display_link_status();
