@@ -1,7 +1,7 @@
 #ifndef __TRACERS_FPGA_H__
 #define __TRACERS_FPGA_H__
 
-#define DATECODE			0x20220714
+#define DATECODE			0x20221119
 #define VERSION				0x00
 
 #define LED 				0
