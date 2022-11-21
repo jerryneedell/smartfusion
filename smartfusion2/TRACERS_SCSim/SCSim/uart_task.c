@@ -479,14 +479,13 @@ static void uart0_rx_handler(mss_uart_instance_t * this_uart)
     }
     else if(g_rx_uart0_size > 0)
     {
-        uint32_t i;
-        for(i=0; i<g_rx_uart0_size; i++)
-        {
-            uart0_rx_buffer[uart0_rx_in + i] = g_rx_uart0_buffer[i];
-        }  
-
         if (uart0_rx_in + g_rx_uart0_size < UART0_RX_BYTES)
         {
+            uint32_t i;
+            for(i=0; i<g_rx_uart0_size; i++)
+            {
+                uart0_rx_buffer[uart0_rx_in + i] = g_rx_uart0_buffer[i];
+            }
             uart0_rx_in += g_rx_uart0_size;
         }
         else // ignore it if it will overrun the buffer - toggle an LED
