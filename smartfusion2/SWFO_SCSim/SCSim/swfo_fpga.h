@@ -1,7 +1,7 @@
 #ifndef __SWFO_FPGA_H__
 #define __SWFO_FPGA_H__
 
-#define DATECODE                        0x20220718
+#define DATECODE                        0x20221129
 #define VERSION                         0x00
 
 #define LED 				0
